@@ -8,4 +8,7 @@ trait Element {
   val hitSize: TileSize = size
 
   require(level >= 1, "level should be >= 1")
+  // Sizes are specified out of constructor atm
+  /*require(coordinate.x + size.size < TileCoordinate.Max, "Outside coords")
+  require(coordinate.y + size.size < TileCoordinate.Max, "Outside coords")*/
 }
