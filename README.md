@@ -12,3 +12,9 @@ Analyses base layouts against sets of war rules
 
 `sbt test`
 `sbt "test-only org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParserSpec"`
+
+
+## Running utils
+
+`sbt package`
+`sbt "run dhau"`

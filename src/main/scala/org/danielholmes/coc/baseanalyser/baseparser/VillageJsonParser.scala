@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser.baseparser
 
-import org.danielholmes.coc.baseanalyser.model.Base
+import org.danielholmes.coc.baseanalyser.model.Village
 import spray.json._
 
 object VillageJsonProtocol extends DefaultJsonProtocol {
@@ -10,9 +10,9 @@ object VillageJsonProtocol extends DefaultJsonProtocol {
 import VillageJsonProtocol._
 
 class VillageJsonParser(elementFactory: ElementFactory) {
-  def parse(input: String): Base = {
+  def parse(input: String): Village = {
     try {
-      Base(
+      Village(
         input.parseJson
           .convertTo[Set[RawElement]]
           .map(elementFactory.build)

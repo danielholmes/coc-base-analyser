@@ -1,3 +1,5 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class TileSize(size: Int)
+case class TileSize(private val size: Int) {
+  val toInt = size
+}

@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser.baseparser
 
-import org.danielholmes.coc.baseanalyser.model.{Base, TileSize, TileCoordinate, Element}
+import org.danielholmes.coc.baseanalyser.model.{TileSize, TileCoordinate, Element, Village}
 import org.scalatest._
 
 class VillageJsonParserSpec extends FlatSpec with Matchers {
@@ -15,19 +15,19 @@ class VillageJsonParserSpec extends FlatSpec with Matchers {
   }
 
   it should "return empty village is empty input" in {
-    parser.parse("[]") should be (Base.empty)
+    parser.parse("[]") should be (Village.empty)
   }
 
   it should "return simple village" in {
     val result = parser.parse("""[{ "data": 1000001, "lvl": 1, "x": 21, "y": 20 }]""")
 
-    result should be (Base(Set(new StubBaseElement(1, new TileCoordinate(21, 20)))))
+    result should be (Village(Set(new StubBaseElement(1, new TileCoordinate(21, 20)))))
   }
 
   it should "return village without ignored elements" in {
     val result = parser.parse("""[{ "data": 999999, "lvl": 1, "x": 21, "y": 20 }]""")
 
-    result should be (Base.empty)
+    result should be (Village.empty)
   }
 }
 

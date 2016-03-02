@@ -4,8 +4,10 @@ import org.danielholmes.coc.baseanalyser.model._
 
 class HardCodedElementFactory extends ElementFactory {
   private def levelAndCoordinateConstructor(constructor: (Int, TileCoordinate) => Element): (RawElement => Element) = {
-    raw => constructor(raw.lvl, new TileCoordinate(raw.x, raw.y))
+    raw => constructor(elementLevel(raw.lvl), new TileCoordinate(raw.x, raw.y))
   }
+
+  private def elementLevel(rawLevel: Int) = Math.max(1, rawLevel + 1)
 
   val elementConstructorByCode: Map[Int, RawElement => Element] = Map(
     // Buildings
@@ -30,7 +32,7 @@ class HardCodedElementFactory extends ElementFactory {
     //1000018 -> GoblinHut,
     1000019 -> levelAndCoordinateConstructor(TeslaTower),
     1000020 -> levelAndCoordinateConstructor(SpellFactory),
-    1000021 -> ((raw: RawElement) => XBow(raw.lvl, new TileCoordinate(raw.x, raw.y), Set(Target.Air), 1 to 10)),
+    1000021 -> ((raw: RawElement) => XBow(elementLevel(raw.lvl), new TileCoordinate(raw.x, raw.y), Set(Target.Air), 1 to 10)),
     1000022 -> levelAndCoordinateConstructor(BarbarianKing),
     1000023 -> levelAndCoordinateConstructor(DarkElixirCollector),
     1000024 -> levelAndCoordinateConstructor(DarkElixirStorage),
