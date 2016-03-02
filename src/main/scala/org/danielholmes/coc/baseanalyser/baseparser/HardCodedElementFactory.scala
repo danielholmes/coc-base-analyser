@@ -8,6 +8,7 @@ class HardCodedElementFactory extends ElementFactory {
   }
 
   val elementConstructorByCode: Map[Int, RawElement => Element] = Map(
+    // Buildings
     1000001 -> levelAndCoordinateConstructor(TownHall),
     1000000 -> levelAndCoordinateConstructor(ArmyCamp),
     1000002 -> levelAndCoordinateConstructor(ElixirCollector),
@@ -37,7 +38,18 @@ class HardCodedElementFactory extends ElementFactory {
     1000026 -> levelAndCoordinateConstructor(DarkBarrack),
     1000027 -> levelAndCoordinateConstructor(InfernoTower),
     1000028 -> levelAndCoordinateConstructor(AirSweeper),
-    1000029 -> levelAndCoordinateConstructor(DarkSpellFactory)
+    1000029 -> levelAndCoordinateConstructor(DarkSpellFactory),
+
+    // Traps
+    12000000 -> levelAndCoordinateConstructor(Bomb),
+    12000001 -> levelAndCoordinateConstructor(SpringTrap),
+    12000002 -> levelAndCoordinateConstructor(GiantBomb),
+    12000003 -> levelAndCoordinateConstructor(HalloweenBomb),
+    //12000004 -> levelAndCoordinateConstructor(????),
+    12000005 -> levelAndCoordinateConstructor(AirBomb),
+    12000006 -> levelAndCoordinateConstructor(SeekingAirMine),
+    12000007 -> levelAndCoordinateConstructor(SantaTrap),
+    12000008 -> levelAndCoordinateConstructor(SkeletonTrap)
   )
 
   def build(raw: RawElement): Option[Element] = {
@@ -51,24 +63,11 @@ class HardCodedElementFactory extends ElementFactory {
   }
 
   private def shouldInclude(raw: RawElement): Boolean = {
-    !raw.data.toString.startsWith("1800") &&
-      !raw.data.toString.startsWith("800")
+    Set("1800", "800").forall(!raw.data.toString.startsWith(_))
   }
 }
 
 /*
-Trap ID:
-Code:
-12000000 Mine
-12000001 Ejector
-12000002 Superbomb
-12000003 Halloweenbomb
-12000004 Slowbomb
-12000005 AirTrap
-12000006 MegaAirTrap
-12000007 SantaTrap
-12000008 Halloweenskels
-
 Decorations
 18000000 Barbarian Statue
 18000001 Torch

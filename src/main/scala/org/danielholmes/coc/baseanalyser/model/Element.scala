@@ -1,11 +1,11 @@
 package org.danielholmes.coc.baseanalyser.model
 
-abstract class Element(level: Int, coordinate: TileCoordinate) {
-  require(level >= 1, "level should be >= 1")
-
+trait Element {
+  val level: Int
+  val coordinate: TileCoordinate
   val size: TileSize
-
   val attackPlacementSize: TileSize = size
-
   val hitSize: TileSize = size
+
+  require(level >= 1, "level should be >= 1")
 }

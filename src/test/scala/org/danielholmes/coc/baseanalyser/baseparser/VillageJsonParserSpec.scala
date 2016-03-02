@@ -21,7 +21,7 @@ class VillageJsonParserSpec extends FlatSpec with Matchers {
   it should "return simple village" in {
     val result = parser.parse("""[{ "data": 1000001, "lvl": 1, "x": 21, "y": 20 }]""")
 
-    result should be (Base(Set(new StubElement(1, new TileCoordinate(21, 20)))))
+    result should be (Base(Set(new StubBaseElement(1, new TileCoordinate(21, 20)))))
   }
 
   it should "return village without ignored elements" in {
@@ -35,10 +35,10 @@ object StubElementFactory$ extends ElementFactory {
   def build(raw: RawElement): Option[Element] = {
     Some(raw)
       .filter(value => value.data != 999999)
-      .map(value => StubElement(value.lvl, new TileCoordinate(value.x, value.y)))
+      .map(value => StubBaseElement(value.lvl, new TileCoordinate(value.x, value.y)))
   }
 }
 
-case class StubElement(level: Int, coordinate: TileCoordinate) extends Element(level, coordinate) {
+case class StubBaseElement(level: Int, coordinate: TileCoordinate) extends Element {
   val size: TileSize = new TileSize(3)
 }
