@@ -1,3 +1,1 @@
-logLevel := Level.Warn
-
-addSbtPlugin("com.artima.supersafe" % "sbtplugin" % "1.1.0-RC6")
+addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "1.0.0")

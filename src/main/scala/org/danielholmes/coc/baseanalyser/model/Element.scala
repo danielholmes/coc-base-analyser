@@ -7,13 +7,13 @@ trait Element {
 
   val coordinate: TileCoordinate
   val size: TileSize
-  def block = Block(coordinate, size)
+  lazy val block = Block(coordinate, size)
 
-  def attackPlacementSize: TileSize = size + 2
-  def attackPlacementBlock = Block.Map.createWithin(coordinate, -1, -1, attackPlacementSize)
+  lazy val attackPlacementSize: TileSize = size + 2
+  lazy val attackPlacementBlock = Block.Map.createWithin(coordinate, -1, -1, attackPlacementSize)
 
-  def hitSize: TileSize = size
-  def hitBlock = Block(coordinate, hitSize)
+  lazy val hitSize: TileSize = size
+  lazy val hitBlock = Block(coordinate, hitSize)
 
   def findClosestHitCoordinate(from: TileCoordinate): TileCoordinate = {
     hitBlock.findClosestCoordinate(from)

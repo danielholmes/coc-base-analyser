@@ -16,5 +16,14 @@ Analyses base layouts against sets of war rules
 
 ## Running utils
 
-`sbt package`
 `sbt "run dhau"`
+`1`
+
+
+## Running dev version of site
+
+```
+sbt
+container:start
+```
+Available at http://localhost:8080/

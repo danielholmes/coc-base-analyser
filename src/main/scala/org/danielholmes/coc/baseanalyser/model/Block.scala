@@ -9,11 +9,11 @@ case class Block(private val coordinate: TileCoordinate, private val width: Tile
 
   val x = coordinate.x
   val y = coordinate.y
-  private val oppositeCoordinate = coordinate.offset(width.toInt, height.toInt)
-  val oppositeX = oppositeCoordinate.x
-  val oppositeY = oppositeCoordinate.y
+  private lazy val oppositeCoordinate = coordinate.offset(width.toInt, height.toInt)
+  lazy val oppositeX = oppositeCoordinate.x
+  lazy val oppositeY = oppositeCoordinate.y
 
-  val centre = MapCoordinate(x + width.toDouble / 2.0, y + height.toDouble / 2.0)
+  lazy val centre = MapCoordinate(x + width.toDouble / 2.0, y + height.toDouble / 2.0)
 
   def internalCoordinates: Set[TileCoordinate] = {
     if (width < 2 || height < 2) return Set.empty
