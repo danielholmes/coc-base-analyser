@@ -21,6 +21,10 @@ case class Block(private val coordinate: TileCoordinate, private val width: Tile
       .matrixOfCoordinatesTo(oppositeCoordinate.offset(-1, -1))
   }
 
+  def allCoordinates: Set[TileCoordinate] = {
+    coordinate.matrixOfCoordinatesTo(oppositeCoordinate)
+  }
+
   def findClosestCoordinate(from: TileCoordinate): TileCoordinate = {
     possibleIntersectionPoints.min(Ordering.by((_: TileCoordinate)
       .distanceTo(from)))
@@ -35,11 +39,19 @@ case class Block(private val coordinate: TileCoordinate, private val width: Tile
       y < other.oppositeY && oppositeY > other.y
   }
 
-  def createWithin(coordinate: TileCoordinate, coordOffsetX: Int, coordOffsetY: Int, size: TileSize) = {
+  def expandWithinMap(size: TileSize): Block = {
+    Block.Map.createWithin(coordinate, -size.toInt, -size.toInt, width + size * 2, height + size * 2)
+  }
+
+  def createWithin(coordinate: TileCoordinate, coordOffsetX: Int, coordOffsetY: Int, size: TileSize): Block = {
+    createWithin(coordinate, coordOffsetX, coordOffsetY, size, size)
+  }
+
+  def createWithin(coordinate: TileCoordinate, coordOffsetX: Int, coordOffsetY: Int, width: TileSize, height: TileSize): Block = {
     val actualX = Math.max(coordinate.x + coordOffsetX, 0)
     val actualY = Math.max(coordinate.y + coordOffsetY, 0)
-    val actualRight = Math.min(coordinate.x + coordOffsetX + size.toInt, TileCoordinate.Max)
-    val actualBottom = Math.min(coordinate.y + coordOffsetY + size.toInt, TileCoordinate.Max)
+    val actualRight = Math.min(coordinate.x + coordOffsetX + width.toInt, TileCoordinate.Max)
+    val actualBottom = Math.min(coordinate.y + coordOffsetY + height.toInt, TileCoordinate.Max)
     Block(
       TileCoordinate(actualX, actualY),
       TileSize(actualRight - actualX),

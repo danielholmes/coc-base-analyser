@@ -1,7 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model
 
 case class ArcherQueen(level: Int, coordinate: TileCoordinate) extends Defense {
-  val range = 0 to 8
+  def radius = Radius(block.centre, TileSize(8))
   val targets = Target.Both
   val size = TileSize(3)
 }

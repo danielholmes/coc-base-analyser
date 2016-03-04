@@ -8,7 +8,7 @@ class HogCCLureRule extends Rule {
       .map(_.radius)
     if (clanCastleRadius.isEmpty) return RuleResult.pass
 
-    HogCCLureFail(
+    HogCCLureResult(
       village.attackPlacementCoordinates
         .flatMap(HogRider.findTarget(_, village))
         .filter(_.cutsRadius(clanCastleRadius.get))
@@ -16,6 +16,6 @@ class HogCCLureRule extends Rule {
   }
 }
 
-case class HogCCLureFail(targeting: Set[HogTargeting]) extends RuleResult {
+case class HogCCLureResult(targeting: Set[HogTargeting]) extends RuleResult {
   val success = targeting.isEmpty
 }

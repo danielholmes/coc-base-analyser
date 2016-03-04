@@ -15,7 +15,7 @@ object PrintBase {
     val gatherer = new BaseGatherer
 
     val json = gatherer.gather(args(0))
-    val base = parser.parse(json)
-    System.out.println(printer.build(base))
+    val village = parser.parse(json)
+    System.out.println(printer.buildColored(village))
   }
 }

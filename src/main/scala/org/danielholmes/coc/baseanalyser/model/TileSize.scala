@@ -8,6 +8,8 @@ case class TileSize(private val size: Int) {
   def +(amount: Int): TileSize = TileSize(size + amount)
   def +(amount: TileSize): TileSize = this + amount.toInt
 
+  def *(amount: Int): TileSize = TileSize(size * amount)
+
   def -(amount: Int): TileSize = TileSize(size - amount)
   def -(amount: TileSize): TileSize = this - amount.toInt
 

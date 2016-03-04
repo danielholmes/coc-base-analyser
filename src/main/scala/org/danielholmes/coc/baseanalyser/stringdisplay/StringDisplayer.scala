@@ -53,7 +53,7 @@ class StringDisplayer {
     drawCCRadius(
       clanCastle.get.radius,
       current,
-      TileCoordinate.All.toSeq
+      TileCoordinate.AllElementPlacement.toSeq
     )
   }
 

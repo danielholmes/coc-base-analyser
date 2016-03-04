@@ -12,11 +12,16 @@ case class Village(val elements: Set[Element]) {
 
   def isEmpty = elements.isEmpty
 
+  // Doesnt seem to work
+  /*def findElementsByType[T <: Element]: Set[T] = {
+    elements.filter(_.isInstanceOf[T])
+      .map(_.asInstanceOf[T])
+  }*/
+
   private val elementAttackPlacements = elements.map(_.attackPlacementBlock)
     .flatMap(_.internalCoordinates)
-    .toSet
 
-  val attackPlacementCoordinates: Set[TileCoordinate] = TileCoordinate.All.toSet -- elementAttackPlacements
+  val attackPlacementCoordinates: Set[TileCoordinate] = TileCoordinate.AllElementPlacement.toSet -- elementAttackPlacements
 }
 
 object Village {

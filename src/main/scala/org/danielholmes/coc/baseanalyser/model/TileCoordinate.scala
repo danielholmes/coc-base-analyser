@@ -6,6 +6,7 @@ object TileCoordinate {
   val Middle: TileCoordinate = TileCoordinate(Max / 2, Max / 2)
   val End = TileCoordinate(Max, Max)
   val All = Origin.matrixOfCoordinatesTo(End)
+  val AllElementPlacement = Origin.matrixOfCoordinatesTo(End.offset(-1, -1))
 }
 
 case class TileCoordinate(x: Int, y: Int) {
