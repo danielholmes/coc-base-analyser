@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
-import org.danielholmes.coc.baseanalyser.model.{TileCoordinate, ClanCastle, Village}
+import org.danielholmes.coc.baseanalyser.model._
 import org.scalatest._
 
 class HogCCLureRuleSpec extends FlatSpec with Matchers {
@@ -10,7 +10,19 @@ class HogCCLureRuleSpec extends FlatSpec with Matchers {
     rule.analyse(Village.empty).success should be (true)
   }
 
-  "HogCCLureRule" should "return violation for base with CC and no blocking" in {
+  it should "return violation for base with CC and no blocking" in {
     rule.analyse(Village(Set(ClanCastle(1, TileCoordinate.Middle)))).success should be (false)
+  }
+
+  it should "return success for base with paths blocked off" in {
+    val ccPosition = TileCoordinate(20, 20)
+    val cc = ClanCastle(1, ccPosition)
+    val village = Village(
+      Set(cc) ++
+        TileCoordinate(2, 2).matrixOfCoordinatesTo(TileCoordinate(41, 41), 3)
+          .filter(_ != ccPosition)
+          .map(Barrack(1, _))
+    )
+    rule.analyse(village).success should be (true)
   }
 }

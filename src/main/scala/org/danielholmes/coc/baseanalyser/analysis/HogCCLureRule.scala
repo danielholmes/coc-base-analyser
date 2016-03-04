@@ -1,30 +1,21 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
-import org.danielholmes.coc.baseanalyser.model.{TileCoordinate, Element, ClanCastle, Village}
+import org.danielholmes.coc.baseanalyser.model._
 
 class HogCCLureRule extends Rule {
   def analyse(village: Village): RuleResult = {
+    val clanCastleRadius = village.clanCastle
+      .map(_.radius)
+    if (clanCastleRadius.isEmpty) return RuleResult.pass
+
     HogCCLureFail(
       village.attackPlacementCoordinates
-        .flatMap(c => closestCCRadiusPathing(c, village))
-        .toSet
+        .flatMap(HogRider.findTarget(_, village))
+        .filter(_.cutsRadius(clanCastleRadius.get))
     )
   }
-
-  private def closestCCRadiusPathing(coordinate: TileCoordinate, village: Village): Option[(Element, TileCoordinate)] = {
-    // TODO: cover in helper method on village when work out typing
-    village.elements
-      .find(_.isInstanceOf[ClanCastle])
-      .flatMap(_ => hogTargetHitPoint(coordinate, village))
-  }
-
-  private def hogTargetHitPoint(dropPoint: TileCoordinate, village: Village): Option[(Element, TileCoordinate)] = {
-    None
-  }
-
-  //private def closestDefense
 }
 
-case class HogCCLureFail(dropLocations: Set[(Element, TileCoordinate)]) extends RuleResult {
-  val success: Boolean = dropLocations.isEmpty
+case class HogCCLureFail(targeting: Set[HogTargeting]) extends RuleResult {
+  val success = targeting.isEmpty
 }
