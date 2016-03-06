@@ -3,13 +3,19 @@ package org.danielholmes.coc.baseanalyser.baseparser
 import org.danielholmes.coc.baseanalyser.model._
 
 class HardCodedElementFactory extends ElementFactory {
+
+
   private def levelAndCoordinateConstructor(constructor: (Int, TileCoordinate) => Element): (RawBuilding => Element) = {
-    raw => constructor(elementLevel(raw.lvl), TileCoordinate(raw.x, raw.y))
+    raw => constructor(elementLevel(raw.lvl), elementCoordinate(raw))
   }
 
   private def elementLevel(rawLevel: Int) = Math.max(1, rawLevel + 1)
 
-  val elementConstructorByCode: Map[Int, RawBuilding => Element] = Map(
+  private val zeroCoordinateSystemOffset = -3
+
+  private def elementCoordinate(raw: RawBuilding) = TileCoordinate(raw.x + zeroCoordinateSystemOffset, raw.y + zeroCoordinateSystemOffset)
+
+  private val elementConstructorByCode: Map[Int, RawBuilding => Element] = Map(
     // Buildings
     1000001 -> levelAndCoordinateConstructor(TownHall),
     1000000 -> levelAndCoordinateConstructor(ArmyCamp),
@@ -32,7 +38,7 @@ class HardCodedElementFactory extends ElementFactory {
     //1000018 -> GoblinHut,
     1000019 -> levelAndCoordinateConstructor(TeslaTower),
     1000020 -> levelAndCoordinateConstructor(SpellFactory),
-    1000021 -> ((raw: RawBuilding) => XBow.both(elementLevel(raw.lvl), TileCoordinate(raw.x, raw.y))),
+    1000021 -> ((raw: RawBuilding) => XBow.both(elementLevel(raw.lvl), elementCoordinate(raw))),
     1000022 -> levelAndCoordinateConstructor(BarbarianKing),
     1000023 -> levelAndCoordinateConstructor(DarkElixirCollector),
     1000024 -> levelAndCoordinateConstructor(DarkElixirStorage),
