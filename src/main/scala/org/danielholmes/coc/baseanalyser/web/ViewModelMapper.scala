@@ -4,7 +4,7 @@ import org.danielholmes.coc.baseanalyser.analysis.AnalysisReport
 import org.danielholmes.coc.baseanalyser.model.{Block, Village, Element}
 import spray.json.DefaultJsonProtocol
 
-object ViewModelMapper {
+class ViewModelMapper {
   def viewModel(report: AnalysisReport): AnalysisReportViewModel = {
     AnalysisReportViewModel(viewModel(report.village))
   }

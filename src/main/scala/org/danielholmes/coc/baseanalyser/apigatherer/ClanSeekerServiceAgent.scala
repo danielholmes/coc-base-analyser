@@ -31,7 +31,8 @@ import ClanSeekerProtocol._
 
 // Details for berserker. Note that kicks off account though
 // ?userId=55845388039&userToken=bp9a6dt8tawn6mbsp69jec8j7cszfd7968df82ka
-class ClanSeekerServiceAgent(private val rootUrl: String) {
+class ClanSeekerServiceAgent {
+  private val rootUrl: String = "http://api.clanseeker.co"
   private val timeout = 10.seconds
 
   def getClanDetails(id: Long): ClanDetailsResponse = {

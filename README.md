@@ -16,10 +16,10 @@ Analyses base layouts against sets of war base rules
 - `sbt "test-only org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParserSpec"`
 
 
-## Running simple print util
+## Simple ASCII print util
 
 ```
-sbt 'run "I AM SPARTA!!1!"'
+sbt 'run-main org.danielholmes.coc.baseanalyser.PrintBase "I AM SPARTA!!1!"'
 ```
 
 

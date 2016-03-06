@@ -19,6 +19,10 @@ libraryDependencies ++= {
 
     "com.github.spullara.mustache.java" % "compiler" % "0.9.1",
 
+    "com.softwaremill.macwire" %% "macros" % "2.2.2" % "provided",
+    "com.softwaremill.macwire" %% "util" % "2.2.2",
+    "com.softwaremill.macwire" %% "proxy" % "2.2.2",
+
     "org.scalatest"       % "scalatest_2.11" % "2.2.6" % "test"
   )
 }
