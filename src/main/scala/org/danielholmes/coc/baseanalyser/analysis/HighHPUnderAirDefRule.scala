@@ -15,7 +15,7 @@ class HighHPUnderAirDefRule extends Rule {
 
   private def willAirDefShootWhileDragAttacking(highHP: Element, airDefs: Set[AirDefense]): Boolean = {
     if (airDefs.isEmpty) return false
-    airDefs.head.radius.containsAll(Dragon.getCoordinatesCanAttackElementFrom(highHP)) ||
+    airDefs.head.range.containsAll(Dragon.getCoordinatesCanAttackElementFrom(highHP)) ||
       willAirDefShootWhileDragAttacking(highHP, airDefs.tail)
   }
 

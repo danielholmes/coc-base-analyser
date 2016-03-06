@@ -5,8 +5,8 @@ import org.apache.commons.math3.geometry.euclidean.twod.{Segment, Line, Vector2D
 case class HogTargeting(val startPosition: TileCoordinate, val targeting: Element) {
   val hitPoint = targeting.findClosestHitCoordinate(startPosition)
 
-  def cutsRadius(radius: Radius): Boolean = {
-    asSegment.distance(coordinateAsPoint(radius.coordinate)) < radius.size.toInt
+  def cutsRadius(radius: ElementRange): Boolean = {
+    asSegment.distance(coordinateAsPoint(radius.coordinate)) < radius.outerSize.toInt
   }
 
   private val asLine = new Line(coordinateAsPoint(startPosition), coordinateAsPoint(hitPoint), 0.01)

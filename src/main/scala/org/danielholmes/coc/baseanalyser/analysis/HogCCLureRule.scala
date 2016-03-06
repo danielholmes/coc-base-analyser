@@ -5,7 +5,7 @@ import org.danielholmes.coc.baseanalyser.model._
 class HogCCLureRule extends Rule {
   def analyse(village: Village): RuleResult = {
     val clanCastleRadius = village.clanCastle
-      .map(_.radius)
+      .map(_.range)
     if (clanCastleRadius.isEmpty) return RuleResult.pass
 
     HogCCLureResult(

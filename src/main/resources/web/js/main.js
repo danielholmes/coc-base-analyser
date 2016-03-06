@@ -2,10 +2,12 @@ $(document).ready(function() {
     var searchForm = $("#searchForm");
     var searchButton = searchForm.find("input[type='submit']");
     var loading = searchForm.find(".loading");
+    var canvas = document.getElementById("villageImage");
+    var stage = new createjs.Stage(canvas);
 
     // Loading
     var runningAnalysis = false;
-    function startAnalysis() {
+    function startLoading() {
         if (runningAnalysis) {
             return;
         }
@@ -14,7 +16,7 @@ $(document).ready(function() {
         runningAnalysis = true;
     }
 
-    function stopAnalysis() {
+    function stopLoading() {
         if (!runningAnalysis) {
             return;
         }
@@ -24,11 +26,15 @@ $(document).ready(function() {
     }
 
     // Render
-    function render(village) {
-        var canvas = document.getElementById("villageImage");
-        var stage = new createjs.Stage(canvas);
+    function render2d(village) {
         var tileSize = Math.floor(Math.min(canvas.width, canvas.height) / 44);
 
+        // Grass
+        var grass = new createjs.Shape();
+        grass.graphics.beginFill("#99dd99").drawRect(0, 0, canvas.width, canvas.height);
+        stage.addChild(grass);
+
+        // Blocks
         for (var i in village.elements) {
             var element = village.elements[i];
             var seed = (element.typeName.length * 5.7) % 30;
@@ -40,6 +46,25 @@ $(document).ready(function() {
             stage.addChild(shape);
         }
 
+        // CC Radius
+        _.each(
+            _.map(
+                _.filter(village.elements, function(element) { return element.typeName == "ClanCastle"; }),
+                function(clanCastle) {
+                    var radius = new createjs.Shape();
+                    radius.graphics.beginStroke("#ffffff").drawCircle(0, 0, clanCastle.range.outer * tileSize);
+                    radius.x = (clanCastle.block.x + clanCastle.block.width / 2) * tileSize;
+                    radius.y = (clanCastle.block.y + clanCastle.block.height / 2) * tileSize;
+                    return radius;
+                }
+            ),
+            function(castle) { stage.addChild(castle); }
+        );
+
+        stage.update();
+    }
+    function clearRender() {
+        stage.removeAllChildren();
         stage.update();
     }
 
@@ -49,12 +74,13 @@ $(document).ready(function() {
             return false;
         }
 
-        startAnalysis();
+        startLoading();
+        clearRender();
 
         var userName = $("#userNameField").val();
         $.getJSON("/village-analysis/" + encodeURI(userName))
             .done(function(response){
-                render(response.village);
+                render2d(response.village);
             })
             .fail(function(response){
                 if (response.status == 404) {
@@ -63,7 +89,7 @@ $(document).ready(function() {
                 }
             })
             .always(function(){
-                stopAnalysis();
+                stopLoading();
             });
 
         return false;

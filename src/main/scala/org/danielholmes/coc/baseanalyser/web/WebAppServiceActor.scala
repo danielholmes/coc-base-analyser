@@ -18,27 +18,22 @@ class WebAppServiceActor extends Actor with HttpService with Services {
   def receive = runRoute(routes)
 
   val routes =
-    path("") {
-      get {
-        val mf = new DefaultMustacheFactory()
-        val mustache = mf.compile("web/home.mustache")
-        val writer = new StringWriter
-        mustache.execute(writer, Map()).flush()
+    compressResponse() {
+      path("") {
+        get {
+          val mf = new DefaultMustacheFactory()
+          val mustache = mf.compile("web/home.mustache")
+          val writer = new StringWriter
+          mustache.execute(writer, Map()).flush()
 
-        respondWithMediaType(`text/html`) {
-          complete(writer.toString)
+          respondWithMediaType(`text/html`) {
+            complete(writer.toString)
+          }
         }
-      }
-    } ~
-    path("main.js") {
-      respondWithMediaType(`application/javascript`) {
-        val stream = getClass.getResourceAsStream("/web/main.js")
-        complete(
-          Source.fromInputStream(stream).mkString
-        )
-      }
-    } ~
-    rejectEmptyResponse {
+      } ~
+      pathPrefix("js") {
+        getFromResourceDirectory("web/js")
+      } ~
       path("village-analysis" / Rest) { userName =>
         respondWithMediaType(`application/json`) {
           val village = villageGatherer.gatherByUserName(userName)

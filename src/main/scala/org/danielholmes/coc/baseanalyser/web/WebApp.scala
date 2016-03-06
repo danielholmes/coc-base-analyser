@@ -14,12 +14,10 @@ trait WebApp {
   val apiActor = system.actorOf(Props[WebAppServiceActor], "webAppActor")
 }
 
-//for use with spray-servlet
 class WebAppServlet extends WebBoot with WebApp {
   override val serviceActor = apiActor
 }
 
-//for use with spray-can
 object SprayApiCan extends App with WebApp {
   implicit val timeout = Timeout(5.seconds)
   IO(Http) ? Http.Bind(apiActor, interface = "localhost", port = 8080)

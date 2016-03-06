@@ -51,15 +51,15 @@ class StringDisplayer {
     val clanCastle = village.clanCastle
     if (clanCastle.isEmpty) return current
     drawCCRadius(
-      clanCastle.get.radius,
+      clanCastle.get.range,
       current,
       TileCoordinate.AllElementPlacement.toSeq
     )
   }
 
-  private def drawCCRadius(radius: Radius, current: List[List[Char]], coords: Seq[TileCoordinate]): List[List[Char]] = {
+  private def drawCCRadius(radius: ElementRange, current: List[List[Char]], coords: Seq[TileCoordinate]): List[List[Char]] = {
     if (coords.isEmpty) return current
-    if (Math.abs(coords.head.distanceTo(radius.coordinate) - radius.size.toInt) > 0.5) {
+    if (Math.abs(coords.head.distanceTo(radius.coordinate) - radius.outerSize.toInt) > 0.5) {
       return drawCCRadius(radius, current, coords.tail)
     }
     drawCCRadius(

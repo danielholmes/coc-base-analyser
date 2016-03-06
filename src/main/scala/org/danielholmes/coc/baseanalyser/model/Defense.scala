@@ -3,7 +3,7 @@ package org.danielholmes.coc.baseanalyser.model
 import Target._
 
 trait Defense extends Element {
-  val radius: Radius
+  val range: ElementRange
   val targets: Set[Target]
 
   // Not specified in constructor atm so doesnt work

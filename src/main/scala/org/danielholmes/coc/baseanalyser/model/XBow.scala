@@ -4,7 +4,7 @@ import Target._
 
 case class XBow(level: Int, coordinate: TileCoordinate, targets: Set[Target], radiusSize: TileSize) extends Defense {
   val size = TileSize(3)
-  lazy val radius = Radius(block.centre, radiusSize)
+  lazy val range = ElementRange(block.centre, radiusSize)
 }
 
 object XBow {
