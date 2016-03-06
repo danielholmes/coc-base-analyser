@@ -8,13 +8,16 @@
         <p>Search for a userName (can only be within the approved clans) and an analysis will be run on their active village</p>
         <form id="searchForm" href="#" method="get">
             <label for="userNameField">UserName:</label>
-            <input id="userNameField" type="text" name="userName" required="required" />
+            <input id="userNameField" type="text" name="userName" required="required" value="Dakota" />
             <br />
             <input type="submit" value="Run Analysis" />
             <span class="loading" style="display:none">Loading...</span>
         </form>
 
+        <canvas id="villageImage" width="880" height="880"></canvas>
+
         <script type="text/javascript" src="//code.jquery.com/jquery-2.2.1.min.js"></script>
+        <script src="//code.createjs.com/easeljs-0.8.2.min.js"></script>
         <script type="text/javascript" src="/main.js"></script>
     </body>
 </html>

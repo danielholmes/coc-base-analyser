@@ -1,6 +1,6 @@
 # COC Base Analyser
 
-Analyses base layouts against sets of war rules
+Analyses base layouts against sets of war base rules
 
 
 ## Dependencies
@@ -29,4 +29,4 @@ sbt 'run "I AM SPARTA!!1!"'
 sbt
 container:start
 ```
-Available at http://localhost:8080/
+Available at http://localhost:8080/ . Run container:start each time something is changed
