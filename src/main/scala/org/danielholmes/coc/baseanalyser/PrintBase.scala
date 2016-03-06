@@ -5,7 +5,7 @@ import org.danielholmes.coc.baseanalyser.baseparser.{HardCodedElementFactory, Vi
 import org.danielholmes.coc.baseanalyser.stringdisplay.StringDisplayer
 
 object PrintBase {
-  def main(args: Array[String]) = {
+  def main(args: Array[String]): Int = {
     if (args.length != 1) {
       throw new RuntimeException("Must provide userName arg")
     }
@@ -16,7 +16,14 @@ object PrintBase {
       new VillageJsonParser(new HardCodedElementFactory())
     )
 
-    val village = gatherer.gatherByUserName(args(0))
-    println(printer.buildColored(village))
+    val userName = args(0)
+    val village = gatherer.gatherByUserName(userName)
+    if (village.isEmpty) {
+      println(s"userName $userName not found")
+      return -1
+    }
+
+    println(printer.buildColored(village.get))
+    return 0
   }
 }

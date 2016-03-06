@@ -6,18 +6,21 @@ Analyses base layouts against sets of war rules
 ## Dependencies
 
  - SBT
-
+ - JDK 8+
+ - Scala 2.11
+ 
 
 ## Tests
 
-`sbt test`
-`sbt "test-only org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParserSpec"`
+- `sbt test`
+- `sbt "test-only org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParserSpec"`
 
 
-## Running utils
+## Running simple print util
 
-`sbt 'run "I AM SPARTA!!1!"'`
-`1`
+```
+sbt 'run "I AM SPARTA!!1!"'
+```
 
 
 ## Running dev version of site

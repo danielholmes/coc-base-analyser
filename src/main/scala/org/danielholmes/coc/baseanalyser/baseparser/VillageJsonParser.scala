@@ -4,8 +4,8 @@ import org.danielholmes.coc.baseanalyser.model.Village
 import spray.json._
 
 object VillageJsonProtocol extends DefaultJsonProtocol {
-  implicit val buildingFormat = jsonFormat4(RawBuilding)
-  implicit val rawVillageFormat = jsonFormat1(RawVillage)
+implicit val buildingFormat = jsonFormat4(RawBuilding)
+implicit val rawVillageFormat = jsonFormat1(RawVillage)
 }
 
 import VillageJsonProtocol._

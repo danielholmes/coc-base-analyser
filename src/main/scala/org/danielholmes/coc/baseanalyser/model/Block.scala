@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class Block(private val coordinate: TileCoordinate, private val width: TileSize, private val height: TileSize) {
+case class Block(private val coordinate: TileCoordinate, val width: TileSize, val height: TileSize) {
   require(coordinate != null, "coordinate musn't be null")
   require(width != null, "width musn't be null")
   require(height != null, "width musn't be null")

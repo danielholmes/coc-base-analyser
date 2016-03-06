@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class Village(val elements: Set[Element]) {
+case class Village(elements: Set[Element]) {
   require(
     !Block.anyIntersect(elements.map(_.block)),
     s"Elements musn't overlap (currently ${Block.getAnyIntersection(elements.map(_.block)).get} overlaps"

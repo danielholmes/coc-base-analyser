@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CoC War Base Analyser</title>
+    </head>
+    <body>
+        <h3>CoC War Base Analyser - TH8</h3>
+        <p>Search for a userName (can only be within the approved clans) and an analysis will be run on their active village</p>
+        <form id="searchForm" href="#" method="get">
+            <label for="userNameField">UserName:</label>
+            <input id="userNameField" type="text" name="userName" required="required" />
+            <br />
+            <input type="submit" value="Run Analysis" />
+            <span class="loading" style="display:none">Loading...</span>
+        </form>
+
+        <script type="text/javascript" src="//code.jquery.com/jquery-2.2.1.min.js"></script>
+        <script type="text/javascript" src="/main.js"></script>
+    </body>
+</html>

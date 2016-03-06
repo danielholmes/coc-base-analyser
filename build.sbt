@@ -17,6 +17,8 @@ libraryDependencies ++= {
     "io.spray"            %%  "spray-client" % sprayV,
     "com.typesafe.akka"   %%  "akka-actor"    % akkaV,
 
+    "com.github.spullara.mustache.java" % "compiler" % "0.9.1",
+
     "org.scalatest"       % "scalatest_2.11" % "2.2.6" % "test"
   )
 }
