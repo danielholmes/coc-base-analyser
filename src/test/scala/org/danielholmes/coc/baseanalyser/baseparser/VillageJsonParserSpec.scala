@@ -15,24 +15,24 @@ class VillageJsonParserSpec extends FlatSpec with Matchers {
   }
 
   it should "return empty village is empty input" in {
-    parser.parse("[]") should be (Village.empty)
+    parser.parse("""{"buildings":[]}""") should be (Village.empty)
   }
 
   it should "return simple village" in {
-    val result = parser.parse("""[{ "data": 1000001, "lvl": 1, "x": 21, "y": 20 }]""")
+    val result = parser.parse("""{"exp_ver":1,"buildings":[{ "data": 1000001, "lvl": 1, "x": 21, "y": 20 }]}""")
 
     result should be (Village(Set(new StubBaseElement(1, TileCoordinate(21, 20)))))
   }
 
   it should "return village without ignored elements" in {
-    val result = parser.parse("""[{ "data": 999999, "lvl": 1, "x": 21, "y": 20 }]""")
+    val result = parser.parse("""{"exp_ver":1,"buildings":[{ "data": 999999, "lvl": 1, "x": 21, "y": 20 }]}""")
 
     result should be (Village.empty)
   }
 }
 
 object StubElementFactory$ extends ElementFactory {
-  def build(raw: RawElement): Option[Element] = {
+  def build(raw: RawBuilding): Option[Element] = {
     Some(raw)
       .filter(value => value.data != 999999)
       .map(value => StubBaseElement(value.lvl, TileCoordinate(value.x, value.y)))

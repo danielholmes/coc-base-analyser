@@ -32,13 +32,13 @@ class StringDisplayer {
     Colors.toVector(Math.abs(char.hashCode) % Colors.size)
   }
 
-  private def buildString(collection: List[List[Char]]): String = {
+  private def buildString(collection: Seq[Seq[Char]]): String = {
     collection.map(_ :+ "\n")
       .map(_.mkString(""))
       .mkString("")
   }
 
-  private def buildCollection(base: Village): List[List[Char]] = {
+  private def buildCollection(base: Village): Seq[Seq[Char]] = {
     drawBoundary(
       drawCCRadius(
         base,
@@ -74,17 +74,24 @@ class StringDisplayer {
     drawElements(elements.tail, drawElement(elements.head, current))
   }
 
-  // TODO: Find functional solution
   private def drawElement(element: Element, current: List[List[Char]]): List[List[Char]] = {
-    val coords = element.coordinate
-      .matrixOfCoordinatesTo(element.coordinate.offset(element.size.toInt - 1, element.size.toInt - 1))
+    drawElement(
+      element,
+      element.coordinate
+        .matrixOfCoordinatesTo(element.coordinate.offset(element.size.toInt - 1, element.size.toInt - 1))
+          .toSeq,
+      current
+    )
+  }
 
+  private def drawElement(element: Element, elementCoords: Seq[TileCoordinate], current: List[List[Char]]): List[List[Char]] = {
+    if (elementCoords.isEmpty) return current
     val char = characterForElement(element)
-    var newList = current
-    for (coord <- coords) {
-      newList = draw(newList, coord, char)
-    }
-    newList
+    drawElement(
+      element,
+      elementCoords.tail,
+      draw(current, elementCoords.head, char)
+    )
   }
 
   private def draw(map: List[List[Char]], coord: TileCoordinate, char: Char): List[List[Char]] = {

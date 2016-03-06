@@ -16,7 +16,7 @@ Analyses base layouts against sets of war rules
 
 ## Running utils
 
-`sbt "run dhau"`
+`sbt 'run "I AM SPARTA!!1!"'`
 `1`
 
 

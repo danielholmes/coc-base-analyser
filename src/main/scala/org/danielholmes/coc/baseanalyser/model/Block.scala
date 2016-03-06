@@ -73,6 +73,10 @@ object Block {
     blocks.exists(anyIntersect(_, blocks.toSeq))
   }
 
+  def getAnyIntersection(blocks: Set[Block]): Option[Block] = {
+    blocks.find(anyIntersect(_, blocks.toSeq))
+  }
+
   private def anyIntersect(block: Block, blocks: Seq[Block]): Boolean = {
     if (blocks.isEmpty) return false
     if (block == blocks.head) return anyIntersect(block, blocks.tail)

@@ -1,7 +1,10 @@
 package org.danielholmes.coc.baseanalyser.model
 
 case class Village(val elements: Set[Element]) {
-  require(!Block.anyIntersect(elements.map(_.block)), "Elements musn't overlap")
+  require(
+    !Block.anyIntersect(elements.map(_.block)),
+    s"Elements musn't overlap (currently ${Block.getAnyIntersection(elements.map(_.block)).get} overlaps"
+  )
 
   val townHallLevel = elements.find(_.isInstanceOf[TownHall])
     .map(_.asInstanceOf[TownHall])

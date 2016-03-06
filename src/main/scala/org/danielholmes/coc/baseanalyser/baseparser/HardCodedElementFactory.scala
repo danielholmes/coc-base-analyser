@@ -3,13 +3,13 @@ package org.danielholmes.coc.baseanalyser.baseparser
 import org.danielholmes.coc.baseanalyser.model._
 
 class HardCodedElementFactory extends ElementFactory {
-  private def levelAndCoordinateConstructor(constructor: (Int, TileCoordinate) => Element): (RawElement => Element) = {
+  private def levelAndCoordinateConstructor(constructor: (Int, TileCoordinate) => Element): (RawBuilding => Element) = {
     raw => constructor(elementLevel(raw.lvl), TileCoordinate(raw.x, raw.y))
   }
 
   private def elementLevel(rawLevel: Int) = Math.max(1, rawLevel + 1)
 
-  val elementConstructorByCode: Map[Int, RawElement => Element] = Map(
+  val elementConstructorByCode: Map[Int, RawBuilding => Element] = Map(
     // Buildings
     1000001 -> levelAndCoordinateConstructor(TownHall),
     1000000 -> levelAndCoordinateConstructor(ArmyCamp),
@@ -32,7 +32,7 @@ class HardCodedElementFactory extends ElementFactory {
     //1000018 -> GoblinHut,
     1000019 -> levelAndCoordinateConstructor(TeslaTower),
     1000020 -> levelAndCoordinateConstructor(SpellFactory),
-    1000021 -> ((raw: RawElement) => XBow.both(elementLevel(raw.lvl), TileCoordinate(raw.x, raw.y))),
+    1000021 -> ((raw: RawBuilding) => XBow.both(elementLevel(raw.lvl), TileCoordinate(raw.x, raw.y))),
     1000022 -> levelAndCoordinateConstructor(BarbarianKing),
     1000023 -> levelAndCoordinateConstructor(DarkElixirCollector),
     1000024 -> levelAndCoordinateConstructor(DarkElixirStorage),
@@ -54,7 +54,7 @@ class HardCodedElementFactory extends ElementFactory {
     12000008 -> levelAndCoordinateConstructor(SkeletonTrap)
   )
 
-  def build(raw: RawElement): Option[Element] = {
+  def build(raw: RawBuilding): Option[Element] = {
     Some(raw)
       .filter(shouldInclude)
       .map(
@@ -64,7 +64,7 @@ class HardCodedElementFactory extends ElementFactory {
       )
   }
 
-  private def shouldInclude(raw: RawElement): Boolean = {
+  private def shouldInclude(raw: RawBuilding): Boolean = {
     Set("1800", "800").forall(!raw.data.toString.startsWith(_))
   }
 }
