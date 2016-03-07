@@ -31,8 +31,8 @@ class WebAppServiceActor extends Actor with HttpService with Services {
           }
         }
       } ~
-      pathPrefix("js") {
-        getFromResourceDirectory("web/js")
+      pathPrefix("assets") {
+        getFromResourceDirectory("web/assets")
       } ~
       path("village-analysis" / Rest) { userName =>
         respondWithMediaType(`application/json`) {
