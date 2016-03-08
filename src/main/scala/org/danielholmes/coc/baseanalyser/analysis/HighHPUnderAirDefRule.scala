@@ -3,14 +3,19 @@ package org.danielholmes.coc.baseanalyser.analysis
 import org.danielholmes.coc.baseanalyser.model._
 
 class HighHPUnderAirDefRule extends Rule {
+  private val name: String = "HighHPUnderAirDef"
+
   def analyse(village: Village): RuleResult = {
     val airDefs = village.elements
       .filter(_.isInstanceOf[AirDefense])
       .map(_.asInstanceOf[AirDefense])
-    if (airDefs.isEmpty) return RuleResult.pass
+    if (airDefs.isEmpty) return RuleResult.pass(name)
 
     val highHPBuildings = village.elements.filter(isHighHPBuilding)
-    HighHPUnderAirDefResult(highHPBuildings.filterNot(willAirDefShootWhileDragAttacking(_, airDefs)))
+    HighHPUnderAirDefResult(
+      name,
+      highHPBuildings.filterNot(willAirDefShootWhileDragAttacking(_, airDefs))
+    )
   }
 
   private def willAirDefShootWhileDragAttacking(highHP: Element, airDefs: Set[AirDefense]): Boolean = {
@@ -30,6 +35,6 @@ class HighHPUnderAirDefRule extends Rule {
   }
 }
 
-case class HighHPUnderAirDefResult(outOfAirDefRange: Set[Element]) extends RuleResult {
+case class HighHPUnderAirDefResult(ruleName: String, outOfAirDefRange: Set[Element]) extends RuleResult {
   val success = outOfAirDefRange.isEmpty
 }

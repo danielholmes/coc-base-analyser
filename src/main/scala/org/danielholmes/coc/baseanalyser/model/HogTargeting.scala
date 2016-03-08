@@ -2,8 +2,10 @@ package org.danielholmes.coc.baseanalyser.model
 
 import org.apache.commons.math3.geometry.euclidean.twod.{Segment, Line, Vector2D}
 
-case class HogTargeting(val startPosition: TileCoordinate, val targeting: Element) {
-  val hitPoint = targeting.findClosestHitCoordinate(startPosition)
+case class HogTargeting(startPosition: TileCoordinate, targeting: Element) {
+  lazy val hitPoint = targeting.findClosestHitCoordinate(startPosition)
+
+  lazy val distance = startPosition.distanceTo(hitPoint)
 
   def cutsRadius(radius: ElementRange): Boolean = {
     asSegment.distance(coordinateAsPoint(radius.coordinate)) < radius.outerSize.toInt

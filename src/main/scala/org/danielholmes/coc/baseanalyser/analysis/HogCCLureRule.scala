@@ -6,16 +6,19 @@ class HogCCLureRule extends Rule {
   def analyse(village: Village): RuleResult = {
     val clanCastleRadius = village.clanCastle
       .map(_.range)
-    if (clanCastleRadius.isEmpty) return RuleResult.pass
+    if (clanCastleRadius.isEmpty) return RuleResult.pass(name)
 
     HogCCLureResult(
+      name,
       village.attackPlacementCoordinates
         .flatMap(HogRider.findTarget(_, village))
         .filter(_.cutsRadius(clanCastleRadius.get))
     )
   }
+
+  private val name: String = "HogCCLure"
 }
 
-case class HogCCLureResult(targeting: Set[HogTargeting]) extends RuleResult {
+case class HogCCLureResult(ruleName: String, targeting: Set[HogTargeting]) extends RuleResult {
   val success = targeting.isEmpty
 }
