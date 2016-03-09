@@ -15,18 +15,13 @@ case class Village(elements: Set[Element]) {
 
   def isEmpty = elements.isEmpty
 
-  // Doesnt seem to work
-  /*def findElementsByType[T <: Element]: Set[T] = {
-    elements.filter(_.isInstanceOf[T])
-      .map(_.asInstanceOf[T])
-  }*/
+  /* private */ lazy val tilesNotAllowedToDropTroop = elements.flatMap(_.preventTroopDropBlock.tiles)
 
-  private val elementAttackPlacements = elements.map(_.attackPlacementBlock)
-    .flatMap(_.internalCoordinates)
+  /* private */ lazy val tilesAllowedToDropTroop = Tile.All -- tilesNotAllowedToDropTroop
 
-  val attackPlacementCoordinates: Set[TileCoordinate] = TileCoordinate.AllElementPlacement.toSet -- elementAttackPlacements
+  lazy val coordinatesAllowedToDropTroop: Set[MapTileCoordinate] = tilesAllowedToDropTroop.flatMap(_.allCoordinates)
 }
 
 object Village {
-  val empty = Village(Set.empty)
+val empty = Village(Set.empty)
 }

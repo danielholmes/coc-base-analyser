@@ -2,8 +2,8 @@ package org.danielholmes.coc.baseanalyser.apigatherer
 
 import org.scalatest._
 
-class ClanSeekerServiceAgentSpec extends FlatSpec with Matchers {
-  val client = new ClanSeekerServiceAgent
+class ClanSeekerAkkaServiceAgentSpec extends FlatSpec with Matchers {
+  val client = new ClanSeekerAkkaServiceAgent
 
   "Clan Seeker Service Client" should "get clan details for OH alpha" in {
     client.getClanDetails(154621406673L).clan.name should be ("OneHive Alpha")

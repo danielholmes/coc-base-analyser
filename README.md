@@ -18,9 +18,8 @@ Analyses base layouts against sets of war base rules
 
 ## Simple ASCII print util
 
-```
-sbt 'run-main org.danielholmes.coc.baseanalyser.PrintBase "I AM SPARTA!!1!"'
-```
+`sbt 'run-main org.danielholmes.coc.baseanalyser.PrintVillage "I AM SPARTA!!1!"'`
+`sbt 'run-main org.danielholmes.coc.baseanalyser.PrintAttackPlacements "I AM SPARTA!!1!"'`
 
 
 ## Running dev version of site

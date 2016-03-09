@@ -11,15 +11,15 @@ class HogCCLureRuleSpec extends FlatSpec with Matchers {
   }
 
   it should "return violation for base with CC and no blocking" in {
-    rule.analyse(Village(Set(ClanCastle(1, TileCoordinate.Middle)))).success should be (false)
+    rule.analyse(Village(Set(ClanCastle(1, Tile.Origin)))).success should be (false)
   }
 
   it should "return success for base with paths blocked off" in {
-    val ccPosition = TileCoordinate(20, 20)
+    val ccPosition = Tile(20, 20)
     val cc = ClanCastle(1, ccPosition)
     val village = Village(
       Set(cc) ++
-        TileCoordinate(2, 2).matrixOfCoordinatesTo(TileCoordinate(41, 41), 3)
+        Tile(2, 2).matrixOfTilesTo(Tile(41, 41), 3)
           .filter(_ != ccPosition)
           .map(Barrack(1, _))
     )

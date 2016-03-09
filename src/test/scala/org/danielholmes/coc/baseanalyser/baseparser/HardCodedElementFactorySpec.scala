@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser.baseparser
 
-import org.danielholmes.coc.baseanalyser.model.{TileCoordinate, Cannon, TownHall}
+import org.danielholmes.coc.baseanalyser.model._
 import org.scalatest._
 
 class HardCodedElementFactorySpec extends FlatSpec with Matchers {
@@ -13,11 +13,11 @@ class HardCodedElementFactorySpec extends FlatSpec with Matchers {
   }
 
   it should "create town hall" in {
-    factory.build(new RawBuilding(1000001, 9, 3, 3)) should be (Some(TownHall(10, TileCoordinate(0, 0))))
+    factory.build(new RawBuilding(1000001, 9, 3, 3)) should contain (Some(TownHall(10, Tile.Origin)))
   }
 
   it should "create construction buildings as level 1" in {
-    factory.build(new RawBuilding(1000008, -1, 3, 4)) should be (Some(Cannon(1, TileCoordinate(0, 1))))
+    factory.build(new RawBuilding(1000008, -1, 3, 4)) should be (Some(Cannon(1, Tile(0, 1))))
   }
 
   it should "ignore obstacles" in {

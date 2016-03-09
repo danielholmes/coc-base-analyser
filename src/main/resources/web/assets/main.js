@@ -1,11 +1,81 @@
 $(document).ready(function() {
     var searchForm = $("#searchForm");
-    var searchButton = searchForm.find("input[type='submit']");
-    var loading = searchForm.find(".loading");
+    var searchButton = searchForm.find("button[type='submit']");
     var canvas = document.getElementById("villageImage");
-    var canvasContext = canvas.getContext("2d");
     var stage = new createjs.Stage(canvas);
     stage.autoClear = false;
+    var bgContainer = new createjs.Container();
+    stage.addChild(bgContainer);
+    var buildingsContainer = new createjs.Container();
+    stage.addChild(buildingsContainer);
+    var extrasContainer = new createjs.Container();
+    stage.addChild(extrasContainer);
+
+    var rules = {
+        HogCCLure: {
+            title: "Easy CC Lure",
+            description: "There should be no spaces that allow a hog or giant to lure without first having to destroy a defense",
+            renderActive: function(result, tileSize) {
+                _.each(
+                    _.map(
+                        result.targetings,
+                        function(targeting) {
+                            var line = new createjs.Shape();
+                            line.graphics
+                                .beginStroke("#00ff00")
+                                .moveTo(0, 0)
+                                .lineTo(
+                                    (targeting.hitPoint.x - targeting.startPosition.x) * tileSize,
+                                    (targeting.hitPoint.y - targeting.startPosition.y) * tileSize
+                                );
+                            line.x = targeting.startPosition.x * tileSize;
+                            line.y = targeting.startPosition.y * tileSize;
+                            extrasContainer.addChild(line);
+                            return _.find(
+                                buildingsContainer.children,
+                                function(buildingContainer) { return buildingContainer.id == targeting.targetingId; }
+                            );
+                        }
+                    ),
+                    function(buildingContainer) {
+                        buildingContainer.filters = [
+                            new createjs.ColorFilter(
+                                1, 0, 0, 1,
+                                0, 0, 0, 0
+                            )
+                        ];
+                        buildingContainer.cache(0, 0, 1000, 1000);
+                    }
+                );
+            }
+        },
+        HighHPUnderAirDef: {
+            title: "High HP covered by Air Defenses",
+            description: "All high HP buildings should be within range of your air defenses",
+            renderActive: function(result, tileSize) {
+                _.each(
+                    _.map(
+                        result.outOfAirDefRange,
+                        function(id) {
+                            return _.find(
+                                buildingsContainer.children,
+                                function(buildingContainer) { return buildingContainer.id == id; }
+                            );
+                        }
+                    ),
+                    function(buildingContainer) {
+                        buildingContainer.filters = [
+                            new createjs.ColorFilter(
+                                1, 0, 0, 1,
+                                0, 0, 0, 0
+                            )
+                        ];
+                        buildingContainer.cache(0, 0, 1000, 1000);
+                    }
+                );
+            }
+        }
+    };
 
     var buildingsSheet = {
         "TownHall": {
@@ -201,8 +271,8 @@ $(document).ready(function() {
         if (runningAnalysis) {
             return;
         }
-        searchButton.attr("disabled", "disabled");
-        loading.show();
+        searchButton.attr("disabled", "disabled")
+            .html("Analysing...");
         runningAnalysis = true;
     }
 
@@ -210,31 +280,38 @@ $(document).ready(function() {
         if (!runningAnalysis) {
             return;
         }
-        searchButton.removeAttr("disabled");
+        searchButton.removeAttr("disabled")
+            .html("Run Analysis");
         runningAnalysis = false;
-        loading.fadeOut();
     }
 
     // Model
     var currentReport = null;
+    var activeRuleName = null;
     function setCurrentReport(report) {
         currentReport = report;
+        activeRuleName = null;
+        renderUi();
         render();
     }
     function clearCurrentReport() {
         currentReport = null;
+        activeRuleName = null;
+        renderUi();
         render();
     }
 
     // Render
     function render() {
         stage.clear();
-        stage.removeAllChildren();
+        bgContainer.removeAllChildren();
+        extrasContainer.removeAllChildren();
+        buildingsContainer.removeAllChildren();
 
         if (assets == null) {
             var text = new createjs.Text("Loading Assets", "20px Arial", "#000000");
             text.y = 30;
-            stage.addChild(text);
+            extrasContainer.addChild(text);
             stage.update();
             return;
         }
@@ -251,6 +328,7 @@ $(document).ready(function() {
         stage.update();
     }
     function renderSpriteSheetDebug() {
+        var canvasContext = canvas.getContext("2d");
         var useScale = Math.min(
             canvas.width / assets.buildings.width,
             canvas.height / assets.buildings.height
@@ -300,18 +378,25 @@ $(document).ready(function() {
         var tileSize = Math.floor(Math.min(canvas.width, canvas.height) / 44);
         render2dGrass();
         //render2dRandomSolidColourElements(tileSize);
-        render2dBuildingGrassBases(tileSize);
         render2dImageBuildings(tileSize);
         renderCCRadius(tileSize);
+        renderActiveRule(tileSize);
+    }
+    function renderActiveRule(tileSize) {
+        if (activeRuleName == null) {
+            return;
+        }
+
+        var result = _.find(currentReport.results, function(test) { return test.name == activeRuleName; });
+        var rule = rules[result.name];
+        rule.renderActive(result, tileSize);
     }
     function render2dGrass() {
-        canvasContext.fillStyle = "#8cbf15";
-        canvasContext.fillRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
+        var grass = new createjs.Shape();
+        grass.graphics
+            .beginFill("#8cbf15")
+            .drawRect(0, 0, canvas.width, canvas.height);
+        bgContainer.addChild(grass);
     }
     function render2dImageBuildings(tileSize) {
         for (var i in currentReport.village.elements) {
@@ -351,10 +436,29 @@ $(document).ready(function() {
             tileSize,
             assets.buildings,
             sheetDef,
-            element.level - 1
+            element.level - 1,
+            true
         )
     }
-    function renderElementImage(element, tileSize, image, sheetDef, sheetIndex) {
+    function renderElementImage(element, tileSize, image, sheetDef, sheetIndex, drawGrass) {
+        var elementContainer = new createjs.Container();
+        elementContainer.x = element.block.x * tileSize;
+        elementContainer.y = element.block.y * tileSize;
+        elementContainer.id = element.id;
+
+        if (drawGrass) {
+            var grass = new createjs.Shape();
+            grass.graphics
+                .beginFill("#6fa414")
+                .drawRect(
+                    0,
+                    0,
+                    element.block.width * tileSize,
+                    element.block.height * tileSize
+                );
+            elementContainer.addChild(grass);
+        }
+
         var widthRatio = element.block.width * tileSize / sheetDef.width;
         var heightRatio = element.block.height * tileSize / sheetDef.height;
         var useScale = Math.min(
@@ -363,17 +467,20 @@ $(document).ready(function() {
         );
         var finalWidth = sheetDef.width * useScale;
         var finalHeight = sheetDef.height * useScale;
-        canvasContext.drawImage(
-            image,
+        var bitmap = new createjs.Bitmap(image);
+        bitmap.sourceRect = new createjs.Rectangle(
             sheetDef.x + sheetIndex * (sheetDef.width + sheetDef.gap) + sheetDef.gap / 2,
             sheetDef.y,
             sheetDef.width,
-            sheetDef.height,
-            element.block.x * tileSize + ((element.block.width * tileSize) - finalWidth) / 2,
-            element.block.y * tileSize + ((element.block.height * tileSize) - finalHeight) / 2,
-            finalWidth,
-            finalHeight
+            sheetDef.height
         );
+        bitmap.x = ((element.block.width * tileSize) - finalWidth) / 2;
+        bitmap.y = ((element.block.height * tileSize) - finalHeight) / 2;
+        bitmap.scaleX = useScale;
+        bitmap.scaleY = useScale;
+        elementContainer.addChild(bitmap);
+
+        buildingsContainer.addChild(elementContainer);
     }
     function render2dRandomSolidColourElements(tileSize) {
         for (var i in currentReport.village.elements) {
@@ -387,42 +494,66 @@ $(document).ready(function() {
             );
         }
     }
-    function render2dBuildingGrassBases(tileSize) {
-        canvasContext.fillStyle = "#6fa414";
-        _.each(
-            _.filter(
-                currentReport.village.elements,
-                function(element) { return element.typeName != "Wall"; }
-            ),
-            function(building) {
-                canvasContext.fillRect(
-                    building.block.x * tileSize,
-                    building.block.y * tileSize,
-                    building.block.width * tileSize,
-                    building.block.height * tileSize
-                );
-            }
-        );
-    }
     function renderCCRadius(tileSize) {
         _.each(
-            _.filter(currentReport.village.elements, function(element) { return element.typeName == "ClanCastle"; }),
-            function(clanCastle) {
-                canvasContext.strokeStyle = "#ffffff";
-                canvasContext.beginPath();
-                canvasContext.arc(
-                    (clanCastle.block.x + clanCastle.block.width / 2) * tileSize,
-                    (clanCastle.block.y + clanCastle.block.height / 2) * tileSize,
-                    clanCastle.range.outer * tileSize,
-                    0,
-                    2 * Math.PI
-                );
-                canvasContext.stroke();
-            }
+            _.map(
+                _.filter(currentReport.village.elements, function(element) { return element.typeName == "ClanCastle"; }),
+                function(clanCastle) {
+                    var circle = new createjs.Shape();
+                    circle.graphics
+                        .beginStroke("#ffffff")
+                        .drawCircle(
+                            (clanCastle.block.x + clanCastle.block.width / 2) * tileSize,
+                            (clanCastle.block.y + clanCastle.block.height / 2) * tileSize,
+                            clanCastle.range.outer * tileSize
+                        );
+                    return circle;
+                }
+            ),
+            function(circle) { extrasContainer.addChild(circle); }
         );
     }
 
     // UI
+    function renderUi() {
+        var panelGroup = $("#results-panel-group");
+        panelGroup.empty();
+        if (currentReport == null) {
+            return;
+        }
+
+        _.each(
+            _.map(
+                currentReport.results,
+                function(result) {
+                    var rule = rules[result.name];
+                    if (rule == null) {
+                        console.error("Can't represent " + result.name);
+                        return $("<div></div>");
+                    }
+
+                    return $(renderTemplate(
+                        "#result-panel",
+                        {
+                            id: result.name,
+                            title: rule.title + " - " + (result.success ? "Passed" : "Failed"),
+                            description: rule.description,
+                            ruleName: result.name
+                        }
+                    ));
+                }
+            ),
+            function(panel) { panelGroup.append(panel); }
+        );
+    }
+    $("#results-panel-group").on("shown.bs.collapse", function(event){
+        activeRuleName = $(event.target).data("rule-name");
+        render();
+    });
+    $("#results-panel-group").on("hide.bs.collapse", function(){
+        activeRuleName = null;
+        render();
+    });
     searchForm.on("submit", function(){
         if (runningAnalysis) {
             return false;
@@ -453,5 +584,10 @@ $(document).ready(function() {
     function randomColour(seed) {
         var numberSeed = (seed.length * 5.7) % 30;
         return '#' + Math.floor(numberSeed / 30 * 16777215).toString(16);
+    }
+    function renderTemplate(selector, vars) {
+        var template = $(selector).html();
+        Mustache.parse(template);
+        return Mustache.render(template, vars);
     }
 });

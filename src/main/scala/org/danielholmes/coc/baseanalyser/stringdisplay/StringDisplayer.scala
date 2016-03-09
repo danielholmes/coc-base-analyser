@@ -3,19 +3,7 @@ package org.danielholmes.coc.baseanalyser.stringdisplay
 import org.danielholmes.coc.baseanalyser.model._
 
 class StringDisplayer {
-  private val WallCorner = '+'
-  private val WallHor = '-'
-  private val WallVert = '|'
-  private val WallChars = Set(WallCorner, WallHor, WallVert)
-
-  private val Colors = Set(
-    Console.MAGENTA,
-    Console.BLUE,
-    Console.CYAN,
-    Console.GREEN,
-    Console.RED,
-    Console.YELLOW
-  )
+  import StringDisplayer._
 
   def build(base: Village): String = {
     buildString(buildCollection(base))
@@ -42,7 +30,7 @@ class StringDisplayer {
     drawBoundary(
       drawCCRadius(
         base,
-        drawElements(base.elements.toList, List.fill[Char](TileCoordinate.Max, TileCoordinate.Max) { ' ' })
+        drawElements(base.elements.toList, List.fill[Char](Tile.Max + 1, Tile.Max + 1) { ' ' })
       )
     )
   }
@@ -53,19 +41,19 @@ class StringDisplayer {
     drawCCRadius(
       clanCastle.get.range,
       current,
-      TileCoordinate.AllElementPlacement.toSeq
+      Tile.All.toSeq
     )
   }
 
-  private def drawCCRadius(radius: ElementRange, current: List[List[Char]], coords: Seq[TileCoordinate]): List[List[Char]] = {
-    if (coords.isEmpty) return current
-    if (Math.abs(coords.head.distanceTo(radius.coordinate) - radius.outerSize.toInt) > 0.5) {
-      return drawCCRadius(radius, current, coords.tail)
+  private def drawCCRadius(radius: ElementRange, current: List[List[Char]], tiles: Seq[Tile]): List[List[Char]] = {
+    if (tiles.isEmpty) return current
+    if (Math.abs(tiles.head.toMapCoordinate.distanceTo(radius.coordinate) - radius.outerSize.toInt) > 0.5) {
+      return drawCCRadius(radius, current, tiles.tail)
     }
     drawCCRadius(
       radius,
-      draw(current, coords.head, '^'),
-      coords.tail
+      draw(current, tiles.head, '^'),
+      tiles.tail
     )
   }
 
@@ -77,25 +65,22 @@ class StringDisplayer {
   private def drawElement(element: Element, current: List[List[Char]]): List[List[Char]] = {
     drawElement(
       element,
-      element.coordinate
-        .matrixOfCoordinatesTo(element.coordinate.offset(element.size.toInt - 1, element.size.toInt - 1))
-          .toSeq,
+      element.block.tiles.toSeq,
       current
     )
   }
 
-  private def drawElement(element: Element, elementCoords: Seq[TileCoordinate], current: List[List[Char]]): List[List[Char]] = {
-    if (elementCoords.isEmpty) return current
-    val char = characterForElement(element)
+  private def drawElement(element: Element, tiles: Seq[Tile], current: List[List[Char]]): List[List[Char]] = {
+    if (tiles.isEmpty) return current
     drawElement(
       element,
-      elementCoords.tail,
-      draw(current, elementCoords.head, char)
+      tiles.tail,
+      draw(current, tiles.head, characterForElement(element))
     )
   }
 
-  private def draw(map: List[List[Char]], coord: TileCoordinate, char: Char): List[List[Char]] = {
-    map.patch(coord.y, Seq(map(coord.y).patch(coord.x, Seq(char), 1)), 1)
+  private def draw(map: List[List[Char]], tile: Tile, char: Char): List[List[Char]] = {
+    map.patch(tile.y, Seq(map(tile.y).patch(tile.x, Seq(char), 1)), 1)
   }
 
   private def characterForElement(element: Element): Char = {
@@ -122,13 +107,29 @@ class StringDisplayer {
   }
 
   private def drawBoundary(current: List[List[Char]]): List[List[Char]] = {
-    (horizontalWall :: verticalWall(current)) :+ horizontalWall
+    (HorizontalWall :: verticalWall(current)) :+ HorizontalWall
   }
 
   private def verticalWall(current: List[List[Char]]): List[List[Char]] = {
     if (current.isEmpty) return current
     ((WallVert :: current.head) :+ WallVert) +: verticalWall(current.tail)
   }
+}
 
-  private val horizontalWall: List[Char] = (WallCorner :: List.fill[Char](TileCoordinate.Max) { WallHor }) :+ WallCorner
+object StringDisplayer {
+  private val WallCorner = '+'
+  private val WallHor = '-'
+  private val WallVert = '|'
+  private val WallChars = Set(WallCorner, WallHor, WallVert)
+
+  private val Colors = Set(
+    Console.MAGENTA,
+    Console.BLUE,
+    Console.CYAN,
+    Console.GREEN,
+    Console.RED,
+    Console.YELLOW
+  )
+
+  private val HorizontalWall: List[Char] = (WallCorner :: List.fill[Char](MapTileCoordinate.Max) { WallHor }) :+ WallCorner
 }

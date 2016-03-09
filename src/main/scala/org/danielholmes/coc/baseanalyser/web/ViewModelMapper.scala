@@ -77,7 +77,7 @@ class ViewModelMapper {
     BlockViewModel(block.x, block.y, block.width.toInt, block.height.toInt)
   }
 
-  def viewModel(coord: TileCoordinate): TileCoordinateViewModel = {
+  def viewModel(coord: MapTileCoordinate): TileCoordinateViewModel = {
     TileCoordinateViewModel(coord.x, coord.y)
   }
 

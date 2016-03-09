@@ -2,7 +2,7 @@ name := "coc-base-analyser"
 
 version := "1.0"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.7"
 
 libraryDependencies ++= {
   val akkaV = "2.3.9"
@@ -16,8 +16,6 @@ libraryDependencies ++= {
     "io.spray"            %%  "spray-routing" % sprayV,
     "io.spray"            %%  "spray-client" % sprayV,
     "com.typesafe.akka"   %%  "akka-actor"    % akkaV,
-
-    "com.github.spullara.mustache.java" % "compiler" % "0.9.1",
 
     "com.softwaremill.macwire" %% "macros" % "2.2.2" % "provided",
     "com.softwaremill.macwire" %% "util" % "2.2.2",

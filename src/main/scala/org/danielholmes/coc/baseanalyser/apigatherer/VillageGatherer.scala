@@ -4,8 +4,8 @@ import org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParser
 import org.danielholmes.coc.baseanalyser.model.Village
 
 // Consider caching in future, for player name -> id and/or clan details results
-class VillageGatherer(private val serviceAgent: ClanSeekerServiceAgent, private val villageParser: VillageJsonParser) {
-  private val PermittedClanIds = Set(154621406673L, 128850679685L, 103079424453L) // OH Alpha, OH Genesis, uncool
+class VillageGatherer(private val serviceAgent: ClanSeekerAkkaServiceAgent, private val villageParser: VillageJsonParser) {
+  private val PermittedClanIds = Set(154621406673L, 128850679685L, 103079424453L, 227634713283L) // OH Alpha, OH Genesis, uncool, Aerial Assault
 
   def gatherByUserName(userName: String): Option[Village] = {
     getPlayerIdByUserName(userName)
@@ -26,7 +26,7 @@ class VillageGatherer(private val serviceAgent: ClanSeekerServiceAgent, private 
       .clan
       .players
       .map(_.avatar)
-      .find(_.userName == userName)
+      .find(_.userName.equalsIgnoreCase(userName))
       .map(_.userId)
       .orElse(getPlayerIdByUserNameCaseInsensitive(userName, clanIds.tail))
   }

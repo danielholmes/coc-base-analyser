@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.troops.HogRider
 
 class HogCCLureRule extends Rule {
   def analyse(village: Village): RuleResult = {
@@ -10,7 +11,7 @@ class HogCCLureRule extends Rule {
 
     HogCCLureResult(
       name,
-      village.attackPlacementCoordinates
+      village.coordinatesAllowedToDropTroop
         .flatMap(HogRider.findTarget(_, village))
         .filter(_.cutsRadius(clanCastleRadius.get))
     )

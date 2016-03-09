@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.troops.Dragon
 
 class HighHPUnderAirDefRule extends Rule {
   private val name: String = "HighHPUnderAirDef"

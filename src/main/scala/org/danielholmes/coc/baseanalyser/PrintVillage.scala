@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser
 
-object PrintBase extends App with Services {
+object PrintVillage extends App with Services {
   if (args.length != 1) {
     throw new RuntimeException("Must provide userName arg")
   }

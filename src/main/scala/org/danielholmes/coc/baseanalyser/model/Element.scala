@@ -5,17 +5,17 @@ trait Element {
 
   val level: Int
 
-  val coordinate: TileCoordinate
+  protected val tile: Tile
   val size: TileSize
-  lazy val block = Block(coordinate, size)
+  lazy val block = Block(tile, size)
 
   lazy val attackPlacementSize: TileSize = size + 2
-  lazy val attackPlacementBlock = Block.Map.createWithin(coordinate, -1, -1, attackPlacementSize)
+  lazy val preventTroopDropBlock = Block.Map.createWithin(tile, -1, -1, attackPlacementSize)
 
   lazy val hitSize: TileSize = size
-  lazy val hitBlock = Block(coordinate, hitSize)
+  lazy val hitBlock = Block(tile, hitSize)
 
-  def findClosestHitCoordinate(from: TileCoordinate): TileCoordinate = {
+  def findClosestHitCoordinate(from: MapTileCoordinate): MapTileCoordinate = {
     hitBlock.findClosestCoordinate(from)
   }
 }
