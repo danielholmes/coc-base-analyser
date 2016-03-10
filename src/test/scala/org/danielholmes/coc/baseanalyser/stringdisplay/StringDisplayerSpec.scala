@@ -4,7 +4,7 @@ import org.danielholmes.coc.baseanalyser.model._
 import org.scalatest._
 
 class StringDisplayerSpec extends FlatSpec with Matchers {
-  val DrawnRowSize = 47
+  val DrawnRowSize = Tile.Max + 1 + 2 + 1 // All tiles, borders and a new line char
   val displayer = new StringDisplayer
 
   "String Displayer" should "display empty base" in {
@@ -12,10 +12,10 @@ class StringDisplayerSpec extends FlatSpec with Matchers {
   }
 
   it should "display origin town hall" in {
-    val result = displayer.build(Village(Set(TownHall(1, Tile(0, 0)))))
-    for (row <- 1 to 4) {
-      for (col <- 1 to 4) {
-        result.charAt(row * DrawnRowSize + col) should be('#')
+    val result = displayer.build(Village(Set(TownHall(1, Tile(1, 1)))))
+    for (row <- 2 to 5) {
+      for (col <- 2 to 5) {
+        result.charAt(row * DrawnRowSize.toInt + col) should be('#')
       }
     }
   }
@@ -24,7 +24,7 @@ class StringDisplayerSpec extends FlatSpec with Matchers {
     val result = displayer.build(Village(Set(ArcherTower(1, Tile(41, 41)))))
     for (row <- 42 to 44) {
       for (col <- 42 to 44) {
-        result.charAt(row * DrawnRowSize + col) should be('A')
+        result.charAt(row * DrawnRowSize.toInt + col) should be('A')
       }
     }
   }
@@ -35,51 +35,53 @@ class StringDisplayerSpec extends FlatSpec with Matchers {
   }
 
   val EMPTY =
-"""+--------------------------------------------+
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-|                                            |
-+--------------------------------------------+
+"""+----------------------------------------------+
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
+|                                              |
++----------------------------------------------+
 """
 }

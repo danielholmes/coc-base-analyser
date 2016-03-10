@@ -12,5 +12,5 @@ object PrintAttackPlacements extends App with Services {
     System.exit(-1)
   }
 
-  println(stringAttackPlacementsDisplayer.build(village.get))
+  println(stringTroopDropDisplayer.build(village.get))
 }

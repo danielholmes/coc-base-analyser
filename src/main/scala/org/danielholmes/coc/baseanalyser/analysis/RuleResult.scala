@@ -10,5 +10,5 @@ case class SuccessRuleResult(val ruleName: String) extends RuleResult {
 }
 
 object RuleResult {
-  def pass(ruleName: String): RuleResult = new SuccessRuleResult(ruleName)
+  def success(ruleName: String): RuleResult = new SuccessRuleResult(ruleName)
 }

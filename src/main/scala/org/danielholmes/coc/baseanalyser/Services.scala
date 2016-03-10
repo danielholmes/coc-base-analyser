@@ -3,7 +3,7 @@ package org.danielholmes.coc.baseanalyser
 import org.danielholmes.coc.baseanalyser.analysis.{HighHPUnderAirDefRule, HogCCLureRule, VillageAnalyser}
 import org.danielholmes.coc.baseanalyser.apigatherer.{HardcodedClanSeekerServiceAgent, VillageGatherer, ClanSeekerAkkaServiceAgent}
 import org.danielholmes.coc.baseanalyser.baseparser.{VillageJsonParser, HardCodedElementFactory}
-import org.danielholmes.coc.baseanalyser.stringdisplay.{StringAttackPlayementsDisplayer, StringDisplayer}
+import org.danielholmes.coc.baseanalyser.stringdisplay.{StringTroopDropDisplayer, StringDisplayer}
 import org.danielholmes.coc.baseanalyser.web.ViewModelMapper
 
 trait Services {
@@ -18,6 +18,6 @@ trait Services {
   lazy val villageAnalyser = wire[VillageAnalyser]
   lazy val villageGatherer = wire[VillageGatherer]
   lazy val stringDisplayer = wire[StringDisplayer]
-  lazy val stringAttackPlacementsDisplayer = wire[StringAttackPlayementsDisplayer]
+  lazy val stringTroopDropDisplayer = wire[StringTroopDropDisplayer]
   lazy val viewModelMapper = wire[ViewModelMapper]
 }

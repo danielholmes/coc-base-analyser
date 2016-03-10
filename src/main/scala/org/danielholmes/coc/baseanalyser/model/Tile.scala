@@ -1,8 +1,12 @@
 package org.danielholmes.coc.baseanalyser.model
 
 case class Tile(x: Int, y: Int) {
-  require(x >= 0 && x <= Tile.Max, s"Tile.x must be >= 0 and <= ${Tile.Max}")
-  require(y >= 0 && y <= Tile.Max, s"Tile.y must be >= 0 and <= ${Tile.Max}")
+  import Tile._
+
+  require((0 to Max.toInt).contains(x), s"Tile.x ($x) must be in [0:$Max]")
+  require((0 to Max.toInt).contains(y), s"Tile.y ($y) must be in [0:$Max]")
+
+  lazy val isWithinMap = AllInMap.contains(this)
 
   def matrixOfTilesTo(other: Tile): Set[Tile] = {
     matrixOfTilesTo(other, 1)
@@ -20,21 +24,36 @@ case class Tile(x: Int, y: Int) {
     toMapCoordinate.matrixOfCoordinatesTo(toMapCoordinate.offset(1, 1))
   }
 
-  lazy val toMapCoordinate = MapTileCoordinate(x, y)
+  lazy val toMapCoordinate = TileCoordinate(x, y)
 
-  def offset(xDiff: Int, yDiff: Int) = {
+  def offset(xDiff: TileSize, yDiff: TileSize): Tile = {
+    offset(xDiff.toInt, yDiff.toInt)
+  }
+
+  def offset(xDiff: Int, yDiff: Int): Tile = {
     Tile(x + xDiff, y + yDiff)
   }
 }
 
 object Tile {
-  val Max = 43
+  private val MapSize = TileSize(44)
+  private val OutsideBorder = TileSize(1) // TODO: Should maybe be the full 3 that clash natively uses
+
+  val Max = MapSize + (OutsideBorder * 2) - 1
 
   val Origin = Tile(0, 0)
-  val End = Tile(MapTileCoordinate.End.x - 1, MapTileCoordinate.End.y - 1)
+  val End = Tile(Max, Max)
   val All = Origin.matrixOfTilesTo(End)
 
-  def fromCoordinate(mapTileCoordinate: MapTileCoordinate): Tile = {
+  val MapOrigin = Origin.offset(OutsideBorder, OutsideBorder)
+  val MapEnd = MapOrigin.offset(MapSize - 1, MapSize - 1)
+  val AllInMap = MapOrigin.matrixOfTilesTo(End)
+
+  def fromCoordinate(mapTileCoordinate: TileCoordinate): Tile = {
     Tile(mapTileCoordinate.x, mapTileCoordinate.y)
+  }
+
+  def apply(xSize: TileSize, ySize: TileSize): Tile = {
+    Tile(xSize.toInt, ySize.toInt)
   }
 }

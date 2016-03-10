@@ -7,7 +7,7 @@ class HogCCLureRule extends Rule {
   def analyse(village: Village): RuleResult = {
     val clanCastleRadius = village.clanCastle
       .map(_.range)
-    if (clanCastleRadius.isEmpty) return RuleResult.pass(name)
+    if (clanCastleRadius.isEmpty) return RuleResult.success(name)
 
     HogCCLureResult(
       name,

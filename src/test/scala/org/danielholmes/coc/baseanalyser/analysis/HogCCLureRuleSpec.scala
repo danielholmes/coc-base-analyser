@@ -11,7 +11,7 @@ class HogCCLureRuleSpec extends FlatSpec with Matchers {
   }
 
   it should "return violation for base with CC and no blocking" in {
-    rule.analyse(Village(Set(ClanCastle(1, Tile.Origin)))).success should be (false)
+    rule.analyse(Village(Set(ClanCastle(1, Tile.MapOrigin)))).success should be (false)
   }
 
   it should "return success for base with paths blocked off" in {

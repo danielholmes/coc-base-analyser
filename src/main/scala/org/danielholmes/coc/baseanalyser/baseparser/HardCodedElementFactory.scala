@@ -11,7 +11,7 @@ class HardCodedElementFactory extends ElementFactory {
 
   private def elementLevel(rawLevel: Int) = Math.max(1, rawLevel + 1)
 
-  private val zeroCoordinateSystemOffset = -3
+  private val zeroCoordinateSystemOffset = -2
 
   private def elementTile(raw: RawBuilding) = Tile(raw.x + zeroCoordinateSystemOffset, raw.y + zeroCoordinateSystemOffset)
 

@@ -4,7 +4,7 @@ import org.danielholmes.coc.baseanalyser.model._
 import org.scalatest._
 
 class HardCodedElementFactorySpec extends FlatSpec with Matchers {
-  val factory = new HardCodedElementFactory()
+  val factory = new HardCodedElementFactory
 
   "Hardcoded Building Factory" should "reject unknown code" in {
     a [RuntimeException] should be thrownBy {
@@ -13,11 +13,11 @@ class HardCodedElementFactorySpec extends FlatSpec with Matchers {
   }
 
   it should "create town hall" in {
-    factory.build(new RawBuilding(1000001, 9, 3, 3)) should contain (Some(TownHall(10, Tile.Origin)))
+    factory.build(new RawBuilding(1000001, 9, 3, 3)) should contain (TownHall(10, Tile.MapOrigin))
   }
 
   it should "create construction buildings as level 1" in {
-    factory.build(new RawBuilding(1000008, -1, 3, 4)) should be (Some(Cannon(1, Tile(0, 1))))
+    factory.build(new RawBuilding(1000008, -1, 3, 4)) should contain (Cannon(1, Tile(1, 2)))
   }
 
   it should "ignore obstacles" in {

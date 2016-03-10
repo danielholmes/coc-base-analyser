@@ -19,7 +19,7 @@ case class Village(elements: Set[Element]) {
 
   /* private */ lazy val tilesAllowedToDropTroop = Tile.All -- tilesNotAllowedToDropTroop
 
-  lazy val coordinatesAllowedToDropTroop: Set[MapTileCoordinate] = tilesAllowedToDropTroop.flatMap(_.allCoordinates)
+  lazy val coordinatesAllowedToDropTroop: Set[TileCoordinate] = tilesAllowedToDropTroop.flatMap(_.allCoordinates) ++ TileCoordinate.AllEdge
 }
 
 object Village {

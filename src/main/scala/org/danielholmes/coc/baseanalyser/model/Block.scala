@@ -1,22 +1,23 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class Block(private val tile: Tile, val width: TileSize, val height: TileSize) {
+case class Block(private val tile: Tile, val size: TileSize) {
   require(tile != null, "coordinate musn't be null")
-  require(width != null, "width musn't be null")
-  require(height != null, "width musn't be null")
-  require(tile.x + width.toInt <= MapTileCoordinate.Max, s"x coord ${tile.x} + ${width.toInt} must be within map")
-  require(tile.y + height.toInt <= MapTileCoordinate.Max, s"y coord ${tile.y} + ${height.toInt} must be within map")
+  require(size != null, "size musn't be null")
+  require(tile.x + size.toInt <= TileCoordinate.Max.toInt, s"x coord ${tile.x} + ${size.toInt} must be within coordinate system")
+  require(tile.y + size.toInt <= TileCoordinate.Max.toInt, s"y coord ${tile.y} + ${size.toInt} must be within coordinate system")
 
   val x = tile.x
   val y = tile.y
-  private lazy val oppositeCoordinate = tile.toMapCoordinate.offset(width.toInt, height.toInt)
+  private lazy val oppositeCoordinate = tile.toMapCoordinate.offset(size)
   lazy val oppositeX = oppositeCoordinate.x
   lazy val oppositeY = oppositeCoordinate.y
 
-  lazy val centre = MapCoordinate(x + width.toDouble / 2.0, y + height.toDouble / 2.0)
+  lazy val isWithinMap = tiles.forall(_.isWithinMap)
 
-  lazy val internalCoordinates: Set[MapTileCoordinate] = {
-    if (width < 2 || height < 2) {
+  lazy val centre = MapCoordinate(x + size.toDouble / 2.0, y + size.toDouble / 2.0)
+
+  lazy val internalCoordinates: Set[TileCoordinate] = {
+    if (size < 2) {
       Set.empty
     } else {
       tile.toMapCoordinate
@@ -25,20 +26,20 @@ case class Block(private val tile: Tile, val width: TileSize, val height: TileSi
     }
   }
 
-  lazy val coordinates: Set[MapTileCoordinate] = {
+  lazy val coordinates: Set[TileCoordinate] = {
     tile.toMapCoordinate.matrixOfCoordinatesTo(oppositeCoordinate)
   }
 
   lazy val tiles: Set[Tile] = {
-    tile.matrixOfTilesInDirection(width, height)
+    tile.matrixOfTilesInDirection(size, size)
   }
 
-  def findClosestCoordinate(from: MapTileCoordinate): MapTileCoordinate = {
-    possibleIntersectionPoints.min(Ordering.by((_: MapTileCoordinate)
+  def findClosestCoordinate(from: TileCoordinate): TileCoordinate = {
+    possibleIntersectionPoints.min(Ordering.by((_: TileCoordinate)
       .distanceTo(from)))
   }
 
-  def distanceFrom(from: MapTileCoordinate) = {
+  def distanceFrom(from: TileCoordinate) = {
     findClosestCoordinate(from).distanceTo(from)
   }
 
@@ -47,35 +48,28 @@ case class Block(private val tile: Tile, val width: TileSize, val height: TileSi
       y < other.oppositeY && oppositeY > other.y
   }
 
-  def expandWithinMap(size: TileSize): Block = {
-    Block.Map.createWithin(tile, -size.toInt, -size.toInt, width + size * 2, height + size * 2)
+  def expandBy(offset: TileSize): Block = {
+    expandToSize(size + (offset * 2))
   }
 
-  def createWithin(tile: Tile, coordOffsetX: Int, coordOffsetY: Int, size: TileSize): Block = {
-    createWithin(tile, coordOffsetX, coordOffsetY, size, size)
-  }
-
-  def createWithin(tile: Tile, coordOffsetX: Int, coordOffsetY: Int, width: TileSize, height: TileSize): Block = {
-    val actualX = Math.max(tile.x + coordOffsetX, 0)
-    val actualY = Math.max(tile.y + coordOffsetY, 0)
-    val actualRight = Math.min(tile.x + coordOffsetX + width.toInt, MapTileCoordinate.Max)
-    val actualBottom = Math.min(tile.y + coordOffsetY + height.toInt, MapTileCoordinate.Max)
+  def expandToSize(newSize: TileSize): Block = {
+    if (newSize < size) throw new IllegalArgumentException("newSize must be greater than size")
+    if ((size - newSize) % 2 != 0) throw new IllegalArgumentException("Must increase by factors of 2")
+    if (newSize == size) return this
+    val sizeDiff = newSize - size
     Block(
-      Tile(actualX, actualY),
-      TileSize(actualRight - actualX),
-      TileSize(actualBottom - actualY)
+      Tile(tile.x - sizeDiff / 2, tile.y - sizeDiff / 2),
+      newSize
     )
   }
 
-  private lazy val possibleIntersectionPoints: Set[MapTileCoordinate] = {
-    tile.toMapCoordinate.matrixOfCoordinatesTo(tile.toMapCoordinate.offset(width, height))
+  private lazy val possibleIntersectionPoints: Set[TileCoordinate] = {
+    tile.toMapCoordinate.matrixOfCoordinatesTo(tile.toMapCoordinate.offset(size))
   }
 }
 
 object Block {
-  val Map = Block(Tile.Origin, TileSize(MapTileCoordinate.Max))
-
-  def apply(tile: Tile, size: TileSize): Block = apply(tile, size, size)
+  val Map = Block(Tile.Origin, TileSize(TileCoordinate.Max.toInt))
 
   def anyIntersect(blocks: Set[Block]): Boolean = {
     blocks.exists(anyIntersect(_, blocks.toSeq))

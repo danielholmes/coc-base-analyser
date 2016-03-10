@@ -1,23 +1,23 @@
 package org.danielholmes.coc.baseanalyser.model.troops
 
-import org.danielholmes.coc.baseanalyser.model.{Tile, BuilderHut, MapTileCoordinate}
+import org.danielholmes.coc.baseanalyser.model.{Tile, BuilderHut, TileCoordinate}
 import org.scalatest._
 
 class DragonSpec extends FlatSpec with Matchers {
-  val origin = MapTileCoordinate(0, 0)
+  val origin = TileCoordinate(0, 0)
 
   "Dragon" should "return correct points can attack building from" in {
-    Dragon.getCoordinatesCanAttackElementFrom(BuilderHut(1, Tile(1, 1))) should contain theSameElementsAs
-      MapTileCoordinate.Origin.matrixOfCoordinatesTo(MapTileCoordinate(4, 4))
+    Dragon.getCoordinatesCanAttackElementFrom(BuilderHut(1, Tile(2, 2))) should contain theSameElementsAs
+      TileCoordinate.MapOrigin.matrixOfCoordinatesTo(TileCoordinate(5, 5))
   }
 
   it should "return correct points can attack building from when at origin" in {
-    Dragon.getCoordinatesCanAttackElementFrom(BuilderHut(1, Tile.Origin)) should contain theSameElementsAs
-      MapTileCoordinate.Origin.matrixOfCoordinatesTo(MapTileCoordinate(3, 3))
+    Dragon.getCoordinatesCanAttackElementFrom(BuilderHut(1, Tile.MapOrigin)) should contain theSameElementsAs
+      TileCoordinate.Origin.matrixOfCoordinatesTo(TileCoordinate(4, 4))
   }
 
   it should "return correct points can attack building from when at end" in {
-    Dragon.getCoordinatesCanAttackElementFrom(BuilderHut(1, Tile.End.offset(-2, -2))) should contain theSameElementsAs
-      MapTileCoordinate(41, 41).matrixOfCoordinatesTo(MapTileCoordinate.End)
+    Dragon.getCoordinatesCanAttackElementFrom(BuilderHut(1, Tile.MapEnd.offset(-2, -2))) should contain theSameElementsAs
+      Tile.MapEnd.offset(-3, -3).toMapCoordinate.matrixOfCoordinatesTo(Tile.MapEnd.offset(1, 1).toMapCoordinate)
   }
 }

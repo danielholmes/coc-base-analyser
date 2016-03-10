@@ -4,7 +4,7 @@ import org.danielholmes.coc.baseanalyser.model._
 import org.scalatest._
 
 class HogRiderSpec extends FlatSpec with Matchers {
-  val origin = MapTileCoordinate(0, 0)
+  val origin = TileCoordinate(0, 0)
 
   "HogRider" should "return defense target" in {
     val at = ArcherTower(1, Tile(1, 1))

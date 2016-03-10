@@ -10,19 +10,27 @@ class HighHPUnderAirDefRule extends Rule {
     val airDefs = village.elements
       .filter(_.isInstanceOf[AirDefense])
       .map(_.asInstanceOf[AirDefense])
-    if (airDefs.isEmpty) return RuleResult.pass(name)
+    if (airDefs.isEmpty) return RuleResult.success(name)
 
     val highHPBuildings = village.elements.filter(isHighHPBuilding)
     HighHPUnderAirDefResult(
       name,
-      highHPBuildings.filterNot(willAirDefShootWhileDragAttacking(_, airDefs))
+      highHPBuildings.filterNot(willSomeAirDefCoverDragonShooting(_, airDefs))
     )
   }
 
-  private def willAirDefShootWhileDragAttacking(highHP: Element, airDefs: Set[AirDefense]): Boolean = {
+  private def willSomeAirDefCoverDragonShooting(highHP: Element, airDefs: Set[AirDefense]): Boolean = {
     if (airDefs.isEmpty) return false
-    airDefs.head.range.containsAll(Dragon.getCoordinatesCanAttackElementFrom(highHP)) ||
-      willAirDefShootWhileDragAttacking(highHP, airDefs.tail)
+    willSomeAirDefCoverDragonShooting(
+      Dragon.getCoordinatesCanAttackElementFrom(highHP),
+      airDefs
+    )
+  }
+
+  private def willSomeAirDefCoverDragonShooting(highHPCoords: Set[TileCoordinate], airDefs: Set[AirDefense]): Boolean = {
+    if (highHPCoords.isEmpty) return true
+    if (!airDefs.exists(_.range.contains(highHPCoords.head))) return false
+    willSomeAirDefCoverDragonShooting(highHPCoords.tail, airDefs)
   }
 
   private def isHighHPBuilding(element: Element): Boolean = {

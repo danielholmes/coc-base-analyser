@@ -55,57 +55,67 @@ class ViewModelMapper {
         element.getClass.getSimpleName,
         element.level,
         viewModel(element.block),
-        RangeViewModel(d.range.innerSize.toInt, d.range.outerSize.toInt)
+        viewModel(element.preventTroopDropBlock),
+        viewModel(d.range)
       )
       case c: ClanCastle => ClanCastleElementViewModel(
         elementId(c),
         element.getClass.getSimpleName,
         element.level,
         viewModel(element.block),
-        RangeViewModel(c.range.innerSize.toInt, c.range.outerSize.toInt)
+        viewModel(element.preventTroopDropBlock),
+        viewModel(c.range)
       )
       case _ => BaseElementViewModel(
         elementId(element),
         element.getClass.getSimpleName,
         element.level,
-        viewModel(element.block)
+        viewModel(element.block),
+        viewModel(element.preventTroopDropBlock)
       )
     }
   }
 
-  def viewModel(block: Block): BlockViewModel = {
-    BlockViewModel(block.x, block.y, block.width.toInt, block.height.toInt)
+  def viewModel(range: ElementRange): RangeViewModel = {
+    RangeViewModel(range.innerSize.toInt, range.outerSize.toInt)
   }
 
-  def viewModel(coord: MapTileCoordinate): TileCoordinateViewModel = {
+  def viewModel(block: Block): BlockViewModel = {
+    BlockViewModel(block.x, block.y, block.size.toInt)
+  }
+
+  def viewModel(coord: TileCoordinate): TileCoordinateViewModel = {
     TileCoordinateViewModel(coord.x, coord.y)
   }
 
   private def elementId(element: Element): String = {
-    UUID.nameUUIDFromBytes(element.toString().getBytes()).toString()
+    UUID.nameUUIDFromBytes(element.toString.getBytes).toString
   }
 }
 
 case class TileCoordinateViewModel(x: Int, y: Int)
 case class RangeViewModel(inner: Int, outer: Int)
-case class BlockViewModel(x: Int, y: Int, width: Int, height: Int)
+case class BlockViewModel(x: Int, y: Int, size: Int)
 sealed trait ElementViewModel {
   def id: String
   def typeName: String
   def level: Int
   def block: BlockViewModel
+  def preventTroopDropBlock: BlockViewModel
 }
 case class BaseElementViewModel(
   override val id: String,
   override val typeName: String,
   override val level: Int,
-  override val block: BlockViewModel
+  override val block: BlockViewModel,
+  override val preventTroopDropBlock: BlockViewModel
 ) extends ElementViewModel
 case class DefenseElementViewModel(
   override val id: String,
   override val typeName: String,
   override val level: Int,
   override val block: BlockViewModel,
+  override val preventTroopDropBlock: BlockViewModel,
   range: RangeViewModel
 ) extends ElementViewModel
 case class ClanCastleElementViewModel(
@@ -113,6 +123,7 @@ case class ClanCastleElementViewModel(
   override val typeName: String,
   override val level: Int,
   override val block: BlockViewModel,
+  override val preventTroopDropBlock: BlockViewModel,
   range: RangeViewModel
 ) extends ElementViewModel
 case class VillageViewModel(elements: Set[ElementViewModel]) {
@@ -157,11 +168,11 @@ object ViewModelProtocol extends DefaultJsonProtocol {
 
   implicit val tileCoordinateFormat = jsonFormat2(TileCoordinateViewModel)
   implicit val rangeFormat = jsonFormat2(RangeViewModel)
-  implicit val blockFormat = jsonFormat4(BlockViewModel)
+  implicit val blockFormat = jsonFormat3(BlockViewModel)
 
-  implicit val baseElementFormat = jsonFormat4(BaseElementViewModel)
-  implicit val defenseElementFormat = jsonFormat5(DefenseElementViewModel)
-  implicit val clanCastleElementFormat = jsonFormat5(ClanCastleElementViewModel)
+  implicit val baseElementFormat = jsonFormat5(BaseElementViewModel)
+  implicit val defenseElementFormat = jsonFormat6(DefenseElementViewModel)
+  implicit val clanCastleElementFormat = jsonFormat6(ClanCastleElementViewModel)
 
   implicit val successRuleResultFormat = jsonFormat2(SuccessRuleResultViewModel)
   implicit val hogTargetingFormat = jsonFormat3(HogTargetingViewModel)

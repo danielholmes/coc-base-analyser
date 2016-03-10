@@ -6,23 +6,23 @@ class BlockSpec extends FlatSpec with Matchers {
   val block = Block(Tile(5, 5), TileSize(3))
 
   "Block" should "find closest coordinate in x axis left" in {
-    block.findClosestCoordinate(MapTileCoordinate(0, 5)) should be (MapTileCoordinate(5, 5))
+    block.findClosestCoordinate(TileCoordinate(0, 5)) should be (TileCoordinate(5, 5))
   }
 
   it should "find closest coordinate in x axis right" in {
-    block.findClosestCoordinate(MapTileCoordinate(10, 5)) should be (MapTileCoordinate(8, 5))
+    block.findClosestCoordinate(TileCoordinate(10, 5)) should be (TileCoordinate(8, 5))
   }
 
   it should "find closest coordinate in y axis up" in {
-    block.findClosestCoordinate(MapTileCoordinate(5, 0)) should be (MapTileCoordinate(5, 5))
+    block.findClosestCoordinate(TileCoordinate(5, 0)) should be (TileCoordinate(5, 5))
   }
 
   it should "find closest coordinate in y axis down" in {
-    block.findClosestCoordinate(MapTileCoordinate(5, 10)) should be (MapTileCoordinate(5, 8))
+    block.findClosestCoordinate(TileCoordinate(5, 10)) should be (TileCoordinate(5, 8))
   }
 
   it should "find closest coordinate diagonally" in {
-    block.findClosestCoordinate(MapTileCoordinate(10, 10)) should be (MapTileCoordinate(8, 8))
+    block.findClosestCoordinate(TileCoordinate(10, 10)) should be (TileCoordinate(8, 8))
   }
 
   it should "return empty internal coords when 1x1" in {
@@ -30,12 +30,12 @@ class BlockSpec extends FlatSpec with Matchers {
   }
 
   it should "return empty internal coords when 2x2" in {
-    Block(Tile(0, 0), TileSize(2)).internalCoordinates should contain theSameElementsAs Set(MapTileCoordinate(1, 1))
+    Block(Tile(0, 0), TileSize(2)).internalCoordinates should contain theSameElementsAs Set(TileCoordinate(1, 1))
   }
 
   it should "return correct internal coords when 3x3 or more" in {
     Block(Tile(0, 0), TileSize(3)).internalCoordinates should contain theSameElementsAs
-      Set(MapTileCoordinate(1, 1), MapTileCoordinate(2, 1), MapTileCoordinate(1, 2), MapTileCoordinate(2, 2))
+      Set(TileCoordinate(1, 1), TileCoordinate(2, 1), TileCoordinate(1, 2), TileCoordinate(2, 2))
   }
 
   it should "return true intersect for overlapping items" in {
@@ -69,9 +69,13 @@ class BlockSpec extends FlatSpec with Matchers {
   it should "return correct all coordinates" in {
     Block(Tile.Origin, TileSize(2)).coordinates should contain theSameElementsAs
       Set(
-        MapTileCoordinate(0, 0), MapTileCoordinate(1, 0), MapTileCoordinate(2, 0),
-        MapTileCoordinate(0, 1), MapTileCoordinate(1, 1), MapTileCoordinate(2, 1),
-        MapTileCoordinate(0, 2), MapTileCoordinate(1, 2), MapTileCoordinate(2, 2)
+        TileCoordinate(0, 0), TileCoordinate(1, 0), TileCoordinate(2, 0),
+        TileCoordinate(0, 1), TileCoordinate(1, 1), TileCoordinate(2, 1),
+        TileCoordinate(0, 2), TileCoordinate(1, 2), TileCoordinate(2, 2)
       )
+  }
+
+  it should "expand to size correctly" in {
+    Block(Tile(1, 1), TileSize(2)).expandToSize(TileSize(4)) should be (Block(Tile(0, 0), TileSize(4)))
   }
 }

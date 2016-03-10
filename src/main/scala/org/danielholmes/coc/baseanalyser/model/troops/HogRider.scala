@@ -3,12 +3,12 @@ package org.danielholmes.coc.baseanalyser.model.troops
 import org.danielholmes.coc.baseanalyser.model._
 
 object HogRider {
-  def findTarget(coordinate: MapTileCoordinate, village: Village): Option[HogTargeting] = {
+  def findTarget(coordinate: TileCoordinate, village: Village): Option[HogTargeting] = {
     if (village.isEmpty) return None
     Some(HogTargeting(coordinate, findTargetInNonEmptyVillage(coordinate, village)))
   }
 
-  private def findTargetInNonEmptyVillage(coordinate: MapTileCoordinate, village: Village): Element = {
+  private def findTargetInNonEmptyVillage(coordinate: TileCoordinate, village: Village): Element = {
     val defenses = village.elements
       .filter(_.isInstanceOf[Defense])
       .filterNot(_.isInstanceOf[Hero])

@@ -15,21 +15,21 @@ $(document).ready(function() {
         HogCCLure: {
             title: "Easy CC Lure",
             description: "There should be no spaces that allow a hog or giant to lure without first having to destroy a defense",
-            renderActive: function(result, tileSize) {
+            renderActive: function(result, mapConfig) {
                 _.each(
                     _.map(
                         result.targetings,
                         function(targeting) {
                             var line = new createjs.Shape();
                             line.graphics
-                                .beginStroke("#00ff00")
+                                .beginStroke("#ff0000")
                                 .moveTo(0, 0)
                                 .lineTo(
-                                    (targeting.hitPoint.x - targeting.startPosition.x) * tileSize,
-                                    (targeting.hitPoint.y - targeting.startPosition.y) * tileSize
+                                    (targeting.hitPoint.x - targeting.startPosition.x) * mapConfig.tileSize,
+                                    (targeting.hitPoint.y - targeting.startPosition.y) * mapConfig.tileSize
                                 );
-                            line.x = targeting.startPosition.x * tileSize;
-                            line.y = targeting.startPosition.y * tileSize;
+                            line.x = targeting.startPosition.x * mapConfig.tileSize;
+                            line.y = targeting.startPosition.y * mapConfig.tileSize;
                             extrasContainer.addChild(line);
                             return _.find(
                                 buildingsContainer.children,
@@ -47,12 +47,13 @@ $(document).ready(function() {
                         buildingContainer.cache(0, 0, 1000, 1000);
                     }
                 );
+                renderElementRanges(mapConfig, "ClanCastle");
             }
         },
         HighHPUnderAirDef: {
             title: "High HP covered by Air Defenses",
             description: "All high HP buildings should be within range of your air defenses",
-            renderActive: function(result, tileSize) {
+            renderActive: function(result, mapConfig) {
                 _.each(
                     _.map(
                         result.outOfAirDefRange,
@@ -73,6 +74,7 @@ $(document).ready(function() {
                         buildingContainer.cache(0, 0, 1000, 1000);
                     }
                 );
+                renderElementRanges(mapConfig, "AirDefense");
             }
         }
     };
@@ -375,44 +377,87 @@ $(document).ready(function() {
         }
     }
     function render2d() {
-        var tileSize = Math.floor(Math.min(canvas.width, canvas.height) / 44);
-        render2dGrass();
-        //render2dRandomSolidColourElements(tileSize);
-        render2dImageBuildings(tileSize);
-        renderCCRadius(tileSize);
-        renderActiveRule(tileSize);
+        // TODO: Get map/coordinate system config from api/backend
+        var mapTiles = 44;
+        var borderTiles = 1;
+        var mapConfig = {
+            mapTiles: mapTiles,
+            borderTiles: borderTiles,
+            tileSize: Math.min(canvas.width, canvas.height) / (mapTiles + 2 * borderTiles)
+        };
+        render2dGrass(mapConfig);
+        //render2dRandomSolidColourElements(mapConfig);
+        render2dPreventTroopDrops(mapConfig);
+        render2dImageBuildings(mapConfig);
+        renderActiveRule(mapConfig);
     }
-    function renderActiveRule(tileSize) {
+    function renderActiveRule(mapConfig) {
         if (activeRuleName == null) {
             return;
         }
 
         var result = _.find(currentReport.results, function(test) { return test.name == activeRuleName; });
         var rule = rules[result.name];
-        rule.renderActive(result, tileSize);
+        rule.renderActive(result, mapConfig);
     }
-    function render2dGrass() {
+    function render2dGrass(mapConfig) {
         var grass = new createjs.Shape();
         grass.graphics
             .beginFill("#8cbf15")
-            .drawRect(0, 0, canvas.width, canvas.height);
+            .drawRect(
+                0,
+                0,
+                mapConfig.mapTiles * mapConfig.tileSize,
+                mapConfig.mapTiles * mapConfig.tileSize
+            );
+        grass.x = mapConfig.borderTiles * mapConfig.tileSize;
+        grass.y = mapConfig.borderTiles * mapConfig.tileSize;
         bgContainer.addChild(grass);
     }
-    function render2dImageBuildings(tileSize) {
+    function render2dPreventTroopDrops(mapConfig) {
+        var allPrevents = new createjs.Container();
+        for (var i in currentReport.village.elements) {
+            var element = currentReport.village.elements[i];
+            if (element.preventTroopDropBlock.size == 0) {
+                continue;
+            }
+            var prevent = new createjs.Shape();
+            prevent.graphics
+                .beginFill("rgba(255,255,255,1)")
+                .drawRect(
+                    0,
+                    0,
+                    element.preventTroopDropBlock.size * mapConfig.tileSize,
+                    element.preventTroopDropBlock.size * mapConfig.tileSize
+                );
+            prevent.x = element.preventTroopDropBlock.x * mapConfig.tileSize;
+            prevent.y = element.preventTroopDropBlock.y * mapConfig.tileSize;
+            allPrevents.addChild(prevent);
+        }
+        allPrevents.filters = [
+            new createjs.ColorFilter(
+                1, 1, 1, 0.3,
+                0, 0, 0, 0
+            )
+        ];
+        allPrevents.cache(0, 0, 1000, 1000);
+        bgContainer.addChild(allPrevents);
+    }
+    function render2dImageBuildings(mapConfig) {
         for (var i in currentReport.village.elements) {
             var element = currentReport.village.elements[i];
             if (element.typeName == "Wall") {
-                renderWallImage(element, tileSize);
+                renderWallImage(element, mapConfig);
                 continue;
             }
 
-            renderBuildingImage(element, tileSize);
+            renderBuildingImage(element, mapConfig);
         }
     }
-    function renderWallImage(element, tileSize) {
+    function renderWallImage(element, mapConfig) {
         renderElementImage(
             element,
-            tileSize,
+            mapConfig,
             assets.walls,
             {
                 x: 80,
@@ -424,7 +469,7 @@ $(document).ready(function() {
             0
         )
     }
-    function renderBuildingImage(element, tileSize) {
+    function renderBuildingImage(element, mapConfig) {
         var sheetDef = buildingsSheet[element.typeName];
         if (sheetDef == null) {
             console.error("Don't know how to render: " + element.typeName);
@@ -433,17 +478,17 @@ $(document).ready(function() {
 
         renderElementImage(
             element,
-            tileSize,
+            mapConfig,
             assets.buildings,
             sheetDef,
             element.level - 1,
             true
         )
     }
-    function renderElementImage(element, tileSize, image, sheetDef, sheetIndex, drawGrass) {
+    function renderElementImage(element, mapConfig, image, sheetDef, sheetIndex, drawGrass) {
         var elementContainer = new createjs.Container();
-        elementContainer.x = element.block.x * tileSize;
-        elementContainer.y = element.block.y * tileSize;
+        elementContainer.x = element.block.x * mapConfig.tileSize;
+        elementContainer.y = element.block.y * mapConfig.tileSize;
         elementContainer.id = element.id;
 
         if (drawGrass) {
@@ -453,14 +498,14 @@ $(document).ready(function() {
                 .drawRect(
                     0,
                     0,
-                    element.block.width * tileSize,
-                    element.block.height * tileSize
+                    element.block.size * mapConfig.tileSize,
+                    element.block.size * mapConfig.tileSize
                 );
             elementContainer.addChild(grass);
         }
 
-        var widthRatio = element.block.width * tileSize / sheetDef.width;
-        var heightRatio = element.block.height * tileSize / sheetDef.height;
+        var widthRatio = element.block.size * mapConfig.tileSize / sheetDef.width;
+        var heightRatio = element.block.size * mapConfig.tileSize / sheetDef.height;
         var useScale = Math.min(
             widthRatio,
             heightRatio
@@ -474,38 +519,38 @@ $(document).ready(function() {
             sheetDef.width,
             sheetDef.height
         );
-        bitmap.x = ((element.block.width * tileSize) - finalWidth) / 2;
-        bitmap.y = ((element.block.height * tileSize) - finalHeight) / 2;
+        bitmap.x = ((element.block.size * mapConfig.tileSize) - finalWidth) / 2;
+        bitmap.y = ((element.block.size * mapConfig.tileSize) - finalHeight) / 2;
         bitmap.scaleX = useScale;
         bitmap.scaleY = useScale;
         elementContainer.addChild(bitmap);
 
         buildingsContainer.addChild(elementContainer);
     }
-    function render2dRandomSolidColourElements(tileSize) {
+    function render2dRandomSolidColourElements(mapConfig) {
         for (var i in currentReport.village.elements) {
             var element = currentReport.village.elements[i];
             canvasContext.fillStyle = randomColour(element.typeName);
             canvasContext.fillRect(
-                element.block.x * tileSize,
-                element.block.y * tileSize,
-                element.block.width * tileSize,
-                element.block.height * tileSize
+                element.block.x * mapConfig.tileSize,
+                element.block.y * mapConfig.tileSize,
+                element.block.size * mapConfig.tileSize,
+                element.block.size * mapConfig.tileSize
             );
         }
     }
-    function renderCCRadius(tileSize) {
+    function renderElementRanges(mapConfig, typeName) {
         _.each(
             _.map(
-                _.filter(currentReport.village.elements, function(element) { return element.typeName == "ClanCastle"; }),
-                function(clanCastle) {
+                _.filter(currentReport.village.elements, function(element) { return element.typeName == typeName; }),
+                function(elementToDraw) {
                     var circle = new createjs.Shape();
                     circle.graphics
                         .beginStroke("#ffffff")
                         .drawCircle(
-                            (clanCastle.block.x + clanCastle.block.width / 2) * tileSize,
-                            (clanCastle.block.y + clanCastle.block.height / 2) * tileSize,
-                            clanCastle.range.outer * tileSize
+                            (elementToDraw.block.x + elementToDraw.block.size / 2) * mapConfig.tileSize,
+                            (elementToDraw.block.y + elementToDraw.block.size / 2) * mapConfig.tileSize,
+                            elementToDraw.range.outer * mapConfig.tileSize
                         );
                     return circle;
                 }

@@ -30,7 +30,7 @@ class StringDisplayer {
     drawBoundary(
       drawCCRadius(
         base,
-        drawElements(base.elements.toList, List.fill[Char](Tile.Max + 1, Tile.Max + 1) { ' ' })
+        drawElements(base.elements.toList, List.fill[Char](Tile.Max.toInt + 1, Tile.Max.toInt + 1) { ' ' })
       )
     )
   }
@@ -131,5 +131,5 @@ object StringDisplayer {
     Console.YELLOW
   )
 
-  private val HorizontalWall: List[Char] = (WallCorner :: List.fill[Char](MapTileCoordinate.Max) { WallHor }) :+ WallCorner
+  private val HorizontalWall: List[Char] = (WallCorner :: List.fill[Char](TileCoordinate.Max.toInt) { WallHor }) :+ WallCorner
 }

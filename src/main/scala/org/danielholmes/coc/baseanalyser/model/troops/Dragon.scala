@@ -1,11 +1,11 @@
 package org.danielholmes.coc.baseanalyser.model.troops
 
-import org.danielholmes.coc.baseanalyser.model.{Element, MapTileCoordinate, TileSize}
+import org.danielholmes.coc.baseanalyser.model.{Element, TileCoordinate, TileSize}
 
 object Dragon {
-  def getCoordinatesCanAttackElementFrom(element: Element): Set[MapTileCoordinate] = {
+  def getCoordinatesCanAttackElementFrom(element: Element): Set[TileCoordinate] = {
     element.block
-      .expandWithinMap(TileSize(1))
+      .expandBy(TileSize(1))
       .coordinates
   }
 }
