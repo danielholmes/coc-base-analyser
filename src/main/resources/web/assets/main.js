@@ -1,5 +1,6 @@
 $(document).ready(function() {
     var searchForm = $("#searchForm");
+    var userNameField = $("#userNameField");
     var searchButton = searchForm.find("button[type='submit']");
     var canvas = document.getElementById("villageImage");
     var stage = new createjs.Stage(canvas);
@@ -250,6 +251,11 @@ $(document).ready(function() {
         }
     };
 
+    // Persistent info
+    var USER_NAME_KEY = "userName";
+    userNameField.val($.jStorage.get(USER_NAME_KEY, ""));
+
+
     // Preload assets
     var assets = null;
     var queue = new createjs.LoadQueue();
@@ -436,7 +442,7 @@ $(document).ready(function() {
         }
         allPrevents.filters = [
             new createjs.ColorFilter(
-                1, 1, 1, 0.3,
+                1, 1, 1, 0.1,
                 0, 0, 0, 0
             )
         ];
@@ -544,15 +550,35 @@ $(document).ready(function() {
             _.map(
                 _.filter(currentReport.village.elements, function(element) { return element.typeName == typeName; }),
                 function(elementToDraw) {
+                    var allInfo = new createjs.Container();
                     var circle = new createjs.Shape();
                     circle.graphics
                         .beginStroke("#ffffff")
+                        .beginFill("rgba(255,255,255,0.1)")
                         .drawCircle(
-                            (elementToDraw.block.x + elementToDraw.block.size / 2) * mapConfig.tileSize,
-                            (elementToDraw.block.y + elementToDraw.block.size / 2) * mapConfig.tileSize,
+                            0,
+                            0,
                             elementToDraw.range.outer * mapConfig.tileSize
                         );
-                    return circle;
+                    allInfo.addChild(circle);
+
+                    var lineSize = 1;
+                    var vert = new createjs.Shape();
+                    vert.graphics
+                        .beginStroke("#ffffff")
+                        .moveTo(0, -lineSize * mapConfig.tileSize / 2)
+                        .lineTo(0, lineSize * mapConfig.tileSize / 2);
+                    allInfo.addChild(vert);
+                    var hor = new createjs.Shape();
+                    hor.graphics
+                        .beginStroke("#ffffff")
+                        .moveTo(-lineSize * mapConfig.tileSize / 2, 0)
+                        .lineTo(lineSize * mapConfig.tileSize / 2, 0);
+                    allInfo.addChild(hor);
+
+                    allInfo.x = (elementToDraw.block.x + elementToDraw.block.size / 2) * mapConfig.tileSize;
+                    allInfo.y = (elementToDraw.block.y + elementToDraw.block.size / 2) * mapConfig.tileSize;
+                    return allInfo;
                 }
             ),
             function(circle) { extrasContainer.addChild(circle); }
@@ -607,9 +633,10 @@ $(document).ready(function() {
         startLoading();
         clearCurrentReport();
 
-        var userName = $("#userNameField").val();
+        var userName = userNameField.val();
         $.getJSON("/village-analysis/" + encodeURI(userName))
             .done(function(response){
+                $.jStorage.set(USER_NAME_KEY, userName);
                 setCurrentReport(response);
             })
             .fail(function(response){
