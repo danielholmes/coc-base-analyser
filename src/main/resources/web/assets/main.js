@@ -13,6 +13,45 @@ $(document).ready(function() {
     stage.addChild(extrasContainer);
 
     var rules = {
+        ArcherAnchor: {
+            title: "Archer Anchor",
+            description: "There should be no unprotected archer anchors",
+            renderActive: function(result, mapConfig) {
+                _.each(
+                    _.map(
+                        result.targetings,
+                        function(targeting) {
+                            var line = new createjs.Shape();
+                            line.graphics
+                                .beginStroke("#ff0000")
+                                .moveTo(0, 0)
+                                .lineTo(
+                                    (targeting.hitPoint.x - targeting.standingPosition.x) * mapConfig.tileSize,
+                                    (targeting.hitPoint.y - targeting.standingPosition.y) * mapConfig.tileSize
+                                );
+                            line.x = targeting.standingPosition.x * mapConfig.tileSize;
+                            line.y = targeting.standingPosition.y * mapConfig.tileSize;
+                            extrasContainer.addChild(line);
+                            return _.find(
+                                buildingsContainer.children,
+                                function(buildingContainer) { return buildingContainer.id == targeting.targetingId; }
+                            );
+                        }
+                    ),
+                    function(buildingContainer) {
+                        buildingContainer.filters = [
+                            new createjs.ColorFilter(
+                                1, 0, 0, 1,
+                                0, 0, 0, 0
+                            )
+                        ];
+                        buildingContainer.cache(0, 0, 1000, 1000);
+                    }
+                );
+                // TODO: Ranges of all ground targeting
+                //renderElementRanges(mapConfig, "ClanCastle");
+            }
+        },
         HogCCLure: {
             title: "Easy CC Lure",
             description: "There should be no spaces that allow a hog or giant to lure without first having to destroy a defense",
@@ -55,6 +94,7 @@ $(document).ready(function() {
             title: "High HP covered by Air Defenses",
             description: "All high HP buildings should be within range of your air defenses",
             renderActive: function(result, mapConfig) {
+                // TODO: Highlight in green all high hp buildings
                 _.each(
                     _.map(
                         result.outOfAirDefRange,

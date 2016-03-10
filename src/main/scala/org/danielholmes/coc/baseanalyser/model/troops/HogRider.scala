@@ -5,15 +5,17 @@ import org.danielholmes.coc.baseanalyser.model._
 object HogRider {
   def findTarget(coordinate: TileCoordinate, village: Village): Option[HogTargeting] = {
     if (village.isEmpty) return None
-    Some(HogTargeting(coordinate, findTargetInNonEmptyVillage(coordinate, village)))
+    findTargetInNonEmptyVillage(coordinate, village)
+      .map(HogTargeting(coordinate, _))
   }
 
-  private def findTargetInNonEmptyVillage(coordinate: TileCoordinate, village: Village): Element = {
+  private def findTargetInNonEmptyVillage(coordinate: TileCoordinate, village: Village): Option[Element] = {
     val defenses = village.elements
       .filter(_.isInstanceOf[Defense])
       .filterNot(_.isInstanceOf[Hero])
       .map(_.asInstanceOf[Defense])
-    if (defenses.isEmpty) return village.elements.minBy(_.block.distanceFrom(coordinate))
-    defenses.minBy(_.block.distanceFrom(coordinate))
+    if (defenses.nonEmpty) return Some(defenses.minBy(_.hitBlock.distanceFrom(coordinate)))
+    if (village.buildings.isEmpty) return None
+    Some(village.buildings.minBy(_.hitBlock.distanceFrom(coordinate))) // TODO: Unit test using hit block and not visual
   }
 }

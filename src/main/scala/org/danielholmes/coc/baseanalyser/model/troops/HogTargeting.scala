@@ -1,6 +1,7 @@
-package org.danielholmes.coc.baseanalyser.model
+package org.danielholmes.coc.baseanalyser.model.troops
 
-import org.apache.commons.math3.geometry.euclidean.twod.{Segment, Line, Vector2D}
+import org.apache.commons.math3.geometry.euclidean.twod.{Line, Segment, Vector2D}
+import org.danielholmes.coc.baseanalyser.model.{Element, ElementRange, MapCoordinate, TileCoordinate}
 
 case class HogTargeting(startPosition: TileCoordinate, targeting: Element) {
   lazy val hitPoint = targeting.findClosestHitCoordinate(startPosition)

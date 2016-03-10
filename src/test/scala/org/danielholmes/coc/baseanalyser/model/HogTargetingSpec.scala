@@ -1,5 +1,6 @@
 package org.danielholmes.coc.baseanalyser.model
 
+import org.danielholmes.coc.baseanalyser.model.troops.HogTargeting
 import org.scalatest._
 
 class HogTargetingSpec extends FlatSpec with Matchers {

@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser
 
-import org.danielholmes.coc.baseanalyser.analysis.{HighHPUnderAirDefRule, HogCCLureRule, VillageAnalyser}
+import org.danielholmes.coc.baseanalyser.analysis.{ArcherAnchorRule, HighHPUnderAirDefRule, HogCCLureRule, VillageAnalyser}
 import org.danielholmes.coc.baseanalyser.apigatherer.{HardcodedClanSeekerServiceAgent, VillageGatherer, ClanSeekerAkkaServiceAgent}
 import org.danielholmes.coc.baseanalyser.baseparser.{VillageJsonParser, HardCodedElementFactory}
 import org.danielholmes.coc.baseanalyser.stringdisplay.{StringTroopDropDisplayer, StringDisplayer}
@@ -13,7 +13,7 @@ trait Services {
   //private lazy val clanSeekerServiceAgent = wire[HardcodedClanSeekerServiceAgent]
   private lazy val elementFactory = wire[HardCodedElementFactory]
   private lazy val villageJsonParser = wire[VillageJsonParser]
-  private lazy val rules = Set(wire[HogCCLureRule], wire[HighHPUnderAirDefRule])
+  private lazy val rules = Set(wire[HogCCLureRule], wire[HighHPUnderAirDefRule], wire[ArcherAnchorRule])
 
   lazy val villageAnalyser = wire[VillageAnalyser]
   lazy val villageGatherer = wire[VillageGatherer]

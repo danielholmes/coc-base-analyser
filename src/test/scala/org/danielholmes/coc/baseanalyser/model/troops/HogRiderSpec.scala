@@ -16,6 +16,10 @@ class HogRiderSpec extends FlatSpec with Matchers {
     HogRider.findTarget(origin, Village(Set(barrack))) should contain (HogTargeting(origin, barrack))
   }
 
+  it should "return empty if only wall available" in {
+    HogRider.findTarget(origin, Village(Set(Wall(1, Tile.MapOrigin)))) should be (empty)
+  }
+
   it should "return closest defense target if available" in {
     val at = ArcherTower(1, Tile(10, 10))
     val closeBarrack = Barrack(1, Tile(2, 2))

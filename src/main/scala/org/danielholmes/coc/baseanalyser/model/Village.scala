@@ -13,7 +13,9 @@ case class Village(elements: Set[Element]) {
   val clanCastle = elements.find(_.isInstanceOf[ClanCastle])
     .map(_.asInstanceOf[ClanCastle])
 
-  def isEmpty = elements.isEmpty
+  lazy val isEmpty = elements.isEmpty
+
+  lazy val buildings = elements.filter(_.isInstanceOf[Building]).map(_.asInstanceOf[Building])
 
   /* private */ lazy val tilesNotAllowedToDropTroop = elements.flatMap(_.preventTroopDropBlock.tiles)
 

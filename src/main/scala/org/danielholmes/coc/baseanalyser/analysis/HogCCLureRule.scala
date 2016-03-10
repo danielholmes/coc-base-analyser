@@ -1,7 +1,7 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
-import org.danielholmes.coc.baseanalyser.model.troops.HogRider
+import org.danielholmes.coc.baseanalyser.model.troops.{HogTargeting, HogRider}
 
 class HogCCLureRule extends Rule {
   def analyse(village: Village): RuleResult = {

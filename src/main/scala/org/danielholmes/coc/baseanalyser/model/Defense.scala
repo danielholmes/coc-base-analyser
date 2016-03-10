@@ -2,7 +2,7 @@ package org.danielholmes.coc.baseanalyser.model
 
 import Target._
 
-trait Defense extends Element {
+trait Defense extends Building {
   val range: ElementRange
   val targets: Set[Target]
 
