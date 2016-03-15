@@ -80,6 +80,11 @@ then deploy it manually through the AWS console:
  - Air defs not walkable/reachable from outside walls
 
 
+## TH10 Rules
+ - all (?) TH9 rules
+ - cant get 2 infernos with one freeze
+
+
 ## Expansion ideas
  - Hog pathing analysis - start paths from each tile and be able to select/see individual paths from defense to defense
    to show DGB issues
