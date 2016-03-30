@@ -10,12 +10,12 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <h3>CoC War Base Analyser - TH8</h3>
+                    <h3>CoC War Base Analyser</h3>
                     <p>Search for a userName (can only be within the approved clans) and an analysis will be run on their active village</p>
                     <form id="searchForm" class="form-inline">
                         <div class="form-group">
                             <label for="userNameField">UserName:</label>
-                            <input id="userNameField" type="text" name="userName" required="required" value="I AM SPARTA!!1!" />
+                            <input id="userNameField" type="text" name="userName" required="required" value="" />
                         </div>
                         <button type="submit" class="btn btn-default">Run Analysis</button>
                     </form>
@@ -27,8 +27,8 @@
                     <h4>Results</h4>
                     <div id="results-panel-group" class="panel-group" role="tablist" aria-multiselectable="false"></div>
                 </div>
-                <div class="village col-md-9">
-                    <canvas id="villageImage" width="700" height="700"></canvas>
+                <div id="village" class="col-md-9">
+                    <canvas id="villageImage"></canvas>
                 </div>
             </div>
         </div>

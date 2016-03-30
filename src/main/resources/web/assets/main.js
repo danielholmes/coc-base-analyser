@@ -1,3 +1,5 @@
+"use strict";
+
 $(document).ready(function() {
     var searchForm = $("#searchForm");
     var userNameField = $("#userNameField");
@@ -339,18 +341,24 @@ $(document).ready(function() {
     function setCurrentReport(report) {
         currentReport = report;
         activeRuleName = null;
-        renderUi();
+        currentReportValid = false;
+        activeReportValid = false;
         render();
     }
     function clearCurrentReport() {
         currentReport = null;
         activeRuleName = null;
-        renderUi();
+        activeReportValid = false;
+        currentReportValid = false;
         render();
     }
 
     // Render
+    var currentReportValid = false;
+    var activeReportValid = false;
     function render() {
+        renderUi();
+
         stage.clear();
         bgContainer.removeAllChildren();
         extrasContainer.removeAllChildren();
@@ -365,12 +373,13 @@ $(document).ready(function() {
         }
 
         //renderSpriteSheetDebug();
-
         if (currentReport == null) {
+            $("#village").hide();
             stage.update();
             return;
         }
 
+        $("#village").show();
         render2d();
 
         stage.update();
@@ -438,6 +447,11 @@ $(document).ready(function() {
         renderActiveRule(mapConfig);
     }
     function renderActiveRule(mapConfig) {
+        if (activeReportValid) {
+            return;
+        }
+
+        activeReportValid = true;
         if (activeRuleName == null) {
             return;
         }
@@ -627,16 +641,26 @@ $(document).ready(function() {
 
     // UI
     function renderUi() {
-        var panelGroup = $("#results-panel-group");
-        panelGroup.empty();
-        if (currentReport == null) {
+        if (currentReportValid) {
             return;
         }
 
+        currentReportValid = true;
+
+        console.log("renderUi");
+
+        var panelGroup = $("#results-panel-group");
+        panelGroup.empty();
+        if (currentReport == null) {
+            $("#results").hide();
+            return;
+        }
+
+        $("#results").show();
         _.each(
             _.map(
                 currentReport.results,
-                function(result) {
+                function (result) {
                     var rule = rules[result.name];
                     if (rule == null) {
                         console.error("Can't represent " + result.name);
@@ -654,15 +678,19 @@ $(document).ready(function() {
                     ));
                 }
             ),
-            function(panel) { panelGroup.append(panel); }
+            function (panel) {
+                panelGroup.append(panel);
+            }
         );
     }
     $("#results-panel-group").on("shown.bs.collapse", function(event){
         activeRuleName = $(event.target).data("rule-name");
+        activeReportValid = false;
         render();
     });
     $("#results-panel-group").on("hide.bs.collapse", function(){
         activeRuleName = null;
+        activeReportValid = false;
         render();
     });
     searchForm.on("submit", function(){

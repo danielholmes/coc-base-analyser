@@ -43,25 +43,30 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - 3d render
- - trap access (if leadership go for it)
+ - refactoring js into modules
+ - ui overhaul: select clan -> load players, select player, click go 
+ - make for all Town Halls with different rule sets for each
  - mobile device/small size compatibility (including dynamic canvas size)
+ - better rendering - hide whole canvas until results received
  - make it more apparent that need to open accordian to see problems (maybe open first failed)
  - green/red tick for accordian headers
  - overall summary, e.g. "you have passed 1/5 rules, see below"
+ 
+ - 3d render
+ - trap access (if leadership go for it)
+ - select rule set types for each TH - farm + arranged
  - pass, warning, fail levels (e.g. for minion anchors)
  - saved result with a url to be able to send someone (save serialised result in db which can be recalled and lasts one 
    day, ensure to inlude version number so can expire early if need)
 
 
 ## TH8 TODO Rules
- - minimum # compartments - defend against gowipe
- - minion anchors (warning only, no hard fail, once that functionality is built)
  - minion+loon hitting mortars and cannons without air coverage
- - BK not swappable
- - minimum 3 DGB possible spots (including diagonal)
- - sufficient empty space within walls to make attacker guess
- - warnings for upgrading, e.g. build new traps asap if not maxed
+ - minimum # compartments - defend against gowipe
+   - BK not swappable
+   - minimum 3 DGB possible spots (including diagonal)
+   - sufficient empty space within walls to make attacker guess
+ - minion anchors (warning only, no hard fail, once that functionality is built)
  - wb t junction warning
  
 
@@ -78,6 +83,8 @@ then deploy it manually through the AWS console:
  - EQ cant connect >2 GB/DGB positions + AQ
  - Jump doesnt connect too many AQ, GB
  - Air defs not walkable/reachable from outside walls
+ - black bombs within range of queen or air def - to get hounds or suicide drags. red bombs out of range of air defs
+ - Air defs not within WT range - prevent hounds tanking them
 
 
 ## TH10 Rules
@@ -89,3 +96,8 @@ then deploy it manually through the AWS console:
  - Hog pathing analysis - start paths from each tile and be able to select/see individual paths from defense to defense
    to show DGB issues
  - war day analysis - analyse all bases for above criteria, also if have CCs filled
+ - multiple goals/rulesets:
+   - farming (protected loot, give away easy shield - one star, but no value for more than)
+   - war - depending on clan and level, this might be to prevent 1 star, prevent 2 star, or just prevent 3 star
+   - trophy?
+ - provide weaknesses for attack types. e.g. drags doesnt consider DGB locations, hogs dont consider air def high hp.
