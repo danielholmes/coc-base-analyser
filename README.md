@@ -9,6 +9,8 @@ Analyses base layouts against sets of war base rules
  - JDK 8+
  - Scala 2.11
  
+To find available SBT dependency updates run `sbt dependencyUpdates`
+ 
 
 ## Tests
 
@@ -51,6 +53,8 @@ then deploy it manually through the AWS console:
  - make it more apparent that need to open accordian to see problems (maybe open first failed)
  - green/red tick for accordian headers
  - overall summary, e.g. "you have passed 1/5 rules, see below"
+ - hog targeting should have 2 possible paths from same drop point, e.g. if equidistant
+ - switch to new, dedicated credentials of own
  
  - 3d render
  - trap access (if leadership go for it)

@@ -1,5 +1,6 @@
 "use strict";
 
+
 $(document).ready(function() {
     var searchForm = $("#searchForm");
     var userNameField = $("#userNameField");
