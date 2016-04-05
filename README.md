@@ -24,12 +24,11 @@ To find available SBT dependency updates run `sbt dependencyUpdates`
 `sbt 'run-main org.danielholmes.coc.baseanalyser.PrintAttackPlacements "I AM SPARTA!!1!"'`
 
 
-## Running dev version of site
+## Running dev version of site (automatically reloads on changes)
 
-```
-sbt
-container:start
-```
+`
+sbt ~tomcat:start
+`
 Available at http://localhost:8080/ . Run container:start each time something is changed
 
 
@@ -41,7 +40,7 @@ Currently has an Elastic Beanstalk app set up. Package the war file:
 
 then deploy it manually through the AWS console:
 
-`target/scala-2.11/coc-base-analyser_2.11-1.0.war`
+`target/scala-2.11/coc-base-analyser_2.11-0.1.war`
 
 
 ## General TODO
@@ -65,6 +64,7 @@ then deploy it manually through the AWS console:
 
 
 ## TH8 TODO Rules
+ - air defs should be a minimum distance apart
  - minion+loon hitting mortars and cannons without air coverage
  - minimum # compartments - defend against gowipe
    - BK not swappable

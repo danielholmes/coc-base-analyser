@@ -1,10 +1,6 @@
-"use strict";
+'use strict';
 
-
-$(document).ready(function() {
-    var searchForm = $("#searchForm");
-    var userNameField = $("#userNameField");
-    var searchButton = searchForm.find("button[type='submit']");
+var map = (function(document) {
     var canvas = document.getElementById("villageImage");
     var stage = new createjs.Stage(canvas);
     stage.autoClear = false;
@@ -15,113 +11,7 @@ $(document).ready(function() {
     var extrasContainer = new createjs.Container();
     stage.addChild(extrasContainer);
 
-    var rules = {
-        ArcherAnchor: {
-            title: "Archer Anchor",
-            description: "There should be no unprotected archer anchors",
-            renderActive: function(result, mapConfig) {
-                _.each(
-                    _.map(
-                        result.targetings,
-                        function(targeting) {
-                            var line = new createjs.Shape();
-                            line.graphics
-                                .beginStroke("#ff0000")
-                                .moveTo(0, 0)
-                                .lineTo(
-                                    (targeting.hitPoint.x - targeting.standingPosition.x) * mapConfig.tileSize,
-                                    (targeting.hitPoint.y - targeting.standingPosition.y) * mapConfig.tileSize
-                                );
-                            line.x = targeting.standingPosition.x * mapConfig.tileSize;
-                            line.y = targeting.standingPosition.y * mapConfig.tileSize;
-                            extrasContainer.addChild(line);
-                            return _.find(
-                                buildingsContainer.children,
-                                function(buildingContainer) { return buildingContainer.id == targeting.targetingId; }
-                            );
-                        }
-                    ),
-                    function(buildingContainer) {
-                        buildingContainer.filters = [
-                            new createjs.ColorFilter(
-                                1, 0, 0, 1,
-                                0, 0, 0, 0
-                            )
-                        ];
-                        buildingContainer.cache(0, 0, 1000, 1000);
-                    }
-                );
-                // TODO: Ranges of all ground targeting
-                //renderElementRanges(mapConfig, "ClanCastle");
-            }
-        },
-        HogCCLure: {
-            title: "Easy CC Lure",
-            description: "There should be no spaces that allow a hog or giant to lure without first having to destroy a defense",
-            renderActive: function(result, mapConfig) {
-                _.each(
-                    _.map(
-                        result.targetings,
-                        function(targeting) {
-                            var line = new createjs.Shape();
-                            line.graphics
-                                .beginStroke("#ff0000")
-                                .moveTo(0, 0)
-                                .lineTo(
-                                    (targeting.hitPoint.x - targeting.startPosition.x) * mapConfig.tileSize,
-                                    (targeting.hitPoint.y - targeting.startPosition.y) * mapConfig.tileSize
-                                );
-                            line.x = targeting.startPosition.x * mapConfig.tileSize;
-                            line.y = targeting.startPosition.y * mapConfig.tileSize;
-                            extrasContainer.addChild(line);
-                            return _.find(
-                                buildingsContainer.children,
-                                function(buildingContainer) { return buildingContainer.id == targeting.targetingId; }
-                            );
-                        }
-                    ),
-                    function(buildingContainer) {
-                        buildingContainer.filters = [
-                            new createjs.ColorFilter(
-                                1, 0, 0, 1,
-                                0, 0, 0, 0
-                            )
-                        ];
-                        buildingContainer.cache(0, 0, 1000, 1000);
-                    }
-                );
-                renderElementRanges(mapConfig, "ClanCastle");
-            }
-        },
-        HighHPUnderAirDef: {
-            title: "High HP covered by Air Defenses",
-            description: "All high HP buildings should be within range of your air defenses",
-            renderActive: function(result, mapConfig) {
-                // TODO: Highlight in green all high hp buildings
-                _.each(
-                    _.map(
-                        result.outOfAirDefRange,
-                        function(id) {
-                            return _.find(
-                                buildingsContainer.children,
-                                function(buildingContainer) { return buildingContainer.id == id; }
-                            );
-                        }
-                    ),
-                    function(buildingContainer) {
-                        buildingContainer.filters = [
-                            new createjs.ColorFilter(
-                                1, 0, 0, 1,
-                                0, 0, 0, 0
-                            )
-                        ];
-                        buildingContainer.cache(0, 0, 1000, 1000);
-                    }
-                );
-                renderElementRanges(mapConfig, "AirDefense");
-            }
-        }
-    };
+    var assets = null;
 
     var buildingsSheet = {
         "TownHall": {
@@ -294,72 +184,17 @@ $(document).ready(function() {
         }
     };
 
-    // Persistent info
-    var USER_NAME_KEY = "userName";
-    userNameField.val($.jStorage.get(USER_NAME_KEY, ""));
-
-
-    // Preload assets
-    var assets = null;
-    var queue = new createjs.LoadQueue();
-    queue.on("complete", handleAssetsLoadComplete, this);
-    queue.loadManifest([
-        { id: "buildings", src:"assets/buildings-sprite.png" },
-        { id: "walls", src:"assets/walls.png" }
-    ]);
-    function handleAssetsLoadComplete() {
-        assets = {
-            "buildings": queue.getResult("buildings"),
-            "walls": queue.getResult("walls")
-        };
+    var randomColour = function(seed) {
+        var numberSeed = (seed.length * 5.7) % 30;
+        return '#' + Math.floor(numberSeed / 30 * 16777215).toString(16);
+    }
+    
+    var setAssets = function(newAssets) {
+        assets = newAssets;
         render();
-    }
-    render();
+    };
 
-    // Analysis Progress
-    var runningAnalysis = false;
-    function startLoading() {
-        if (runningAnalysis) {
-            return;
-        }
-        searchButton.attr("disabled", "disabled")
-            .html("Analysing...");
-        runningAnalysis = true;
-    }
-
-    function stopLoading() {
-        if (!runningAnalysis) {
-            return;
-        }
-        searchButton.removeAttr("disabled")
-            .html("Run Analysis");
-        runningAnalysis = false;
-    }
-
-    // Model
-    var currentReport = null;
-    var activeRuleName = null;
-    function setCurrentReport(report) {
-        currentReport = report;
-        activeRuleName = null;
-        currentReportValid = false;
-        activeReportValid = false;
-        render();
-    }
-    function clearCurrentReport() {
-        currentReport = null;
-        activeRuleName = null;
-        activeReportValid = false;
-        currentReportValid = false;
-        render();
-    }
-
-    // Render
-    var currentReportValid = false;
-    var activeReportValid = false;
-    function render() {
-        renderUi();
-
+    var render = function() {
         stage.clear();
         bgContainer.removeAllChildren();
         extrasContainer.removeAllChildren();
@@ -374,7 +209,7 @@ $(document).ready(function() {
         }
 
         //renderSpriteSheetDebug();
-        if (currentReport == null) {
+        if (!model.hasReport()) {
             $("#village").hide();
             stage.update();
             return;
@@ -384,7 +219,8 @@ $(document).ready(function() {
         render2d();
 
         stage.update();
-    }
+    };
+
     function renderSpriteSheetDebug() {
         var canvasContext = canvas.getContext("2d");
         var useScale = Math.min(
@@ -432,6 +268,7 @@ $(document).ready(function() {
             }
         }
     }
+
     function render2d() {
         // TODO: Get map/coordinate system config from api/backend
         var mapTiles = 44;
@@ -447,20 +284,132 @@ $(document).ready(function() {
         render2dImageBuildings(mapConfig);
         renderActiveRule(mapConfig);
     }
+
     function renderActiveRule(mapConfig) {
-        if (activeReportValid) {
+        if (!model.hasActiveRule()) {
             return;
         }
 
-        activeReportValid = true;
-        if (activeRuleName == null) {
-            return;
+        var result = _.find(model.getReport().results, function (test) {
+            return test.name == model.getActiveRuleName();
+        });
+        switch (result.name) {
+            case 'ArcherAnchor':
+                renderArcherAnchor(result, mapConfig);
+                break;
+            case 'HogCCLure':
+                renderHogCCLure(result, mapConfig);
+                break;
+            case 'HighHPUnderAirDef':
+                renderHighHPUnderAirDef(result, mapConfig);
+                break;
+            default:
+                console.error('Don\'t know how to render active rule: ' + result.name);
         }
-
-        var result = _.find(currentReport.results, function(test) { return test.name == activeRuleName; });
-        var rule = rules[result.name];
-        rule.renderActive(result, mapConfig);
     }
+
+    function renderArcherAnchor(result, mapConfig) {
+        _.each(
+            _.map(
+                result.targetings,
+                function (targeting) {
+                    var line = new createjs.Shape();
+                    line.graphics
+                        .beginStroke("#ff0000")
+                        .moveTo(0, 0)
+                        .lineTo(
+                            (targeting.hitPoint.x - targeting.standingPosition.x) * mapConfig.tileSize,
+                            (targeting.hitPoint.y - targeting.standingPosition.y) * mapConfig.tileSize
+                        );
+                    line.x = targeting.standingPosition.x * mapConfig.tileSize;
+                    line.y = targeting.standingPosition.y * mapConfig.tileSize;
+                    extrasContainer.addChild(line);
+                    return _.find(
+                        buildingsContainer.children,
+                        function (buildingContainer) {
+                            return buildingContainer.id == targeting.targetingId;
+                        }
+                    );
+                }
+            ),
+            function (buildingContainer) {
+                buildingContainer.filters = [
+                    new createjs.ColorFilter(
+                        1, 0, 0, 1,
+                        0, 0, 0, 0
+                    )
+                ];
+                buildingContainer.cache(0, 0, 1000, 1000);
+            }
+        );
+        // TODO: Ranges of all ground targeting
+        //renderElementRanges(mapConfig, "ClanCastle");
+    }
+
+    function renderHogCCLure(result, mapConfig) {
+        _.each(
+            _.map(
+                result.targetings,
+                function (targeting) {
+                    var line = new createjs.Shape();
+                    line.graphics
+                        .beginStroke("#ff0000")
+                        .moveTo(0, 0)
+                        .lineTo(
+                            (targeting.hitPoint.x - targeting.startPosition.x) * mapConfig.tileSize,
+                            (targeting.hitPoint.y - targeting.startPosition.y) * mapConfig.tileSize
+                        );
+                    line.x = targeting.startPosition.x * mapConfig.tileSize;
+                    line.y = targeting.startPosition.y * mapConfig.tileSize;
+                    extrasContainer.addChild(line);
+                    return _.find(
+                        buildingsContainer.children,
+                        function (buildingContainer) {
+                            return buildingContainer.id == targeting.targetingId;
+                        }
+                    );
+                }
+            ),
+            function (buildingContainer) {
+                buildingContainer.filters = [
+                    new createjs.ColorFilter(
+                        1, 0, 0, 1,
+                        0, 0, 0, 0
+                    )
+                ];
+                buildingContainer.cache(0, 0, 1000, 1000);
+            }
+        );
+        renderElementRanges(mapConfig, "ClanCastle");
+    }
+
+    function renderHighHPUnderAirDef(result, mapConfig) {
+        // TODO: Highlight in green all high hp buildings
+        _.each(
+            _.map(
+                result.outOfAirDefRange,
+                function (id) {
+                    return _.find(
+                        buildingsContainer.children,
+                        function (buildingContainer) {
+                            return buildingContainer.id == id;
+                        }
+                    );
+                }
+            ),
+            function (buildingContainer) {
+                buildingContainer.filters = [
+                    new createjs.ColorFilter(
+                        1, 0, 0, 1,
+                        0, 0, 0, 0
+                    )
+                ];
+                buildingContainer.cache(0, 0, 1000, 1000);
+            }
+        );
+        renderElementRanges(mapConfig, "AirDefense");
+    }
+
     function render2dGrass(mapConfig) {
         var grass = new createjs.Shape();
         grass.graphics
@@ -475,10 +424,11 @@ $(document).ready(function() {
         grass.y = mapConfig.borderTiles * mapConfig.tileSize;
         bgContainer.addChild(grass);
     }
+
     function render2dPreventTroopDrops(mapConfig) {
         var allPrevents = new createjs.Container();
-        for (var i in currentReport.village.elements) {
-            var element = currentReport.village.elements[i];
+        for (var i in model.getReport().village.elements) {
+            var element = model.getReport().village.elements[i];
             if (element.preventTroopDropBlock.size == 0) {
                 continue;
             }
@@ -504,9 +454,10 @@ $(document).ready(function() {
         allPrevents.cache(0, 0, 1000, 1000);
         bgContainer.addChild(allPrevents);
     }
+
     function render2dImageBuildings(mapConfig) {
-        for (var i in currentReport.village.elements) {
-            var element = currentReport.village.elements[i];
+        for (var i in model.getReport().village.elements) {
+            var element = model.getReport().village.elements[i];
             if (element.typeName == "Wall") {
                 renderWallImage(element, mapConfig);
                 continue;
@@ -515,6 +466,7 @@ $(document).ready(function() {
             renderBuildingImage(element, mapConfig);
         }
     }
+
     function renderWallImage(element, mapConfig) {
         renderElementImage(
             element,
@@ -530,6 +482,7 @@ $(document).ready(function() {
             0
         )
     }
+
     function renderBuildingImage(element, mapConfig) {
         var sheetDef = buildingsSheet[element.typeName];
         if (sheetDef == null) {
@@ -546,6 +499,7 @@ $(document).ready(function() {
             true
         )
     }
+
     function renderElementImage(element, mapConfig, image, sheetDef, sheetIndex, drawGrass) {
         var elementContainer = new createjs.Container();
         elementContainer.x = element.block.x * mapConfig.tileSize;
@@ -588,9 +542,10 @@ $(document).ready(function() {
 
         buildingsContainer.addChild(elementContainer);
     }
+
     function render2dRandomSolidColourElements(mapConfig) {
-        for (var i in currentReport.village.elements) {
-            var element = currentReport.village.elements[i];
+        for (var i in model.getReport().village.elements) {
+            var element = model.getReport().village.elements[i];
             canvasContext.fillStyle = randomColour(element.typeName);
             canvasContext.fillRect(
                 element.block.x * mapConfig.tileSize,
@@ -600,11 +555,14 @@ $(document).ready(function() {
             );
         }
     }
+
     function renderElementRanges(mapConfig, typeName) {
         _.each(
             _.map(
-                _.filter(currentReport.village.elements, function(element) { return element.typeName == typeName; }),
-                function(elementToDraw) {
+                _.filter(model.getReport().village.elements, function (element) {
+                    return element.typeName == typeName;
+                }),
+                function (elementToDraw) {
                     var allInfo = new createjs.Container();
                     var circle = new createjs.Shape();
                     circle.graphics
@@ -636,99 +594,14 @@ $(document).ready(function() {
                     return allInfo;
                 }
             ),
-            function(circle) { extrasContainer.addChild(circle); }
-        );
-    }
-
-    // UI
-    function renderUi() {
-        if (currentReportValid) {
-            return;
-        }
-
-        currentReportValid = true;
-
-        console.log("renderUi");
-
-        var panelGroup = $("#results-panel-group");
-        panelGroup.empty();
-        if (currentReport == null) {
-            $("#results").hide();
-            return;
-        }
-
-        $("#results").show();
-        _.each(
-            _.map(
-                currentReport.results,
-                function (result) {
-                    var rule = rules[result.name];
-                    if (rule == null) {
-                        console.error("Can't represent " + result.name);
-                        return $("<div></div>");
-                    }
-
-                    return $(renderTemplate(
-                        "#result-panel",
-                        {
-                            id: result.name,
-                            title: rule.title + " - " + (result.success ? "Passed" : "Failed"),
-                            description: rule.description,
-                            ruleName: result.name
-                        }
-                    ));
-                }
-            ),
-            function (panel) {
-                panelGroup.append(panel);
+            function (circle) {
+                extrasContainer.addChild(circle);
             }
         );
     }
-    $("#results-panel-group").on("shown.bs.collapse", function(event){
-        activeRuleName = $(event.target).data("rule-name");
-        activeReportValid = false;
-        render();
-    });
-    $("#results-panel-group").on("hide.bs.collapse", function(){
-        activeRuleName = null;
-        activeReportValid = false;
-        render();
-    });
-    searchForm.on("submit", function(){
-        if (runningAnalysis) {
-            return false;
-        }
-
-        startLoading();
-        clearCurrentReport();
-
-        var userName = userNameField.val();
-        $.getJSON("/village-analysis/" + encodeURI(userName))
-            .done(function(response){
-                $.jStorage.set(USER_NAME_KEY, userName);
-                setCurrentReport(response);
-            })
-            .fail(function(response){
-                if (response.status == 404) {
-                    alert("user not found in approved clans");
-                    return false;
-                }
-            })
-            .always(function(){
-                stopLoading();
-            });
-
-        return false;
-    });
-
-    // utils
-    function randomColour(seed) {
-        var numberSeed = (seed.length * 5.7) % 30;
-        return '#' + Math.floor(numberSeed / 30 * 16777215).toString(16);
-    }
-    function renderTemplate(selector, vars) {
-        var template = $(selector).html();
-        Mustache.parse(template);
-        return Mustache.render(template, vars);
-    }
-});
+    
+    return {
+        render: render,
+        setAssets: setAssets
+    };
+})(document);

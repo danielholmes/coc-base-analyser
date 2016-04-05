@@ -29,8 +29,10 @@ libraryDependencies ++= {
   )
 }
 
+/*
 webappPostProcess := {
-  webappDir: File =>
+  webappDir: File => Unit;
+
     def listFiles(level: Int)(f: File): Unit = {
       val indent = ((1 until level) map { _ => "  " }).mkString
       if (f.isDirectory) {
@@ -42,7 +44,9 @@ webappPostProcess := {
 }
 
 pipelineStages in Assets := Seq(concat)
+// Doesnt work but need something like this so can copy the staged files in the PostProcess above
+packageBin <<= packageBin.dependsOn(WebKeys.stage)
 
 Concat.groups := Seq(
-  "script-group.js" -> group(Seq("js/script1.js", "js/script2.js"))
-)
+  "js/script-group.js" -> group(Seq("js/script1.js", "js/script2.js"))
+)*/
