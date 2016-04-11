@@ -2,7 +2,7 @@
 
 $(document).ready(function() {
     preloader.loadAssets(function(queue) {
-        map.setAssets({
+        mapDisplay2d.setAssets({
             "buildings": queue.getResult("buildings"),
             "walls": queue.getResult("walls")
         });

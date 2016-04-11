@@ -1,8 +1,8 @@
 'use strict';
 
-var ui = (function(model, map) {
+var ui = (function($, model, mapDisplay, window) {
     var runningAnalysis = false;
-    var reportValid = true;
+    var reportValid = false;
 
     var rules = {
         ArcherAnchor: {
@@ -31,21 +31,35 @@ var ui = (function(model, map) {
     };
 
     var render = function() {
-        map.render();
+        var panelGroup = $("#results-panel-group");
+        mapDisplay.canvas.width = 1;
+        mapDisplay.canvas.height = 1;
+
+        $("#report").show();
+        var canvasSize = Math.max(
+            $(window.document).height() - $(mapDisplay.canvas).parent().offset().top - 10,
+            panelGroup.width()
+        );
+        mapDisplay.canvas.width = canvasSize;
+        mapDisplay.canvas.height = canvasSize;
+        mapDisplay.render();
+        if (!model.hasReport()) {
+            $("#report").hide();
+        }
 
         if (reportValid) {
             return;
         }
 
         reportValid = true;
-        var panelGroup = $("#results-panel-group");
+
         panelGroup.empty();
         if (!model.hasReport()) {
-            $("#results").hide();
+            $("#report").hide();
             return;
         }
 
-        $("#results").show();
+        $("#report").show();
         _.each(
             _.map(
                 model.getReport().results,
@@ -74,7 +88,7 @@ var ui = (function(model, map) {
     };
 
     model.reportChanged.add(_.bind(invalidateReport, this));
-    model.ruleChanged.add(_.bind(render, this));
+    model.ruleChanged.add(_.bind(invalidateReport, this));
 
     var searchButton;
 
@@ -142,7 +156,9 @@ var ui = (function(model, map) {
         runningAnalysis = false;
     }
 
+    $(window).on("resize", render);
+
     return {
         render: render
     }
-})(model, map);
+})(jQuery, model, mapDisplay2d, window);

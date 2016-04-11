@@ -11,7 +11,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <h3>War Base Analyser</h3>
-                    <p>Search for a userName (can only be within the approved clans) and an analysis will be run on their active village</p>
+                    <p>Search for an IGN (can only be within the approved clans) and an analysis will be run on their active village</p>
                     <form id="searchForm" class="form-inline">
                         <div class="form-group">
                             <label for="userNameField">UserName:</label>
@@ -22,12 +22,12 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div id="results" class="col-md-3">
+            <div id="report" class="row">
+                <div class="col-md-3">
                     <h4>Results</h4>
                     <div id="results-panel-group" class="panel-group" role="tablist" aria-multiselectable="false"></div>
                 </div>
-                <div id="village" class="col-md-9">
+                <div class="col-md-9">
                     <canvas id="villageImage"></canvas>
                 </div>
             </div>
@@ -60,7 +60,9 @@
         <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
         <script type="text/javascript" src="/assets/js/preloader.js"></script>
         <script type="text/javascript" src="/assets/js/model.js"></script>
-        <script type="text/javascript" src="/assets/js/map2d.js"></script>
+        <script type="text/javascript" src="/assets/js/BuildingSpriteSheet.js"></script>
+        <script type="text/javascript" src="/assets/js/WallSpriteSheet.js"></script>
+        <script type="text/javascript" src="/assets/js/mapDisplay2d.js"></script>
         <script type="text/javascript" src="/assets/js/ui.js"></script>
         <script type="text/javascript" src="/assets/js/main.js"></script>
     </body>

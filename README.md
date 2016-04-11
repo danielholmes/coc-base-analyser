@@ -44,14 +44,10 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - refactoring js into modules
  - ui overhaul: select clan -> load players, select player, click go 
  - make for all Town Halls with different rule sets for each
- - mobile device/small size compatibility (including dynamic canvas size)
- - better rendering - hide whole canvas until results received
  - make it more apparent that need to open accordian to see problems (maybe open first failed)
  - green/red tick for accordian headers
- - overall summary, e.g. "you have passed 1/5 rules, see below"
  - hog targeting should have 2 possible paths from same drop point, e.g. if equidistant
  - switch to new, dedicated credentials of own
  
