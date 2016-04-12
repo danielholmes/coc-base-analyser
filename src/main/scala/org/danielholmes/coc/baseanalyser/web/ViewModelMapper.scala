@@ -4,8 +4,8 @@ import java.util.UUID
 
 import org.danielholmes.coc.baseanalyser.analysis._
 import org.danielholmes.coc.baseanalyser.model._
-import org.danielholmes.coc.baseanalyser.model.troops.{ArcherTargeting, HogTargeting}
-import spray.json.{JsValue, RootJsonFormat, DefaultJsonProtocol}
+import org.danielholmes.coc.baseanalyser.model.troops.{ArcherTargeting, HogTargeting, MinionAttackPosition}
+import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
 
 class ViewModelMapper {
   def viewModel(report: AnalysisReport): AnalysisReportViewModel = {
@@ -18,7 +18,7 @@ class ViewModelMapper {
   def viewModel(result: RuleResult): RuleResultViewModel = {
     result match {
       case s: SuccessRuleResult => SuccessRuleResultViewModel(result.ruleName, result.success)
-      case h: HogCCLureResult => HogCCLureFailedResultViewModel(
+      case h: HogCCLureResult => HogCCLureResultViewModel(
         h.ruleName,
         h.success,
         h.targeting
@@ -28,7 +28,7 @@ class ViewModelMapper {
           .map(viewModel)
           .toSet
       )
-      case h: ArcherAnchorRuleResult => ArcherAnchorFailedResultViewModel(
+      case h: ArcherAnchorRuleResult => ArcherAnchorResultViewModel(
         h.ruleName,
         h.success,
         h.targeting
@@ -39,11 +39,17 @@ class ViewModelMapper {
           .toSet,
         h.aimingDefenses.map(elementId)
       )
-      case a: HighHPUnderAirDefResult => HighHPUnderAirDefFailedResultViewModel(
+      case a: HighHPUnderAirDefResult => HighHPUnderAirDefResultViewModel(
         a.ruleName,
         a.success,
         a.outOfAirDefRange.map(elementId),
         a.inAirDefRange.map(elementId)
+      )
+      case a: AirSnipedDefenseRuleResult => AirSnipedDefenseResultViewModel(
+        a.ruleName,
+        a.success,
+        a.snipedDefenses.map(_.element).map(elementId),
+        a.airDefenses.map(elementId)
       )
       case _ => throw new RuntimeException(s"Don't know how to create view model for ${result.getClass.getSimpleName}")
     }
@@ -157,10 +163,11 @@ sealed trait RuleResultViewModel {
 }
 case class SuccessRuleResultViewModel(name: String, success: Boolean) extends RuleResultViewModel
 case class HogTargetingViewModel(startPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
-case class HogCCLureFailedResultViewModel(name: String, success: Boolean, targetings: Set[HogTargetingViewModel]) extends RuleResultViewModel
+case class HogCCLureResultViewModel(name: String, success: Boolean, targetings: Set[HogTargetingViewModel]) extends RuleResultViewModel
 case class ArcherTargetingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
-case class ArcherAnchorFailedResultViewModel(name: String, success: Boolean, targetings: Set[ArcherTargetingViewModel], aimingDefenses: Set[String]) extends RuleResultViewModel
-case class HighHPUnderAirDefFailedResultViewModel(name: String, success: Boolean, outOfAirDefRange: Set[String], inAirDefRange: Set[String]) extends RuleResultViewModel
+case class ArcherAnchorResultViewModel(name: String, success: Boolean, targetings: Set[ArcherTargetingViewModel], aimingDefenses: Set[String]) extends RuleResultViewModel
+case class HighHPUnderAirDefResultViewModel(name: String, success: Boolean, outOfAirDefRange: Set[String], inAirDefRange: Set[String]) extends RuleResultViewModel
+case class AirSnipedDefenseResultViewModel(name: String, success: Boolean, snipedDefenses: Set[String], airDefenses: Set[String]) extends RuleResultViewModel
 case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel])
 
 
@@ -179,9 +186,10 @@ object ViewModelProtocol extends DefaultJsonProtocol {
 
   implicit  object RuleResultJsonFormat extends RootJsonFormat[RuleResultViewModel] {
     def write(r: RuleResultViewModel) = r match {
-      case h: HogCCLureFailedResultViewModel => hogCCLureFormat.write(h)
-      case aa: ArcherAnchorFailedResultViewModel => archerAnchorFormat.write(aa)
-      case a: HighHPUnderAirDefFailedResultViewModel => highHPUnderAirDefResultFormat.write(a)
+      case h: HogCCLureResultViewModel => hogCCLureFormat.write(h)
+      case aa: ArcherAnchorResultViewModel => archerAnchorFormat.write(aa)
+      case a: HighHPUnderAirDefResultViewModel => highHPUnderAirDefResultFormat.write(a)
+      case a: AirSnipedDefenseResultViewModel => airSnipedDefenseResultViewModelFormat.write(a)
       case _ => throw new RuntimeException(s"Don't know how to serialise ${r.getClass.getSimpleName}")
     }
 
@@ -200,10 +208,11 @@ object ViewModelProtocol extends DefaultJsonProtocol {
 
   implicit val successRuleResultFormat = jsonFormat2(SuccessRuleResultViewModel)
   implicit val hogTargetingFormat = jsonFormat3(HogTargetingViewModel)
-  implicit val hogCCLureFormat = jsonFormat3(HogCCLureFailedResultViewModel)
+  implicit val hogCCLureFormat = jsonFormat3(HogCCLureResultViewModel)
   implicit val archerTargetingFormat = jsonFormat3(ArcherTargetingViewModel)
-  implicit val archerAnchorFormat = jsonFormat4(ArcherAnchorFailedResultViewModel)
-  implicit val highHPUnderAirDefResultFormat = jsonFormat4(HighHPUnderAirDefFailedResultViewModel)
+  implicit val archerAnchorFormat = jsonFormat4(ArcherAnchorResultViewModel)
+  implicit val highHPUnderAirDefResultFormat = jsonFormat4(HighHPUnderAirDefResultViewModel)
+  implicit val airSnipedDefenseResultViewModelFormat = jsonFormat4(AirSnipedDefenseResultViewModel)
 
   implicit val villageFormat = jsonFormat1(VillageViewModel)
   implicit val analysisReportFormat = jsonFormat2(AnalysisReportViewModel)

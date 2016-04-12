@@ -97,9 +97,32 @@ var mapDisplay2d = (function(document) {
             case 'HighHPUnderAirDef':
                 renderHighHPUnderAirDef(result, mapConfig);
                 break;
+            case 'AirSnipedDefense':
+                renderAirSnipedDefense(result, mapConfig);
+                break;
             default:
                 console.error('Don\'t know how to render active rule: ' + result.name);
         }
+    };
+
+    var applyColour = function(display, r, g, b) {
+        display.filters = [
+            new createjs.ColorFilter(
+                r, g, b, 1,
+                0, 0, 0, 0
+            )
+        ];
+        display.cache(0, 0, 1000, 1000);
+    };
+
+    var renderAirSnipedDefense = function(result, mapConfig) {
+        eachBuildingDisplay(
+            result.snipedDefenses,
+            function (buildingContainer) {
+                applyColour(buildingContainer, 1, 0, 0);
+            }
+        );
+        renderElementRangesByIds(mapConfig, result.airDefenses);
     };
 
     var renderArcherAnchor = function(result, mapConfig) {
@@ -127,13 +150,7 @@ var mapDisplay2d = (function(document) {
                 }
             ),
             function (buildingContainer) {
-                buildingContainer.filters = [
-                    new createjs.ColorFilter(
-                        1, 0, 0, 1,
-                        0, 0, 0, 0
-                    )
-                ];
-                buildingContainer.cache(0, 0, 1000, 1000);
+                applyColour(buildingContainer, 1, 0, 0);
             }
         );
         renderElementRangesByIds(mapConfig, result.aimingDefenses);
@@ -164,13 +181,7 @@ var mapDisplay2d = (function(document) {
                 }
             ),
             function (buildingContainer) {
-                buildingContainer.filters = [
-                    new createjs.ColorFilter(
-                        1, 0, 0, 1,
-                        0, 0, 0, 0
-                    )
-                ];
-                buildingContainer.cache(0, 0, 1000, 1000);
+                applyColour(buildingContainer, 1, 0, 0);
             }
         );
         renderElementRangesByTypeName(mapConfig, "ClanCastle");
@@ -180,25 +191,13 @@ var mapDisplay2d = (function(document) {
         eachBuildingDisplay(
             result.outOfAirDefRange,
             function (buildingContainer) {
-                buildingContainer.filters = [
-                    new createjs.ColorFilter(
-                        1, 0, 0, 1,
-                        0, 0, 0, 0
-                    )
-                ];
-                buildingContainer.cache(0, 0, 1000, 1000);
+                applyColour(buildingContainer, 1, 0, 0);
             }
         );
         eachBuildingDisplay(
             result.inAirDefRange,
             function (buildingContainer) {
-                buildingContainer.filters = [
-                    new createjs.ColorFilter(
-                        0, 1, 0, 1,
-                        0, 0, 0, 0
-                    )
-                ];
-                buildingContainer.cache(0, 0, 1000, 1000);
+                applyColour(buildingContainer, 0, 1, 0);
             }
         );
         renderElementRangesByTypeName(mapConfig, "AirDefense");

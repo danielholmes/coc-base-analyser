@@ -18,6 +18,10 @@ var ui = (function($, model, mapDisplay, window) {
         HighHPUnderAirDef: {
             title: "High HP covered by Air Defenses",
             description: "All high HP buildings should be within range of your air defenses"
+        },
+        AirSnipedDefense: {
+            title: "Ground Defenses covered for Air",
+            description: "No ground only defenses should be reachable by minions or loons"
         }
     };
 

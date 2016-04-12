@@ -56,7 +56,6 @@ then deploy it manually through the AWS console:
 
 
 ## TH8 TODO Rules
- - minion+loon hitting mortars and cannons without air coverage
  - air defs should be a minimum distance apart
  - minimum # compartments - defend against gowipe
    - BK not swappable
