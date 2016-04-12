@@ -26,9 +26,8 @@ To find available SBT dependency updates run `sbt dependencyUpdates`
 
 ## Running dev version of site (automatically reloads on changes)
 
-`
-sbt ~tomcat:start
-`
+`sbt ~tomcat:start`
+
 Available at http://localhost:8080/ . Run container:start each time something is changed
 
 
@@ -44,11 +43,9 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - make it more apparent that need to open accordian to see problems (maybe open first failed)
- - hog targeting should have 2 possible paths from same drop point, e.g. if equidistant
- - switch to new, dedicated credentials of own
- - ui overhaul: select clan -> load players, select player, click go 
+ - ui overhaul: select clan -> load players, select player, click go
  
+ - switch to new, dedicated credentials of own
  - 3d render
  - trap access (if leadership go for it)
  - select rule set types for each TH - farm + arranged

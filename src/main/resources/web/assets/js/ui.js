@@ -48,20 +48,21 @@ var ui = (function($, model, mapDisplay, window) {
         }
 
         var panelGroup = $("#results-panel-group");
-        mapDisplay.canvas.width = 1;
-        mapDisplay.canvas.height = 1;
+        $(mapDisplay.canvas).hide();
 
-        var wasVisible = $("#report").is(":visible");
-        $("#report").show();
-        var canvasSize = Math.max(
-            $(window.document).height() - $(mapDisplay.canvas).parent().offset().top - 10,
-            panelGroup.width()
-        );
+        // Don't know why width - padding is the desired width, found by trial and error
+        var padding = ($(mapDisplay.canvas).parent().outerWidth() - $(mapDisplay.canvas).parent().width()) / 2;
+        var canvasSize;
+        if ($(window).width() < 980) {
+            // Vertical column
+            canvasSize = $(mapDisplay.canvas).parent().width() - padding;
+        } else {
+            // side by side
+            canvasSize = $(window.document).height() - $(mapDisplay.canvas).parent().offset().top - 20;
+        }
         mapDisplay.canvas.width = canvasSize;
         mapDisplay.canvas.height = canvasSize;
-        if (!wasVisible) {
-            $("#report").hide();
-        }
+        $(mapDisplay.canvas).show();
 
         sizeValid = true;
     };

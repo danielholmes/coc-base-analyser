@@ -12,7 +12,7 @@ class HogCCLureRule extends Rule {
     HogCCLureResult(
       name,
       village.coordinatesAllowedToDropTroop
-        .flatMap(HogRider.findTarget(_, village))
+        .flatMap(HogRider.findTargets(_, village))
         .filter(_.cutsRadius(clanCastleRadius.get))
     )
   }

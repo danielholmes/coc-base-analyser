@@ -19,7 +19,7 @@ libraryDependencies ++= {
     "io.spray"            %%  "spray-client"  % sprayV,
     "com.typesafe.akka"   %%  "akka-actor"    % akkaV,
 
-    "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided",
+    "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
 
     "com.softwaremill.macwire" %% "macros" % "2.2.2" % "provided",
     "com.softwaremill.macwire" %% "util" % "2.2.2",
