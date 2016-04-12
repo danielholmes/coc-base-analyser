@@ -2,8 +2,11 @@ package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model.Village
 
-class VillageAnalyser(private val rules: Set[Rule]) {
+class VillageAnalyser(private val rulesByThLevel: Map[Int, Set[Rule]]) {
   def analyse(village: Village): Option[AnalysisReport] = {
-    Some(AnalysisReport(village, rules.map(_.analyse(village))))
+    village.townHallLevel
+      .flatMap(rulesByThLevel.get)
+      .map(_.map(rule => rule.analyse(village)))
+      .map(AnalysisReport(village, _))
   }
 }

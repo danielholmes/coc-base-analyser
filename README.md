@@ -44,7 +44,6 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - make for all Town Halls with different rule sets for each
  - make it more apparent that need to open accordian to see problems (maybe open first failed)
  - hog targeting should have 2 possible paths from same drop point, e.g. if equidistant
  - switch to new, dedicated credentials of own

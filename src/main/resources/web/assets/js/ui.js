@@ -3,8 +3,8 @@
 var ui = (function($, model, mapDisplay, window) {
     var runningAnalysis = false;
     var reportValid = false;
-    var ruleValid = false;
     var sizeValid = false;
+    var activeRuleValid = false;
 
     var rules = {
         ArcherAnchor: {
@@ -34,6 +34,11 @@ var ui = (function($, model, mapDisplay, window) {
 
     var invalidateSize = function() {
         sizeValid = false;
+        render();
+    };
+
+    var invalidateRule = function() {
+        activeRuleValid = false;
         render();
     };
 
@@ -75,60 +80,70 @@ var ui = (function($, model, mapDisplay, window) {
         }
 
         $("#report").show();
-        _.each(
-            _.map(
-                model.getReport().results,
-                function (result) {
-                    var rule = rules[result.name];
-                    if (rule == null) {
-                        console.error("Can't represent " + result.name);
-                        return $("<div></div>");
-                    }
-
-                    return $(renderTemplate(
-                        "#result-panel",
-                        {
-                            id: result.name,
-                            title: rule.title,
-                            description: rule.description,
-                            ruleName: result.name,
-                            success: result.success
-                        }
-                    ));
+        var panels = _.map(
+            model.getReport().results,
+            function (result) {
+                var rule = rules[result.name];
+                if (rule == null) {
+                    console.error("Can't represent " + result.name);
+                    return $("<div></div>");
                 }
-            ),
-            function (panel) {
-                panelGroup.append(panel);
+
+                return $(renderTemplate(
+                    "#result-panel",
+                    {
+                        id: result.name,
+                        title: rule.title,
+                        description: rule.description,
+                        ruleName: result.name,
+                        success: result.success
+                    }
+                ));
             }
         );
+        panelGroup.append(panels);
+        panelGroup.find(".panel.failed:first a").trigger("click");
+    };
+
+    var renderRule = function() {
+        if (activeRuleValid) {
+            return;
+        }
+
+        activeRuleValid = true;
+        var panels = $("#results-panel-group").find(".panel");
+        panels.removeClass("active");
+        if (model.hasActiveRule()) {
+            panels.filter("#panel-" + model.getActiveRuleName()).addClass("active");
+        }
     };
 
     var render = function() {
         renderMapSize();
         renderReport();
+        renderRule();
         mapDisplay.render();
     };
 
     model.reportChanged.add(_.bind(invalidateReport, this));
-    model.ruleChanged.add(_.bind(render, this));
+    model.ruleChanged.add(_.bind(invalidateRule, this));
 
     var searchButton;
 
     $(document).ready(function () {
-
         var searchForm = $("#searchForm");
         searchButton = searchForm.find("button[type='submit']");
         var userNameField = $("#userNameField");
         var USER_NAME_KEY = "userName";
         userNameField.val($.jStorage.get(USER_NAME_KEY, ""));
 
-        $("#results-panel-group").on("shown.bs.collapse", function(event) {
+        $("#results-panel-group").on("show.bs.collapse", function(event) {
             model.setActiveRuleName($(event.target).data("rule-name"));
-            render();
         });
-        $("#results-panel-group").on("hide.bs.collapse", function () {
-            model.clearActiveRuleName();
-            render();
+        $("#results-panel-group").on("hide.bs.collapse", function(event) {
+            if (model.getActiveRuleName() == $(event.target).data("rule-name")) {
+                model.clearActiveRuleName();
+            }
         });
         searchForm.on("submit", function () {
             if (runningAnalysis) {
@@ -146,10 +161,12 @@ var ui = (function($, model, mapDisplay, window) {
                     model.setReport(response);
                 })
                 .fail(function (response) {
-                    if (response.status == 404) {
-                        alert("user not found in approved clans");
+                    if (response.status == 404 || response.status == 400) {
+                        alert(response.responseJSON);
                         return false;
                     }
+
+                    alert("There was an unknown problem, please try again later");
                 })
                 .always(function () {
                     stopLoading();
@@ -158,7 +175,7 @@ var ui = (function($, model, mapDisplay, window) {
             return false;
         });
 
-        console.log("TODO: Remove");searchForm.submit();
+        //console.log("TODO: Remove");searchForm.submit();
     });
 
     // Analysis Progress

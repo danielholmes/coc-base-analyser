@@ -34,8 +34,8 @@
         </div>
 
         <script id="result-panel" type="x-tmpl-mustache">
-            <div class="panel panel-default">
-                <div class="panel-heading" role="tab" id="heading-{{id}}">
+            <div id="panel-{{id}}" class="panel panel-default {{#success}}success{{/success}} {{^success}}failed{{/success}}">
+                <div class="panel-heading" role="tab" id="heading-{{id}}"  role="button" class="collapsed" data-toggle="collapse" data-parent="#results-panel-group" href="#collapse-{{id}}" aria-expanded="false" aria-controls="collapse-{{id}}">
                     <h4 class="panel-title">
                         {{#success}}
                             <span class="glyphicon glyphicon-ok-sign"></span>
@@ -43,9 +43,11 @@
                         {{^success}}
                             <span class="glyphicon glyphicon-remove-sign"></span>
                         {{/success}}
-                        <a role="button" class="collapsed" data-toggle="collapse" data-parent="#results-panel-group" href="#collapse-{{id}}" aria-expanded="false" aria-controls="collapse-{{id}}">
+                        <a href="#">
                             {{title}}
                         </a>
+                        <a class="toggle-header do-show">show me</a>
+                        <a class="toggle-header do-hide">hide [x]</a>
                     </h4>
                 </div>
                 <div id="collapse-{{id}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{{id}}" data-rule-name="{{ruleName}}">

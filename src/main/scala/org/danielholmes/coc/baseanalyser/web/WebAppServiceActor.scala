@@ -1,6 +1,5 @@
 package org.danielholmes.coc.baseanalyser.web
 
-
 import akka.actor.Actor
 import org.danielholmes.coc.baseanalyser.Services
 import spray.routing._
@@ -26,11 +25,11 @@ class WebAppServiceActor extends Actor with HttpService with Services {
         respondWithMediaType(`application/json`) {
           val village = villageGatherer.gatherByUserName(userName)
           if (village.isEmpty) {
-            complete(StatusCodes.NotFound, s"userName $userName not found in approved clans")
+            complete(StatusCodes.NotFound, s""""IGN $userName not found in approved clans"""")
           } else {
             val analysis = villageAnalyser.analyse(village.get)
             if (analysis.isEmpty) {
-              complete(StatusCodes.BadRequest, s"$userName village can't be analysed")
+              complete(StatusCodes.BadRequest, s""""$userName village can't be analysed - currently only supporting TH8-11"""")
             } else {
               complete(viewModelMapper.viewModel(analysis.get))
             }
