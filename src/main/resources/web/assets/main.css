@@ -1,3 +1,9 @@
 #villageImage {
     border: 1px solid #000000;
 }
+.panel .glyphicon-ok-sign {
+    color: #55bb55;
+}
+.panel .glyphicon-remove-sign {
+    color: #dd4444;
+}

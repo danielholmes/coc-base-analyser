@@ -36,16 +36,20 @@
         <script id="result-panel" type="x-tmpl-mustache">
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="heading-{{id}}">
-                  <h4 class="panel-title">
-                    <a role="button" class="collapsed" data-toggle="collapse" data-parent="#results-panel-group" href="#collapse-{{id}}" aria-expanded="false" aria-controls="collapse-{{id}}">
-                      {{title}}
-                    </a>
-                  </h4>
+                    <h4 class="panel-title">
+                        {{#success}}
+                            <span class="glyphicon glyphicon-ok-sign"></span>
+                        {{/success}}
+                        {{^success}}
+                            <span class="glyphicon glyphicon-remove-sign"></span>
+                        {{/success}}
+                        <a role="button" class="collapsed" data-toggle="collapse" data-parent="#results-panel-group" href="#collapse-{{id}}" aria-expanded="false" aria-controls="collapse-{{id}}">
+                            {{title}}
+                        </a>
+                    </h4>
                 </div>
                 <div id="collapse-{{id}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{{id}}" data-rule-name="{{ruleName}}">
-                  <div class="panel-body">
-                    {{description}}
-                  </div>
+                    <div class="panel-body">{{description}}</div>
                 </div>
             </div>
         </script>
@@ -58,6 +62,7 @@
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jStorage/0.4.12/jstorage.min.js"></script>
         <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="/assets/js/console-polyfill.js"></script>
         <script type="text/javascript" src="/assets/js/preloader.js"></script>
         <script type="text/javascript" src="/assets/js/model.js"></script>
         <script type="text/javascript" src="/assets/js/BuildingSpriteSheet.js"></script>

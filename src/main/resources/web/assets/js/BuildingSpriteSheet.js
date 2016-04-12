@@ -172,6 +172,12 @@ var BuildingSpriteSheet = function(image) {
     
     var create = function(element, mapConfig) {
         var sheetDef = defs[element.typeName];
+        if (sheetDef == null) {
+            console.error("Cannot render " + element.typeName);
+            var display = new createjs.Container();
+            display.sourceRect = new createjs.Rectangle(0, 0, 0, 0);
+            return display;
+        }
         var widthRatio = element.block.size * mapConfig.tileSize / sheetDef.width;
         var heightRatio = element.block.size * mapConfig.tileSize / sheetDef.height;
         var useScale = Math.min(widthRatio, heightRatio);

@@ -44,12 +44,11 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - ui overhaul: select clan -> load players, select player, click go 
  - make for all Town Halls with different rule sets for each
  - make it more apparent that need to open accordian to see problems (maybe open first failed)
- - green/red tick for accordian headers
  - hog targeting should have 2 possible paths from same drop point, e.g. if equidistant
  - switch to new, dedicated credentials of own
+ - ui overhaul: select clan -> load players, select player, click go 
  
  - 3d render
  - trap access (if leadership go for it)

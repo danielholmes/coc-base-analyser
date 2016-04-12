@@ -3,6 +3,8 @@
 var ui = (function($, model, mapDisplay, window) {
     var runningAnalysis = false;
     var reportValid = false;
+    var ruleValid = false;
+    var sizeValid = false;
 
     var rules = {
         ArcherAnchor: {
@@ -30,11 +32,21 @@ var ui = (function($, model, mapDisplay, window) {
         render();
     };
 
-    var render = function() {
+    var invalidateSize = function() {
+        sizeValid = false;
+        render();
+    };
+
+    var renderMapSize = function() {
+        if (sizeValid) {
+            return;
+        }
+
         var panelGroup = $("#results-panel-group");
         mapDisplay.canvas.width = 1;
         mapDisplay.canvas.height = 1;
 
+        var wasVisible = $("#report").is(":visible");
         $("#report").show();
         var canvasSize = Math.max(
             $(window.document).height() - $(mapDisplay.canvas).parent().offset().top - 10,
@@ -42,17 +54,20 @@ var ui = (function($, model, mapDisplay, window) {
         );
         mapDisplay.canvas.width = canvasSize;
         mapDisplay.canvas.height = canvasSize;
-        mapDisplay.render();
-        if (!model.hasReport()) {
+        if (!wasVisible) {
             $("#report").hide();
         }
 
+        sizeValid = true;
+    };
+
+    var renderReport = function() {
         if (reportValid) {
             return;
         }
 
         reportValid = true;
-
+        var panelGroup = $("#results-panel-group");
         panelGroup.empty();
         if (!model.hasReport()) {
             $("#report").hide();
@@ -74,9 +89,10 @@ var ui = (function($, model, mapDisplay, window) {
                         "#result-panel",
                         {
                             id: result.name,
-                            title: rule.title + " - " + (result.success ? "Passed" : "Failed"),
+                            title: rule.title,
                             description: rule.description,
-                            ruleName: result.name
+                            ruleName: result.name,
+                            success: result.success
                         }
                     ));
                 }
@@ -87,8 +103,14 @@ var ui = (function($, model, mapDisplay, window) {
         );
     };
 
+    var render = function() {
+        renderMapSize();
+        renderReport();
+        mapDisplay.render();
+    };
+
     model.reportChanged.add(_.bind(invalidateReport, this));
-    model.ruleChanged.add(_.bind(invalidateReport, this));
+    model.ruleChanged.add(_.bind(render, this));
 
     var searchButton;
 
@@ -135,6 +157,8 @@ var ui = (function($, model, mapDisplay, window) {
 
             return false;
         });
+
+        console.log("TODO: Remove");searchForm.submit();
     });
 
     // Analysis Progress
@@ -156,7 +180,7 @@ var ui = (function($, model, mapDisplay, window) {
         runningAnalysis = false;
     }
 
-    $(window).on("resize", render);
+    $(window).on("resize", _.bind(invalidateSize, this));
 
     return {
         render: render
