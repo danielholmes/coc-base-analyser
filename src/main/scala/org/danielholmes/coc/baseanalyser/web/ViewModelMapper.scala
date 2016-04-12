@@ -36,12 +36,14 @@ class ViewModelMapper {
           .values
           .map(_.head)
           .map(viewModel)
-          .toSet
+          .toSet,
+        h.aimingDefenses.map(elementId)
       )
       case a: HighHPUnderAirDefResult => HighHPUnderAirDefFailedResultViewModel(
         a.ruleName,
         a.success,
-        a.outOfAirDefRange.map(elementId)
+        a.outOfAirDefRange.map(elementId),
+        a.inAirDefRange.map(elementId)
       )
       case _ => throw new RuntimeException(s"Don't know how to create view model for ${result.getClass.getSimpleName}")
     }
@@ -157,8 +159,8 @@ case class SuccessRuleResultViewModel(name: String, success: Boolean) extends Ru
 case class HogTargetingViewModel(startPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 case class HogCCLureFailedResultViewModel(name: String, success: Boolean, targetings: Set[HogTargetingViewModel]) extends RuleResultViewModel
 case class ArcherTargetingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
-case class ArcherAnchorFailedResultViewModel(name: String, success: Boolean, targetings: Set[ArcherTargetingViewModel]) extends RuleResultViewModel
-case class HighHPUnderAirDefFailedResultViewModel(name: String, success: Boolean, outOfAirDefRange: Set[String]) extends RuleResultViewModel
+case class ArcherAnchorFailedResultViewModel(name: String, success: Boolean, targetings: Set[ArcherTargetingViewModel], aimingDefenses: Set[String]) extends RuleResultViewModel
+case class HighHPUnderAirDefFailedResultViewModel(name: String, success: Boolean, outOfAirDefRange: Set[String], inAirDefRange: Set[String]) extends RuleResultViewModel
 case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel])
 
 
@@ -200,8 +202,8 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val hogTargetingFormat = jsonFormat3(HogTargetingViewModel)
   implicit val hogCCLureFormat = jsonFormat3(HogCCLureFailedResultViewModel)
   implicit val archerTargetingFormat = jsonFormat3(ArcherTargetingViewModel)
-  implicit val archerAnchorFormat = jsonFormat3(ArcherAnchorFailedResultViewModel)
-  implicit val highHPUnderAirDefResultFormat = jsonFormat3(HighHPUnderAirDefFailedResultViewModel)
+  implicit val archerAnchorFormat = jsonFormat4(ArcherAnchorFailedResultViewModel)
+  implicit val highHPUnderAirDefResultFormat = jsonFormat4(HighHPUnderAirDefFailedResultViewModel)
 
   implicit val villageFormat = jsonFormat1(VillageViewModel)
   implicit val analysisReportFormat = jsonFormat2(AnalysisReportViewModel)

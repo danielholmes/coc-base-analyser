@@ -8,11 +8,11 @@ var ui = (function($, model, mapDisplay, window) {
 
     var rules = {
         ArcherAnchor: {
-            title: "Archer Anchor",
+            title: "No Archer Anchors",
             description: "There should be no unprotected archer anchors"
         },
         HogCCLure: {
-            title: "Easy CC Lure",
+            title: "No Easy CC Lure",
             description: "There should be no spaces that allow a hog or giant to lure without first having to destroy a defense"
         },
         HighHPUnderAirDef: {

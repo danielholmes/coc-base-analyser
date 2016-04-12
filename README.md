@@ -52,11 +52,12 @@ then deploy it manually through the AWS console:
  - pass, warning, fail levels (e.g. for minion anchors)
  - saved result with a url to be able to send someone (save serialised result in db which can be recalled and lasts one 
    day, ensure to inlude version number so can expire early if need)
+ - dynamic sizing of canvas still a bit funky - find proper js solution
 
 
 ## TH8 TODO Rules
- - air defs should be a minimum distance apart
  - minion+loon hitting mortars and cannons without air coverage
+ - air defs should be a minimum distance apart
  - minimum # compartments - defend against gowipe
    - BK not swappable
    - minimum 3 DGB possible spots (including diagonal)

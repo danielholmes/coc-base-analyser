@@ -19,18 +19,16 @@ var mapDisplay2d = (function(document) {
         return '#' + Math.floor(numberSeed / 30 * 16777215).toString(16);
     };
 
-    var renderElementRanges = function(mapConfig, typeName) {
+    var renderElementRanges = function(mapConfig, elements) {
         _.each(
             _.map(
-                _.filter(model.getReport().village.elements, function (element) {
-                    return element.typeName == typeName;
-                }),
+                elements,
                 function (elementToDraw) {
                     var allInfo = new createjs.Container();
                     var circle = new createjs.Shape();
                     circle.graphics
                         .beginStroke("#ffffff")
-                        .beginFill("rgba(255,255,255,0.1)")
+                        .beginFill("rgba(255,255,255,0.05)")
                         .drawCircle(
                             0,
                             0,
@@ -60,6 +58,24 @@ var mapDisplay2d = (function(document) {
             function (circle) {
                 extrasContainer.addChild(circle);
             }
+        );
+    };
+
+    var renderElementRangesByIds = function(mapConfig, ids) {
+        renderElementRanges(
+            mapConfig,
+            _.filter(model.getReport().village.elements, function (element) {
+                return _.contains(ids, element.id);
+            })
+        );
+    };
+
+    var renderElementRangesByTypeName = function(mapConfig, typeName) {
+        renderElementRanges(
+            mapConfig,
+            _.filter(model.getReport().village.elements, function (element) {
+                return element.typeName == typeName;
+            })
         );
     };
 
@@ -120,8 +136,7 @@ var mapDisplay2d = (function(document) {
                 buildingContainer.cache(0, 0, 1000, 1000);
             }
         );
-        // TODO: Ranges of all ground targeting
-        //renderElementRanges(mapConfig, "ClanCastle");
+        renderElementRangesByIds(mapConfig, result.aimingDefenses);
     };
 
     var renderHogCCLure = function(result, mapConfig) {
@@ -158,23 +173,12 @@ var mapDisplay2d = (function(document) {
                 buildingContainer.cache(0, 0, 1000, 1000);
             }
         );
-        renderElementRanges(mapConfig, "ClanCastle");
+        renderElementRangesByTypeName(mapConfig, "ClanCastle");
     };
 
     var renderHighHPUnderAirDef = function(result, mapConfig) {
-        // TODO: Highlight in green all high hp buildings
-        _.each(
-            _.map(
-                result.outOfAirDefRange,
-                function (id) {
-                    return _.find(
-                        buildingsContainer.children,
-                        function (buildingContainer) {
-                            return buildingContainer.id == id;
-                        }
-                    );
-                }
-            ),
+        eachBuildingDisplay(
+            result.outOfAirDefRange,
             function (buildingContainer) {
                 buildingContainer.filters = [
                     new createjs.ColorFilter(
@@ -185,7 +189,36 @@ var mapDisplay2d = (function(document) {
                 buildingContainer.cache(0, 0, 1000, 1000);
             }
         );
-        renderElementRanges(mapConfig, "AirDefense");
+        eachBuildingDisplay(
+            result.inAirDefRange,
+            function (buildingContainer) {
+                buildingContainer.filters = [
+                    new createjs.ColorFilter(
+                        0, 1, 0, 1,
+                        0, 0, 0, 0
+                    )
+                ];
+                buildingContainer.cache(0, 0, 1000, 1000);
+            }
+        );
+        renderElementRangesByTypeName(mapConfig, "AirDefense");
+    };
+
+    var eachBuildingDisplay = function(ids, operation) {
+        _.each(
+            _.map(
+                ids,
+                function (id) {
+                    return _.find(
+                        buildingsContainer.children,
+                        function (buildingContainer) {
+                            return buildingContainer.id == id;
+                        }
+                    );
+                }
+            ),
+            operation
+        );
     };
 
     var renderGrass = function(mapConfig) {

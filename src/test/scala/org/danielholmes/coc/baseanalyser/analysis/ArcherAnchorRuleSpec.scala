@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
-import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model
+import org.danielholmes.coc.baseanalyser.model.{AirDefense, _}
 import org.scalatest._
 
 class ArcherAnchorRuleSpec extends FlatSpec with Matchers {
@@ -42,5 +43,12 @@ class ArcherAnchorRuleSpec extends FlatSpec with Matchers {
       )
     )
     rule.analyse(village).success should be (true)
+  }
+
+  it should "return defenses that can hit archer" in {
+    val at = ArcherTower(1, Tile(30, 30))
+    val cannon = Cannon(1, Tile(36, 36))
+    val village = Village(Set(at, AirDefense(1, Tile(33, 33)), cannon))
+    rule.analyse(village).asInstanceOf[ArcherAnchorRuleResult].aimingDefenses should be (Set(at, cannon))
   }
 }

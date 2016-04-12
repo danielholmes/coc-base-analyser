@@ -77,6 +77,13 @@ var BuildingSpriteSheet = function(image) {
             height: 64,
             gap: 16
         },
+        "XBow": {
+            x: 700,
+            y: 715,
+            width: 64,
+            height: 57,
+            gap: 10
+        },
         "WizardTower": {
             x: 0,
             y: 1092,
@@ -118,6 +125,13 @@ var BuildingSpriteSheet = function(image) {
             width: 69,
             height: 69,
             gap: 7
+        },
+        "InfernoTower": {
+            x: 893,
+            y: 903,
+            width: 33,
+            height: 60,
+            gap: 16
         },
         "DarkBarrack": {
             x: 0,
