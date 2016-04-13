@@ -26,6 +26,10 @@ var ui = (function($, model, mapDisplay, window) {
         MinimumCompartments: {
             title: "At least {{minimumCompartments}} compartments ({{compartments.length}})",
             description: "GoWiPe can be slowed down by having enough compartments to hold it up"
+        },
+        BKSwappable: {
+            title: "BK should be protected",
+            description: "The BK's range should be inside walls so he can't be lureed out and killed early as part of a tanking BK or KS"
         }
     };
 

@@ -3,6 +3,21 @@ package org.danielholmes.coc.baseanalyser.util
 import org.danielholmes.coc.baseanalyser.model.{Element, Tile, Village}
 
 object ElementsBuilder {
+  def rectangle[T <: Element](origin: Tile, xTimes: Int, yTimes: Int, step: Int, builder: (Tile) => T): Set[T] = {
+    ElementsBuilder.repeatX(origin, xTimes, step, builder) ++
+      ElementsBuilder.repeatX(origin.offset(0, yTimes - 1), xTimes, step, builder) ++
+      ElementsBuilder.repeatY(origin.offset(0, step), yTimes - 2, step, builder) ++
+      ElementsBuilder.repeatY(origin.offset(xTimes - 1, step), yTimes - 2, step, builder)
+  }
+
+  private def repeatX[T <: Element](origin: Tile, times: Int, step: Int, builder: (Tile) => T): Set[T] = {
+    Range(origin.x, origin.x + times, step).map(Tile(_, origin.y)).map(builder.apply).toSet
+  }
+
+  private def repeatY[T <: Element](origin: Tile, times: Int, step: Int, builder: (Tile) => T): Set[T] = {
+    Range(origin.y, origin.y + times, step).map(Tile(origin.x, _)).map(builder.apply).toSet
+  }
+
   def fromString[T <: Element](input: String, origin: Tile, builder: (Tile) => T): Set[T] = {
     input.split("\n")
       .zipWithIndex

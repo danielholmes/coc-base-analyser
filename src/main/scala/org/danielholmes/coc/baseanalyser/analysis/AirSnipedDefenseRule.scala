@@ -27,6 +27,5 @@ class AirSnipedDefenseRule extends Rule {
 }
 
 case class AirSnipedDefenseRuleResult(snipedDefenses: Set[MinionAttackPosition], airDefenses: Set[Defense]) extends RuleResult {
-  val ruleName = "AirSnipedDefense"
   val success = snipedDefenses.isEmpty
 }

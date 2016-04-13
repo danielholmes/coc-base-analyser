@@ -10,7 +10,7 @@ class HighHPUnderAirDefRule extends Rule {
       .map(_.asInstanceOf[AirDefense])
     val highHPBuildings = village.elements.filter(isHighHPBuilding)
     val covered = highHPBuildings.partition(willSomeAirDefCoverDragonShooting(_, airDefs))
-    HighHPUnderAirDefResult(covered._2, covered._1)
+    HighHPUnderAirDefRuleResult(covered._2, covered._1)
   }
 
   private def willSomeAirDefCoverDragonShooting(highHP: Element, airDefs: Set[AirDefense]): Boolean = {
@@ -39,9 +39,8 @@ class HighHPUnderAirDefRule extends Rule {
   }
 }
 
-case class HighHPUnderAirDefResult(outOfAirDefRange: Set[Element], inAirDefRange: Set[Element]) extends RuleResult {
+case class HighHPUnderAirDefRuleResult(outOfAirDefRange: Set[Element], inAirDefRange: Set[Element]) extends RuleResult {
   require(outOfAirDefRange.intersect(inAirDefRange).isEmpty)
 
-  val ruleName = "HighHPUnderAirDef"
   val success = outOfAirDefRange.isEmpty
 }

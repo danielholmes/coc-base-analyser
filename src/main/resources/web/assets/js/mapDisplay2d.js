@@ -68,9 +68,7 @@ var mapDisplay2d = (function(document) {
     var renderElementRangesByTypeName = function(mapConfig, typeName) {
         renderElementRanges(
             mapConfig,
-            _.filter(model.getReport().village.elements, function (element) {
-                return element.typeName == typeName;
-            })
+            model.getVillageElementsByTypeName(typeName)
         );
     };
 
@@ -98,6 +96,9 @@ var mapDisplay2d = (function(document) {
             case 'MinimumCompartments':
                 renderMinimumCompartments(result, mapConfig);
                 break;
+            case 'BKSwappable':
+                renderBKSwappable(result, mapConfig);
+                break;
             default:
                 console.error('Don\'t know how to render active rule: ' + result.name);
         }
@@ -111,6 +112,40 @@ var mapDisplay2d = (function(document) {
             )
         ];
         display.cache(0, 0, 1000, 1000);
+    };
+
+    var renderBKSwappable = function(result, mapConfig) {
+        var bk = model.getVillageElementByTypeName("BarbarianKing");
+        if (bk == null) {
+            return;
+        }
+
+        var bkRadiusFill = new createjs.Shape();
+        bkRadiusFill.graphics
+            .beginFill("#ff0000")
+            .drawCircle(
+                0,
+                0,
+                bk.range.outer * mapConfig.tileSize
+            );
+        bkRadiusFill.x = (bk.block.x + bk.block.size / 2) * mapConfig.tileSize;
+        bkRadiusFill.y = (bk.block.y + bk.block.size / 2) * mapConfig.tileSize;
+        bkRadiusFill.alpha = 0.6;
+        extrasContainer.addChild(bkRadiusFill);
+
+        var exposedMask = new createjs.Shape();
+        exposedMask.graphics.beginFill("#00ff00");
+        _.each(result.exposedTiles, function(tile) {
+            exposedMask.graphics.drawRect(
+                tile.x * mapConfig.tileSize,
+                tile.y * mapConfig.tileSize,
+                mapConfig.tileSize,
+                mapConfig.tileSize
+            );
+        });
+        bkRadiusFill.mask = exposedMask;
+
+        renderElementRangesByTypeName(mapConfig, "BarbarianKing");
     };
 
     var renderMinimumCompartments = function(result, mapConfig) {

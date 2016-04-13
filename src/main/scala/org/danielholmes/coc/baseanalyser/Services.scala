@@ -13,10 +13,17 @@ trait Services {
   //private lazy val clanSeekerServiceAgent = wire[HardcodedClanSeekerServiceAgent]
   private lazy val elementFactory = wire[HardCodedElementFactory]
   private lazy val villageJsonParser = wire[VillageJsonParser]
-  private lazy val th8Rules: Set[Rule] = Set(wire[HogCCLureRule], wire[HighHPUnderAirDefRule], wire[ArcherAnchorRule], wire[AirSnipedDefenseRule], wire[MinimumCompartmentsRule])
-  private lazy val th9Rules: Set[Rule] = Set(wire[HogCCLureRule], wire[AirSnipedDefenseRule])
-  private lazy val th10Rules: Set[Rule] = Set(wire[HogCCLureRule], wire[AirSnipedDefenseRule])
-  private lazy val th11Rules: Set[Rule] = Set(wire[HogCCLureRule], wire[AirSnipedDefenseRule])
+  private lazy val th8Rules: Set[Rule] = Set(
+    wire[HogCCLureRule],
+    wire[HighHPUnderAirDefRule],
+    wire[ArcherAnchorRule],
+    wire[AirSnipedDefenseRule],
+    wire[MinimumCompartmentsRule],
+    wire[BKSwappableRule]
+  )
+  private lazy val th9Rules: Set[Rule] = Set(wire[HogCCLureRule], wire[AirSnipedDefenseRule], wire[BKSwappableRule])
+  private lazy val th10Rules: Set[Rule] = th9Rules
+  private lazy val th11Rules: Set[Rule] = th10Rules
   private lazy val rulesByThLevel = Map(8 -> th8Rules, 9 -> th9Rules, 10 -> th10Rules, 11 -> th11Rules)
 
   lazy val villageAnalyser = wire[VillageAnalyser]

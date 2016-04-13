@@ -20,6 +20,5 @@ class ArcherAnchorRule extends Rule {
 }
 
 case class ArcherAnchorRuleResult(targeting: Set[ArcherTargeting], aimingDefenses: Set[Defense]) extends RuleResult {
-  val ruleName: String = "ArcherAnchor"
   val success = targeting.isEmpty
 }

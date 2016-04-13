@@ -14,8 +14,9 @@ To find available SBT dependency updates run `sbt dependencyUpdates`
 
 ## Tests
 
-- `sbt test`
-- `sbt "test-only org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParserSpec"`
+ - All: `sbt test`
+ - Individual: `sbt "test-only org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParserSpec"`
+ - Individual continuous: `sbt ~"test-only org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParserSpec"`
 
 
 ## Simple ASCII print utils
@@ -56,8 +57,12 @@ then deploy it manually through the AWS console:
 
 
 ## TH8 TODO Rules
- - BK not swappable
  - air defs should be a minimum distance apart
+ - loon pathing
+   - must be >= 3 defenses to go through to path to air defs
+   - OR must be > certain distance
+   - should also consider air trap placement
+   - should also consider air sweeper placement
  - minimum 3 DGB possible spots (including diagonal)
  - sufficient empty space within walls to make attacker guess
  - minion anchors (warning only, no hard fail, once that functionality is built)
@@ -67,18 +72,16 @@ then deploy it manually through the AWS console:
 ## TH8 TODO Rules once traps available
  - spring trap locations (resting on defenses)
  - skele traps not lurable
- - loon pathing? e.g. must be >= 3 defenses to go through to path to air defs
  - skele traps + air traps not within dgb positions (gives info for cleanup if first hit was with air)
  - 3 viable DGB spots (more difficult)
 
 
 ## TH9 Rules
- - most of TH8 rules
+ - Air defs not within WT range - prevent hounds tanking them
+ - Air defs not walkable/reachable from outside walls
  - EQ cant connect >2 GB/DGB positions + AQ
  - Jump doesnt connect too many AQ, GB
- - Air defs not walkable/reachable from outside walls
  - black bombs within range of queen or air def - to get hounds or suicide drags. red bombs out of range of air defs
- - Air defs not within WT range - prevent hounds tanking them
 
 
 ## TH10 Rules

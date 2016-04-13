@@ -37,6 +37,18 @@ var model = (function() {
         });
     };
 
+    var getVillageElementsByTypeName = function(typeName) {
+        return _.filter(currentReport.village.elements, function (element) {
+            return element.typeName == typeName;
+        });
+    };
+    
+    var getVillageElementByTypeName = function(typeName) {
+        return _.find(currentReport.village.elements, function (element) {
+            return element.typeName == typeName;
+        });
+    };
+
     var hasReport = function() {
         return currentReport != null;
     };
@@ -68,6 +80,8 @@ var model = (function() {
         clearReport: clearReport,
         getVillageElementById: getVillageElementById,
         getVillageElementsByIds: getVillageElementsByIds,
+        getVillageElementsByTypeName: getVillageElementsByTypeName,
+        getVillageElementByTypeName: getVillageElementByTypeName,
 
         hasActiveRule: hasActiveRule,
         getActiveRuleName: getActiveRuleName,

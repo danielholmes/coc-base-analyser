@@ -12,6 +12,5 @@ class MinimumCompartmentsRule extends Rule {
 }
 
 case class MinimumCompartmentsRuleResult(minimumCompartments: Int, compartments: Set[WallCompartment]) extends RuleResult {
-  val ruleName = "MinimumCompartments"
   val success = compartments.size >= minimumCompartments
 }
