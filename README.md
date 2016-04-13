@@ -19,7 +19,7 @@ To find available SBT dependency updates run `sbt dependencyUpdates`
  - Individual continuous: `sbt ~"test-only org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParserSpec"`
 
 
-## Simple ASCII print utils
+## Command Line Utils
 
 `sbt 'run-main org.danielholmes.coc.baseanalyser.PrintVillage "I AM SPARTA!!1!"'`
 `sbt 'run-main org.danielholmes.coc.baseanalyser.PrintAttackPlacements "I AM SPARTA!!1!"'`

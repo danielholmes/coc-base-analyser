@@ -174,8 +174,18 @@ var ui = (function($, model, mapDisplay, window) {
                     model.setReport(response);
                 })
                 .fail(function (response) {
-                    if (response.status == 404 || response.status == 400) {
+                    if (response.status == 404) {
                         alert(response.responseJSON);
+                        return false;
+                    }
+
+                    if (response.status == 400) {
+                        alert(response.responseJSON.message);
+                        // Bit of a hack, but oh well
+                        model.setReport({
+                           village: response.responseJSON.village,
+                           results: []
+                        });
                         return false;
                     }
 

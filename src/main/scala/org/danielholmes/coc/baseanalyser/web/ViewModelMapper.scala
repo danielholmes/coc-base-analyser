@@ -15,7 +15,11 @@ class ViewModelMapper {
     )
   }
 
-  def viewModel(result: RuleResult): RuleResultViewModel = {
+  def viewModel(village: Village, message: String): CantAnalyseVillageViewModel = {
+    CantAnalyseVillageViewModel(viewModel(village), message)
+  }
+
+  private def viewModel(result: RuleResult): RuleResultViewModel = {
     result match {
       case h: HogCCLureRuleResult => HogCCLureResultViewModel(
         h.success,
@@ -59,7 +63,7 @@ class ViewModelMapper {
     }
   }
 
-  def viewModel(targeting: HogTargeting): HogTargetingViewModel = {
+  private def viewModel(targeting: HogTargeting): HogTargetingViewModel = {
     HogTargetingViewModel(
       viewModel(targeting.startPosition),
       elementId(targeting.targeting),
@@ -67,7 +71,7 @@ class ViewModelMapper {
     )
   }
 
-  def viewModel(targeting: ArcherTargeting): ArcherTargetingViewModel = {
+  private def viewModel(targeting: ArcherTargeting): ArcherTargetingViewModel = {
     ArcherTargetingViewModel(
       viewModel(targeting.standingPosition),
       elementId(targeting.targeting),
@@ -75,15 +79,15 @@ class ViewModelMapper {
     )
   }
 
-  def viewModel(compartment: WallCompartment): WallCompartmentViewModel = {
+  private def viewModel(compartment: WallCompartment): WallCompartmentViewModel = {
     WallCompartmentViewModel(compartment.walls.map(elementId), compartment.innerTiles.map(viewModel))
   }
 
-  def viewModel(tile: Tile): TileViewModel = TileViewModel(tile.x, tile.y)
+  private def viewModel(tile: Tile): TileViewModel = TileViewModel(tile.x, tile.y)
 
-  def viewModel(village: Village): VillageViewModel = VillageViewModel(village.elements.map(viewModel))
+  private def viewModel(village: Village): VillageViewModel = VillageViewModel(village.elements.map(viewModel))
 
-  def viewModel(element: Element): ElementViewModel = {
+  private def viewModel(element: Element): ElementViewModel = {
     element match {
       case d: Defense => DefenseElementViewModel(
         elementId(d),
@@ -111,15 +115,15 @@ class ViewModelMapper {
     }
   }
 
-  def viewModel(range: ElementRange): RangeViewModel = {
+  private def viewModel(range: ElementRange): RangeViewModel = {
     RangeViewModel(range.innerSize.toInt, range.outerSize.toInt)
   }
 
-  def viewModel(block: Block): BlockViewModel = {
+  private def viewModel(block: Block): BlockViewModel = {
     BlockViewModel(block.x, block.y, block.size.toInt)
   }
 
-  def viewModel(coord: TileCoordinate): TileCoordinateViewModel = {
+  private def viewModel(coord: TileCoordinate): TileCoordinateViewModel = {
     TileCoordinateViewModel(coord.x, coord.y)
   }
 
@@ -184,6 +188,8 @@ case class BKSwappableResultViewModel(success: Boolean, exposedTiles: Set[TileVi
 
 case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel])
 
+case class CantAnalyseVillageViewModel(village: VillageViewModel, message: String)
+
 object ViewModelProtocol extends DefaultJsonProtocol {
   implicit  object ElementJsonFormat extends RootJsonFormat[ElementViewModel] {
     def write(e: ElementViewModel) = e match {
@@ -234,4 +240,5 @@ object ViewModelProtocol extends DefaultJsonProtocol {
 
   implicit val villageFormat = jsonFormat1(VillageViewModel)
   implicit val analysisReportFormat = jsonFormat2(AnalysisReportViewModel)
+  implicit val cantAnalyseVillageFormat = jsonFormat2(CantAnalyseVillageViewModel)
 }

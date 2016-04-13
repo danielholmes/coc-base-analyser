@@ -29,7 +29,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
           } else {
             val analysis = villageAnalyser.analyse(village.get)
             if (analysis.isEmpty) {
-              complete(StatusCodes.BadRequest, s""""$userName village can't be analysed - currently only supporting TH8-11"""")
+              complete(StatusCodes.BadRequest, viewModelMapper.viewModel(village.get, s"$userName village can't be analysed - currently only supporting TH8-11"))
             } else {
               complete(viewModelMapper.viewModel(analysis.get))
             }
