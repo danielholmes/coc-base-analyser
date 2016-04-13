@@ -227,6 +227,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
       case a: AirSnipedDefenseResultViewModel => airSnipedDefenseResultFormat.write(a)
       case m: MinimumCompartmentsResultViewModel => minimumCompartmentsResultFormat.write(m)
       case b: BKSwappableResultViewModel => bkSwappableResultFormat.write(b)
+      case w: WizardTowersOutOfHoundPositionsResultViewModel => wizardTowersOutOfHoundPositionsResultFormat.write(w)
       case _ => throw new RuntimeException(s"Don't know how to serialise ${r.getClass.getSimpleName}")
     }
 

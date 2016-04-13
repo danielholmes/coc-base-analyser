@@ -117,6 +117,7 @@ var mapDisplay2d = (function(document) {
                 break;
             case 'WizardTowersOutOfHoundPositions':
                 renderWizardTowersOutOfHoundPositions(result, mapConfig);
+                break;
             default:
                 console.error('Don\'t know how to render active rule: ' + result.name);
         }
