@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser.web
 
-import java.util.UUID
+import java.util.{Base64, UUID}
 
 import org.danielholmes.coc.baseanalyser.analysis._
 import org.danielholmes.coc.baseanalyser.model._
@@ -38,22 +38,22 @@ class ViewModelMapper {
           .map(_.head)
           .map(viewModel)
           .toSet,
-        h.aimingDefenses.map(elementId)
+        h.aimingDefenses.map(objectId)
       )
       case a: HighHPUnderAirDefRuleResult => HighHPUnderAirDefResultViewModel(
         a.success,
-        a.outOfAirDefRange.map(elementId),
-        a.inAirDefRange.map(elementId)
+        a.outOfAirDefRange.map(objectId),
+        a.inAirDefRange.map(objectId)
       )
       case a: AirSnipedDefenseRuleResult => AirSnipedDefenseResultViewModel(
         a.success,
-        a.snipedDefenses.map(_.element).map(elementId),
-        a.airDefenses.map(elementId)
+        a.snipedDefenses.map(_.element).map(objectId),
+        a.airDefenses.map(objectId)
       )
       case m: MinimumCompartmentsRuleResult => MinimumCompartmentsResultViewModel(
         m.success,
         m.minimumCompartments,
-        m.compartments.map(viewModel)
+        m.compartments.map(objectId)
       )
       case b: BKSwappableRuleResult => BKSwappableResultViewModel(
         b.success,
@@ -66,7 +66,7 @@ class ViewModelMapper {
   private def viewModel(targeting: HogTargeting): HogTargetingViewModel = {
     HogTargetingViewModel(
       viewModel(targeting.startPosition),
-      elementId(targeting.targeting),
+      objectId(targeting.targeting),
       viewModel(targeting.hitPoint)
     )
   }
@@ -74,23 +74,29 @@ class ViewModelMapper {
   private def viewModel(targeting: ArcherTargeting): ArcherTargetingViewModel = {
     ArcherTargetingViewModel(
       viewModel(targeting.standingPosition),
-      elementId(targeting.targeting),
+      objectId(targeting.targeting),
       viewModel(targeting.hitPoint)
     )
   }
 
   private def viewModel(compartment: WallCompartment): WallCompartmentViewModel = {
-    WallCompartmentViewModel(compartment.walls.map(elementId), compartment.innerTiles.map(viewModel))
+    WallCompartmentViewModel(
+      objectId(compartment),
+      compartment.walls.map(objectId),
+      compartment.innerTiles.map(viewModel)
+    )
   }
 
   private def viewModel(tile: Tile): TileViewModel = TileViewModel(tile.x, tile.y)
 
-  private def viewModel(village: Village): VillageViewModel = VillageViewModel(village.elements.map(viewModel))
+  private def viewModel(village: Village): VillageViewModel = {
+    VillageViewModel(village.elements.map(viewModel), village.wallCompartments.map(viewModel))
+  }
 
   private def viewModel(element: Element): ElementViewModel = {
     element match {
       case d: Defense => DefenseElementViewModel(
-        elementId(d),
+        objectId(d),
         element.getClass.getSimpleName,
         element.level,
         viewModel(element.block),
@@ -98,7 +104,7 @@ class ViewModelMapper {
         viewModel(d.range)
       )
       case c: ClanCastle => ClanCastleElementViewModel(
-        elementId(c),
+        objectId(c),
         element.getClass.getSimpleName,
         element.level,
         viewModel(element.block),
@@ -106,7 +112,7 @@ class ViewModelMapper {
         viewModel(c.range)
       )
       case _ => BaseElementViewModel(
-        elementId(element),
+        objectId(element),
         element.getClass.getSimpleName,
         element.level,
         viewModel(element.block),
@@ -127,8 +133,8 @@ class ViewModelMapper {
     TileCoordinateViewModel(coord.x, coord.y)
   }
 
-  private def elementId(element: Element): String = {
-    UUID.nameUUIDFromBytes(element.toString.getBytes).toString
+  private def objectId(obj: Object): String = {
+    new String(Base64.getEncoder.encode(UUID.nameUUIDFromBytes(obj.toString.getBytes).toString.getBytes)).substring(0, 9)
   }
 }
 
@@ -141,21 +147,21 @@ sealed trait ElementViewModel {
   def typeName: String
   def level: Int
   def block: BlockViewModel
-  def preventTroopDropBlock: BlockViewModel
+  def noTroopDropBlock: BlockViewModel
 }
 case class BaseElementViewModel(
   override val id: String,
   override val typeName: String,
   override val level: Int,
   override val block: BlockViewModel,
-  override val preventTroopDropBlock: BlockViewModel
+  override val noTroopDropBlock: BlockViewModel
 ) extends ElementViewModel
 case class DefenseElementViewModel(
   override val id: String,
   override val typeName: String,
   override val level: Int,
   override val block: BlockViewModel,
-  override val preventTroopDropBlock: BlockViewModel,
+  override val noTroopDropBlock: BlockViewModel,
   range: RangeViewModel
 ) extends ElementViewModel
 case class ClanCastleElementViewModel(
@@ -163,16 +169,16 @@ case class ClanCastleElementViewModel(
   override val typeName: String,
   override val level: Int,
   override val block: BlockViewModel,
-  override val preventTroopDropBlock: BlockViewModel,
+  override val noTroopDropBlock: BlockViewModel,
   range: RangeViewModel
 ) extends ElementViewModel
-case class VillageViewModel(elements: Set[ElementViewModel]) {
+case class VillageViewModel(elements: Set[ElementViewModel], wallCompartments: Set[WallCompartmentViewModel]) {
   require(elements.toList.map(_.id).distinct.size == elements.size, "All ids must be unique")
 }
 
 case class HogTargetingViewModel(startPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 case class ArcherTargetingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
-case class WallCompartmentViewModel(walls: Set[String], innerTiles: Set[TileViewModel])
+case class WallCompartmentViewModel(id: String, walls: Set[String], innerTiles: Set[TileViewModel])
 
 sealed trait RuleResultViewModel {
   val name: String
@@ -183,7 +189,7 @@ case class HogCCLureResultViewModel(success: Boolean, targetings: Set[HogTargeti
 case class ArcherAnchorResultViewModel(success: Boolean, targetings: Set[ArcherTargetingViewModel], aimingDefenses: Set[String], name: String = "ArcherAnchor") extends RuleResultViewModel
 case class HighHPUnderAirDefResultViewModel(success: Boolean, outOfAirDefRange: Set[String], inAirDefRange: Set[String], name: String = "HighHPUnderAirDef") extends RuleResultViewModel
 case class AirSnipedDefenseResultViewModel(success: Boolean, snipedDefenses: Set[String], airDefenses: Set[String], name: String = "AirSnipedDefense") extends RuleResultViewModel
-case class MinimumCompartmentsResultViewModel(success: Boolean, minimumCompartments: Int, compartments: Set[WallCompartmentViewModel], name: String = "MinimumCompartments") extends RuleResultViewModel
+case class MinimumCompartmentsResultViewModel(success: Boolean, minimumCompartments: Int, compartments: Set[String], name: String = "MinimumCompartments") extends RuleResultViewModel
 case class BKSwappableResultViewModel(success: Boolean, exposedTiles: Set[TileViewModel], name: String = "BKSwappable") extends RuleResultViewModel
 
 case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel])
@@ -223,7 +229,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val rangeFormat = jsonFormat2(RangeViewModel)
   implicit val blockFormat = jsonFormat3(BlockViewModel)
   implicit val tileFormat = jsonFormat2(TileViewModel)
-  implicit val wallCompartmentFormat = jsonFormat2(WallCompartmentViewModel)
+  implicit val wallCompartmentFormat = jsonFormat3(WallCompartmentViewModel)
 
   implicit val baseElementFormat = jsonFormat5(BaseElementViewModel)
   implicit val defenseElementFormat = jsonFormat6(DefenseElementViewModel)
@@ -238,7 +244,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val minimumCompartmentsResultFormat = jsonFormat4(MinimumCompartmentsResultViewModel)
   implicit val bkSwappableResultFormat = jsonFormat3(BKSwappableResultViewModel)
 
-  implicit val villageFormat = jsonFormat1(VillageViewModel)
+  implicit val villageFormat = jsonFormat2(VillageViewModel)
   implicit val analysisReportFormat = jsonFormat2(AnalysisReportViewModel)
   implicit val cantAnalyseVillageFormat = jsonFormat2(CantAnalyseVillageViewModel)
 }

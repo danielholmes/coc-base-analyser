@@ -150,7 +150,7 @@ var mapDisplay2d = (function(document) {
 
     var renderMinimumCompartments = function(result, mapConfig) {
         _.each(
-            result.compartments,
+            model.getVillageCompartmentsByIds(result.compartments),
             function(compartment) {
                 var colour = randomColour(compartment.walls.join("|"));
 
@@ -308,7 +308,7 @@ var mapDisplay2d = (function(document) {
         var allPrevents = new createjs.Container();
         for (var i in model.getReport().village.elements) {
             var element = model.getReport().village.elements[i];
-            if (element.preventTroopDropBlock.size == 0) {
+            if (element.noTroopDropBlock.size == 0) {
                 continue;
             }
             var prevent = new createjs.Shape();
@@ -317,11 +317,11 @@ var mapDisplay2d = (function(document) {
                 .drawRect(
                     0,
                     0,
-                    element.preventTroopDropBlock.size * mapConfig.tileSize,
-                    element.preventTroopDropBlock.size * mapConfig.tileSize
+                    element.noTroopDropBlock.size * mapConfig.tileSize,
+                    element.noTroopDropBlock.size * mapConfig.tileSize
                 );
-            prevent.x = element.preventTroopDropBlock.x * mapConfig.tileSize;
-            prevent.y = element.preventTroopDropBlock.y * mapConfig.tileSize;
+            prevent.x = element.noTroopDropBlock.x * mapConfig.tileSize;
+            prevent.y = element.noTroopDropBlock.y * mapConfig.tileSize;
             allPrevents.addChild(prevent);
         }
         allPrevents.filters = [

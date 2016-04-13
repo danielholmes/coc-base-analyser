@@ -37,6 +37,12 @@ var model = (function() {
         });
     };
 
+    var getVillageCompartmentsByIds = function(ids) {
+        return _.filter(currentReport.village.wallCompartments, function (compartment) {
+            return _.contains(ids, compartment.id);
+        });
+    };
+
     var getVillageElementsByTypeName = function(typeName) {
         return _.filter(currentReport.village.elements, function (element) {
             return element.typeName == typeName;
@@ -82,6 +88,7 @@ var model = (function() {
         getVillageElementsByIds: getVillageElementsByIds,
         getVillageElementsByTypeName: getVillageElementsByTypeName,
         getVillageElementByTypeName: getVillageElementByTypeName,
+        getVillageCompartmentsByIds: getVillageCompartmentsByIds,
 
         hasActiveRule: hasActiveRule,
         getActiveRuleName: getActiveRuleName,
