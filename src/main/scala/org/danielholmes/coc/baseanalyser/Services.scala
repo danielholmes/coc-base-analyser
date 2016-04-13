@@ -21,7 +21,12 @@ trait Services {
     wire[MinimumCompartmentsRule],
     wire[BKSwappableRule]
   )
-  private lazy val th9Rules: Set[Rule] = Set(wire[HogCCLureRule], wire[AirSnipedDefenseRule], wire[BKSwappableRule])
+  private lazy val th9Rules: Set[Rule] = Set(
+    wire[HogCCLureRule],
+    wire[AirSnipedDefenseRule],
+    wire[BKSwappableRule],
+    wire[WizardTowersOutOfHoundPositionsRule]
+  )
   private lazy val th10Rules: Set[Rule] = th9Rules
   private lazy val th11Rules: Set[Rule] = th10Rules
   private lazy val rulesByThLevel = Map(8 -> th8Rules, 9 -> th9Rules, 10 -> th10Rules, 11 -> th11Rules)

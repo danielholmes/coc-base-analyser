@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class Block(val tile: Tile, val size: TileSize) {
+case class Block(tile: Tile, size: TileSize) {
   require(tile != null, "coordinate musn't be null")
   require(size != null, "size musn't be null")
   require(tile.x + size.toInt <= TileCoordinate.Max.toInt, s"x coord ${tile.x} + ${size.toInt} must be within coordinate system")
@@ -26,7 +26,7 @@ case class Block(val tile: Tile, val size: TileSize) {
     }
   }
 
-  lazy val coordinates: Set[TileCoordinate] = {
+  lazy val allCoordinates: Set[TileCoordinate] = {
     tile.toMapCoordinate.matrixOfCoordinatesTo(oppositeCoordinate)
   }
 

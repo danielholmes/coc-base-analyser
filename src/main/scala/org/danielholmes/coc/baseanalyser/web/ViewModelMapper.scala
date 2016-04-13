@@ -1,5 +1,6 @@
 package org.danielholmes.coc.baseanalyser.web
 
+import java.time.Duration
 import java.util.{Base64, UUID}
 
 import org.danielholmes.coc.baseanalyser.analysis._
@@ -8,10 +9,12 @@ import org.danielholmes.coc.baseanalyser.model.troops.{ArcherTargeting, HogTarge
 import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
 
 class ViewModelMapper {
-  def viewModel(report: AnalysisReport): AnalysisReportViewModel = {
+  def viewModel(report: AnalysisReport, time: Duration, memoryUsed: Long): AnalysisReportViewModel = {
     AnalysisReportViewModel(
       viewModel(report.village),
-      report.results.map(viewModel)
+      report.results.map(viewModel),
+      time.toMillis,
+      memoryUsed
     )
   }
 
@@ -58,6 +61,12 @@ class ViewModelMapper {
       case b: BKSwappableRuleResult => BKSwappableResultViewModel(
         b.success,
         b.exposedTiles.map(viewModel)
+      )
+      case w: WizardTowersOutOfHoundPositionsRuleResult => WizardTowersOutOfHoundPositionsResultViewModel(
+        w.success,
+        w.outOfRange.map(objectId),
+        w.inRange.map(objectId),
+        w.houndPositions.map(_.block).map(viewModel)
       )
       case _ => throw new RuntimeException(s"Don't know how to create view model for ${result.getClass.getSimpleName}")
     }
@@ -191,8 +200,9 @@ case class HighHPUnderAirDefResultViewModel(success: Boolean, outOfAirDefRange: 
 case class AirSnipedDefenseResultViewModel(success: Boolean, snipedDefenses: Set[String], airDefenses: Set[String], name: String = "AirSnipedDefense") extends RuleResultViewModel
 case class MinimumCompartmentsResultViewModel(success: Boolean, minimumCompartments: Int, compartments: Set[String], name: String = "MinimumCompartments") extends RuleResultViewModel
 case class BKSwappableResultViewModel(success: Boolean, exposedTiles: Set[TileViewModel], name: String = "BKSwappable") extends RuleResultViewModel
+case class WizardTowersOutOfHoundPositionsResultViewModel(success: Boolean, outOfRange: Set[String], inRange: Set[String], houndPositions: Set[BlockViewModel], name: String = "WizardTowersOutOfHoundPositions") extends RuleResultViewModel
 
-case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel])
+case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel], timeMillis: Long, memoryUsed: Long)
 
 case class CantAnalyseVillageViewModel(village: VillageViewModel, message: String)
 
@@ -243,8 +253,9 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val airSnipedDefenseResultFormat = jsonFormat4(AirSnipedDefenseResultViewModel)
   implicit val minimumCompartmentsResultFormat = jsonFormat4(MinimumCompartmentsResultViewModel)
   implicit val bkSwappableResultFormat = jsonFormat3(BKSwappableResultViewModel)
+  implicit val wizardTowersOutOfHoundPositionsResultFormat = jsonFormat5(WizardTowersOutOfHoundPositionsResultViewModel)
 
   implicit val villageFormat = jsonFormat2(VillageViewModel)
-  implicit val analysisReportFormat = jsonFormat2(AnalysisReportViewModel)
+  implicit val analysisReportFormat = jsonFormat4(AnalysisReportViewModel)
   implicit val cantAnalyseVillageFormat = jsonFormat2(CantAnalyseVillageViewModel)
 }

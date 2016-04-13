@@ -32,6 +32,8 @@ case class Village(elements: Set[Element]) {
     }
   }
 
+  lazy val wallTiles = walls.map(_.block.tile)
+
   private lazy val walls: Set[Wall] = elements.filter(_.isInstanceOf[Wall]).map(_.asInstanceOf[Wall])
 
   private lazy val outerTiles: Set[Tile] = detectCompartment(Tile.AllOutsideMap).innerTiles

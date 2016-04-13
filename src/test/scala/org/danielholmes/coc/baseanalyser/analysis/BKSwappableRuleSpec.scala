@@ -17,29 +17,47 @@ class BKSwappableRuleSpec extends FlatSpec with Matchers {
   }
 
   it should "return success for deep walled BK" in {
-    val elements = ElementsBuilder.rectangle(Tile(9, 9), 27, 27, 1, Wall(1, _)) ++
+    val elements =
+      ElementsBuilder.rectangle(Tile(9, 9), 27, 27, 1, Wall(1, _)) ++
+      ElementsBuilder.repeatX(Tile(10, 10), 5, 5, ArmyCamp(1, _)) ++
+      ElementsBuilder.repeatX(Tile(10, 15), 5, 5, ArmyCamp(1, _)) ++
       Set[Element](
-        ArmyCamp(1, Tile(10, 10)), ArmyCamp(1, Tile(15, 10)), ArmyCamp(1, Tile(20, 10)), ArmyCamp(1, Tile(25, 10)), ArmyCamp(1, Tile(30, 10)),
-        ArmyCamp(1, Tile(10, 15)), ArmyCamp(1, Tile(15, 15)), ArmyCamp(1, Tile(20, 15)), ArmyCamp(1, Tile(25, 15)), ArmyCamp(1, Tile(30, 15)),
-        ArmyCamp(1, Tile(10, 20)), ArmyCamp(1, Tile(15, 20)), BarbarianKing(1, Tile(21, 21)), ArmyCamp(1, Tile(25, 20)), ArmyCamp(1, Tile(30, 20)),
-        ArmyCamp(1, Tile(10, 25)), ArmyCamp(1, Tile(15, 25)), ArmyCamp(1, Tile(20, 25)), ArmyCamp(1, Tile(25, 25)), ArmyCamp(1, Tile(30, 25)),
-        ArmyCamp(1, Tile(10, 30)), ArmyCamp(1, Tile(15, 30)), ArmyCamp(1, Tile(20, 30)), ArmyCamp(1, Tile(25, 30)), ArmyCamp(1, Tile(30, 30))
-      )
+        ArmyCamp(1, Tile(10, 20)), ArmyCamp(1, Tile(15, 20)), BarbarianKing(1, Tile(21, 21)), ArmyCamp(1, Tile(25, 20)), ArmyCamp(1, Tile(30, 20))
+      ) ++
+      ElementsBuilder.repeatX(Tile(10, 25), 5, 5, ArmyCamp(1, _)) ++
+      ElementsBuilder.repeatX(Tile(10, 30), 5, 5, ArmyCamp(1, _))
     rule.analyse(Village(elements)).success should be (true)
   }
 
   it should "return fail for exposed BK" in {
-    val elements = ElementsBuilder.rectangle(Tile(9, 9), 27, 27, 1, Wall(1, _)) ++
+    val elements =
+      ElementsBuilder.rectangle(Tile(9, 9), 27, 27, 1, Wall(1, _)) ++
+      ElementsBuilder.repeatX(Tile(10, 10), 5, 5, ArmyCamp(1, _)) ++
+      ElementsBuilder.repeatX(Tile(10, 15), 5, 5, ArmyCamp(1, _)) ++
       Set[Element](
-        ArmyCamp(1, Tile(10, 10)), ArmyCamp(1, Tile(15, 10)), ArmyCamp(1, Tile(20, 10)), ArmyCamp(1, Tile(25, 10)), ArmyCamp(1, Tile(30, 10)),
-        ArmyCamp(1, Tile(10, 15)), ArmyCamp(1, Tile(15, 15)), ArmyCamp(1, Tile(20, 15)), ArmyCamp(1, Tile(25, 15)), ArmyCamp(1, Tile(30, 15)),
-        ArmyCamp(1, Tile(10, 20)), ArmyCamp(1, Tile(15, 20)), ArmyCamp(1, Tile(20, 20)), Barrack(1, Tile(26, 21)), BarbarianKing(1, Tile(29, 21)), Barrack(1, Tile(32, 21)),
-        ArmyCamp(1, Tile(10, 25)), ArmyCamp(1, Tile(15, 25)), ArmyCamp(1, Tile(20, 25)), ArmyCamp(1, Tile(25, 25)), ArmyCamp(1, Tile(30, 25)),
-        ArmyCamp(1, Tile(10, 30)), ArmyCamp(1, Tile(15, 30)), ArmyCamp(1, Tile(20, 30)), ArmyCamp(1, Tile(25, 30)), ArmyCamp(1, Tile(30, 30))
-      )
+        ArmyCamp(1, Tile(10, 20)), ArmyCamp(1, Tile(15, 20)), ArmyCamp(1, Tile(20, 20)), Barrack(1, Tile(26, 21)), BarbarianKing(1, Tile(29, 21)), Barrack(1, Tile(32, 21))
+      ) ++
+      ElementsBuilder.repeatX(Tile(10, 25), 5, 5, ArmyCamp(1, _)) ++
+      ElementsBuilder.repeatX(Tile(10, 30), 5, 5, ArmyCamp(1, _))
+
     val result = rule.analyse(Village(elements))
     result.success should be (false)
   }
 
-  // TODO: Consider channels running through base
+  it should "return success for very deep non-walled BK" in {
+    val elements =
+      ElementsBuilder.repeatX(Tile(5, 5), 7, 5, ArmyCamp(1, _)) ++
+      ElementsBuilder.repeatX(Tile(5, 10), 7, 5, ArmyCamp(1, _)) ++
+      ElementsBuilder.repeatX(Tile(5, 15), 7, 5, ArmyCamp(1, _)) ++
+      Set[Element](
+        ArmyCamp(1, Tile(5, 20)), ArmyCamp(1, Tile(10, 20)), ArmyCamp(1, Tile(15, 20)),
+        BarbarianKing(1, Tile(21, 21)),
+        ArmyCamp(1, Tile(25, 20)), ArmyCamp(1, Tile(30, 20)), ArmyCamp(1, Tile(35, 20))
+      ) ++
+      ElementsBuilder.repeatX(Tile(5, 25), 7, 5, ArmyCamp(1, _)) ++
+      ElementsBuilder.repeatX(Tile(5, 30), 7, 5, ArmyCamp(1, _)) ++
+      ElementsBuilder.repeatX(Tile(5, 35), 7, 5, ArmyCamp(1, _))
+    val result = rule.analyse(Village(elements))
+    result.success should be (true)
+  }
 }

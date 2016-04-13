@@ -7,5 +7,7 @@ case class ElementRange(coordinate: MapCoordinate, outerSize: TileSize, innerSiz
 
   def touches(tile: Tile) = tile.allCoordinates.exists(contains)
 
+  def touches(block: Block) = block.allCoordinates.exists(contains)
+
   lazy val allTouchingTiles = Tile.All.filter(touches)
 }

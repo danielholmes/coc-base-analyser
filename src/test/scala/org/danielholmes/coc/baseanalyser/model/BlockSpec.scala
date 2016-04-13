@@ -67,7 +67,7 @@ class BlockSpec extends FlatSpec with Matchers {
   }
 
   it should "return correct all coordinates" in {
-    Block(Tile.Origin, TileSize(2)).coordinates should contain theSameElementsAs
+    Block(Tile.Origin, TileSize(2)).allCoordinates should contain theSameElementsAs
       Set(
         TileCoordinate(0, 0), TileCoordinate(1, 0), TileCoordinate(2, 0),
         TileCoordinate(0, 1), TileCoordinate(1, 1), TileCoordinate(2, 1),

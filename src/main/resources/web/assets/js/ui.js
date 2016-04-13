@@ -30,6 +30,10 @@ var ui = (function($, model, mapDisplay, window) {
         BKSwappable: {
             title: "BK should be protected",
             description: "The BK's range should be inside walls so he can't be lureed out and killed early as part of a tanking BK or KS"
+        },
+        WizardTowersOutOfHoundPositions: {
+            title: "Wizard Towers shouldn't lock onto hounds",
+            description: "Wizard Towers are strong against loons, they shouldn't be too close to air defenses where hounds can tank for them for long periods"
         }
     };
 

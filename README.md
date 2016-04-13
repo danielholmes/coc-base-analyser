@@ -45,6 +45,8 @@ then deploy it manually through the AWS console:
 
 ## General TODO
  - ui overhaul: select clan -> load players, select player, click go
+ - find a way to instance pool/memoize Tile - many instances atm especially with path finding
+  - also TileSize
  
  - switch to new, dedicated credentials of own
  - 3d render
@@ -85,7 +87,6 @@ then deploy it manually through the AWS console:
 
 
 ## TH10 Rules
- - all (?) TH9 rules
  - cant get 2 infernos with one freeze
 
 

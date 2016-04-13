@@ -1,5 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model
 
+import org.danielholmes.coc.baseanalyser.util.PathFinder
+
 case class Tile(x: Int, y: Int) {
   import Tile._
 
@@ -17,9 +19,27 @@ case class Tile(x: Int, y: Int) {
       .toSet
   }
 
-  def matrixOfTilesTo(other: Tile): Set[Tile] = {
-    matrixOfTilesTo(other, 1)
+  lazy val centre = MapCoordinate(x + 0.5, y + 0.5)
+
+  def distanceTo(other: Tile): Double = {
+    allCoordinates.flatMap(otherCoord => other.allCoordinates.map(_.distanceTo(otherCoord))).min
   }
+
+  def centreDistanceTo(other: Tile): Double = centre.distanceTo(other.centre)
+
+  def manhattanDistanceTo(other: Tile): Int = Math.abs(other.x - x) + Math.abs(other.y - y)
+
+  def shortestTilePathTo(other: Tile, wallTiles: Set[Tile]): Option[List[Tile]] = {
+    PathFinder.apply(
+      this,
+      other,
+      (subject: Tile) => subject.touchingTiles.diff(wallTiles).toList,
+      (tile1: Tile, tile2: Tile) => tile1.centreDistanceTo(tile2).toFloat,
+      (tile1: Tile, tile2: Tile) => 1
+    )
+  }
+
+  def matrixOfTilesTo(other: Tile): Set[Tile] = matrixOfTilesTo(other, 1)
 
   def matrixOfTilesTo(other: Tile, step: Int): Set[Tile] = {
     (x to other.x by step).flatMap(newX => (y to other.y by step).map(newY => Tile(newX, newY))).toSet
@@ -29,9 +49,9 @@ case class Tile(x: Int, y: Int) {
     matrixOfTilesTo(Tile(x + width.toInt - 1, y + height.toInt - 1))
   }
 
-  lazy val allCoordinates = {
-    toMapCoordinate.matrixOfCoordinatesTo(toMapCoordinate.offset(1, 1))
-  }
+  lazy val toBlock = Block(this, TileSize(1))
+
+  lazy val allCoordinates = toMapCoordinate.matrixOfCoordinatesTo(toMapCoordinate.offset(1, 1))
 
   lazy val toMapCoordinate = TileCoordinate(x, y)
 
@@ -63,7 +83,5 @@ object Tile {
     Tile(mapTileCoordinate.x, mapTileCoordinate.y)
   }
 
-  def apply(xSize: TileSize, ySize: TileSize): Tile = {
-    Tile(xSize.toInt, ySize.toInt)
-  }
+  def apply(xSize: TileSize, ySize: TileSize): Tile = apply(xSize.toInt, ySize.toInt)
 }

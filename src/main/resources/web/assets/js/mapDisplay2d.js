@@ -72,6 +72,22 @@ var mapDisplay2d = (function(document) {
         );
     };
 
+    var renderWizardTowersOutOfHoundPositions = function(result, mapConfig) {
+        eachBuildingDisplay(
+            result.outOfRange,
+            function (buildingContainer) {
+                applyColour(buildingContainer, 0, 1, 0);
+            }
+        );
+        eachBuildingDisplay(
+            result.inRange,
+            function (buildingContainer) {
+                applyColour(buildingContainer, 1, 0, 0);
+            }
+        );
+        renderElementRangesByIds(mapConfig, _.union(result.outOfRange, result.inRange));
+    };
+
     var renderActiveRule = function(mapConfig) {
         if (!model.hasActiveRule()) {
             return;
@@ -99,6 +115,8 @@ var mapDisplay2d = (function(document) {
             case 'BKSwappable':
                 renderBKSwappable(result, mapConfig);
                 break;
+            case 'WizardTowersOutOfHoundPositions':
+                renderWizardTowersOutOfHoundPositions(result, mapConfig);
             default:
                 console.error('Don\'t know how to render active rule: ' + result.name);
         }
@@ -120,6 +138,17 @@ var mapDisplay2d = (function(document) {
             return;
         }
 
+        var exposedMask = new createjs.Shape();
+        exposedMask.graphics.beginFill("#00ff00");
+        _.each(result.exposedTiles, function(tile) {
+            exposedMask.graphics.drawRect(
+                tile.x * mapConfig.tileSize,
+                tile.y * mapConfig.tileSize,
+                mapConfig.tileSize,
+                mapConfig.tileSize
+            );
+        });
+
         var bkRadiusFill = new createjs.Shape();
         bkRadiusFill.graphics
             .beginFill("#ff0000")
@@ -131,19 +160,9 @@ var mapDisplay2d = (function(document) {
         bkRadiusFill.x = (bk.block.x + bk.block.size / 2) * mapConfig.tileSize;
         bkRadiusFill.y = (bk.block.y + bk.block.size / 2) * mapConfig.tileSize;
         bkRadiusFill.alpha = 0.6;
-        extrasContainer.addChild(bkRadiusFill);
-
-        var exposedMask = new createjs.Shape();
-        exposedMask.graphics.beginFill("#00ff00");
-        _.each(result.exposedTiles, function(tile) {
-            exposedMask.graphics.drawRect(
-                tile.x * mapConfig.tileSize,
-                tile.y * mapConfig.tileSize,
-                mapConfig.tileSize,
-                mapConfig.tileSize
-            );
-        });
         bkRadiusFill.mask = exposedMask;
+
+        extrasContainer.addChild(bkRadiusFill);
 
         renderElementRangesByTypeName(mapConfig, "BarbarianKing");
     };
@@ -407,6 +426,19 @@ var mapDisplay2d = (function(document) {
         }
 
         render2d();
+
+        /*var size = 150;
+        var shape = new createjs.Shape().set({x:200,y:200});
+        shape.graphics.beginFill("#ff0000").drawCircle(0,0,size);
+        var blurFilter = new createjs.BlurFilter(40, 40, 1);
+        shape.filters = [blurFilter];
+        var bounds = blurFilter.getBounds();
+        shape.cache(-size +bounds.x, -size +bounds.y, 2*size+bounds.width, 2*size+bounds.height);
+        stage.addChild(shape);
+
+        var shape = new createjs.Shape().set({x:400,y:200});
+        shape.graphics.beginFill("#ff0000").drawCircle(0,0,size);
+        stage.addChild(shape);*/
 
         stage.update();
     };

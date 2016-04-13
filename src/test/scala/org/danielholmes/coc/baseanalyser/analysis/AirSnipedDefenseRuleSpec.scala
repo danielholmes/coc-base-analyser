@@ -14,7 +14,7 @@ class AirSnipedDefenseRuleSpec extends FlatSpec with Matchers {
   it should "return sniped ground when no air def" in {
     val cannon = Cannon(1, Tile.MapOrigin)
     rule.analyse(Village(Set(cannon))) should be (AirSnipedDefenseRuleResult(
-      cannon.block.expandBy(TileSize(1)).coordinates.map(MinionAttackPosition(_, cannon)),
+      cannon.block.expandBy(TileSize(1)).allCoordinates.map(MinionAttackPosition(_, cannon)),
       Set.empty
     ))
   }

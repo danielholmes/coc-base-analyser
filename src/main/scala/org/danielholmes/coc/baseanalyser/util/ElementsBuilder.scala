@@ -10,12 +10,20 @@ object ElementsBuilder {
       ElementsBuilder.repeatY(origin.offset(xTimes - 1, step), yTimes - 2, step, builder)
   }
 
-  private def repeatX[T <: Element](origin: Tile, times: Int, step: Int, builder: (Tile) => T): Set[T] = {
-    Range(origin.x, origin.x + times, step).map(Tile(_, origin.y)).map(builder.apply).toSet
+  def repeatX[T <: Element](origin: Tile, times: Int, step: Int, builder: (Tile) => T): Set[T] = {
+    Range(0, times)
+      .map(origin.x + _ * step)
+      .map(Tile(_, origin.y))
+      .map(builder.apply)
+      .toSet
   }
 
   private def repeatY[T <: Element](origin: Tile, times: Int, step: Int, builder: (Tile) => T): Set[T] = {
-    Range(origin.y, origin.y + times, step).map(Tile(origin.x, _)).map(builder.apply).toSet
+    Range(0, times)
+      .map(origin.y + _ * step)
+      .map(Tile(origin.x, _))
+      .map(builder.apply)
+      .toSet
   }
 
   def fromString[T <: Element](input: String, origin: Tile, builder: (Tile) => T): Set[T] = {

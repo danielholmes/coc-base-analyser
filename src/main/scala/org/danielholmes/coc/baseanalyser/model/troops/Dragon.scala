@@ -6,6 +6,6 @@ object Dragon {
   def getCoordinatesCanAttackElementFrom(element: Element): Set[TileCoordinate] = {
     element.hitBlock
       .expandBy(TileSize(1))
-      .coordinates
+      .allCoordinates
   }
 }
