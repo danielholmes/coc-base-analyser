@@ -56,9 +56,8 @@ then deploy it manually through the AWS console:
 
 
 ## TH8 TODO Rules
- - minimum # compartments - defend against gowipe
- - air defs should be a minimum distance apart
  - BK not swappable
+ - air defs should be a minimum distance apart
  - minimum 3 DGB possible spots (including diagonal)
  - sufficient empty space within walls to make attacker guess
  - minion anchors (warning only, no hard fail, once that functionality is built)

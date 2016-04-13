@@ -51,6 +51,12 @@ class ViewModelMapper {
         a.snipedDefenses.map(_.element).map(elementId),
         a.airDefenses.map(elementId)
       )
+      case m: MinimumCompartmentsRuleResult => MinimumCompartmentsResultViewModel(
+        m.ruleName,
+        m.success,
+        m.minimumCompartments,
+        m.compartments.map(viewModel)
+      )
       case _ => throw new RuntimeException(s"Don't know how to create view model for ${result.getClass.getSimpleName}")
     }
   }
@@ -71,9 +77,13 @@ class ViewModelMapper {
     )
   }
 
-  def viewModel(village: Village): VillageViewModel = {
-    VillageViewModel(village.elements.map(viewModel))
+  def viewModel(compartment: WallCompartment): WallCompartmentViewModel = {
+    WallCompartmentViewModel(compartment.walls.map(elementId), compartment.innerTiles.map(viewModel))
   }
+
+  def viewModel(tile: Tile): TileViewModel = TileViewModel(tile.x, tile.y)
+
+  def viewModel(village: Village): VillageViewModel = VillageViewModel(village.elements.map(viewModel))
 
   def viewModel(element: Element): ElementViewModel = {
     element match {
@@ -123,6 +133,7 @@ class ViewModelMapper {
 case class TileCoordinateViewModel(x: Int, y: Int)
 case class RangeViewModel(inner: Int, outer: Int)
 case class BlockViewModel(x: Int, y: Int, size: Int)
+case class TileViewModel(x: Int, y: Int)
 sealed trait ElementViewModel {
   def id: String
   def typeName: String
@@ -157,17 +168,22 @@ case class VillageViewModel(elements: Set[ElementViewModel]) {
   require(elements.toList.map(_.id).distinct.size == elements.size, "All ids must be unique")
 }
 
+case class HogTargetingViewModel(startPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
+case class ArcherTargetingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
+case class WallCompartmentViewModel(walls: Set[String], innerTiles: Set[TileViewModel])
+
 sealed trait RuleResultViewModel {
   val name: String
   val success: Boolean
 }
+
 case class SuccessRuleResultViewModel(name: String, success: Boolean) extends RuleResultViewModel
-case class HogTargetingViewModel(startPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 case class HogCCLureResultViewModel(name: String, success: Boolean, targetings: Set[HogTargetingViewModel]) extends RuleResultViewModel
-case class ArcherTargetingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 case class ArcherAnchorResultViewModel(name: String, success: Boolean, targetings: Set[ArcherTargetingViewModel], aimingDefenses: Set[String]) extends RuleResultViewModel
 case class HighHPUnderAirDefResultViewModel(name: String, success: Boolean, outOfAirDefRange: Set[String], inAirDefRange: Set[String]) extends RuleResultViewModel
 case class AirSnipedDefenseResultViewModel(name: String, success: Boolean, snipedDefenses: Set[String], airDefenses: Set[String]) extends RuleResultViewModel
+case class MinimumCompartmentsResultViewModel(name: String, success: Boolean, minimumCompartments: Int, compartments: Set[WallCompartmentViewModel]) extends RuleResultViewModel
+
 case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel])
 
 
@@ -187,9 +203,10 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit  object RuleResultJsonFormat extends RootJsonFormat[RuleResultViewModel] {
     def write(r: RuleResultViewModel) = r match {
       case h: HogCCLureResultViewModel => hogCCLureFormat.write(h)
-      case aa: ArcherAnchorResultViewModel => archerAnchorFormat.write(aa)
+      case a: ArcherAnchorResultViewModel => archerAnchorFormat.write(a)
       case a: HighHPUnderAirDefResultViewModel => highHPUnderAirDefResultFormat.write(a)
       case a: AirSnipedDefenseResultViewModel => airSnipedDefenseResultViewModelFormat.write(a)
+      case m: MinimumCompartmentsResultViewModel => minimumCompartmentsResultViewModelFormat.write(m)
       case _ => throw new RuntimeException(s"Don't know how to serialise ${r.getClass.getSimpleName}")
     }
 
@@ -201,6 +218,8 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val tileCoordinateFormat = jsonFormat2(TileCoordinateViewModel)
   implicit val rangeFormat = jsonFormat2(RangeViewModel)
   implicit val blockFormat = jsonFormat3(BlockViewModel)
+  implicit val tileFormat = jsonFormat2(TileViewModel)
+  implicit val wallCompartmentFormat = jsonFormat2(WallCompartmentViewModel)
 
   implicit val baseElementFormat = jsonFormat5(BaseElementViewModel)
   implicit val defenseElementFormat = jsonFormat6(DefenseElementViewModel)
@@ -213,6 +232,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val archerAnchorFormat = jsonFormat4(ArcherAnchorResultViewModel)
   implicit val highHPUnderAirDefResultFormat = jsonFormat4(HighHPUnderAirDefResultViewModel)
   implicit val airSnipedDefenseResultViewModelFormat = jsonFormat4(AirSnipedDefenseResultViewModel)
+  implicit val minimumCompartmentsResultViewModelFormat = jsonFormat4(MinimumCompartmentsResultViewModel)
 
   implicit val villageFormat = jsonFormat1(VillageViewModel)
   implicit val analysisReportFormat = jsonFormat2(AnalysisReportViewModel)

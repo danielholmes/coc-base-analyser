@@ -22,6 +22,10 @@ var ui = (function($, model, mapDisplay, window) {
         AirSnipedDefense: {
             title: "Ground Defenses covered for Air",
             description: "No ground only defenses should be reachable by minions or loons"
+        },
+        MinimumCompartments: {
+            title: "At least {{minimumCompartments}} compartments ({{compartments.length}})",
+            description: "GoWiPe can be slowed down by having enough compartments to hold it up"
         }
     };
 
@@ -98,8 +102,8 @@ var ui = (function($, model, mapDisplay, window) {
                     "#result-panel",
                     {
                         id: result.name,
-                        title: rule.title,
-                        description: rule.description,
+                        title: Mustache.render(rule.title, result),
+                        description: Mustache.render(rule.description, result),
                         ruleName: result.name,
                         success: result.success
                     }

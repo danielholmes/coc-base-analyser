@@ -13,7 +13,7 @@ trait Services {
   //private lazy val clanSeekerServiceAgent = wire[HardcodedClanSeekerServiceAgent]
   private lazy val elementFactory = wire[HardCodedElementFactory]
   private lazy val villageJsonParser = wire[VillageJsonParser]
-  private lazy val th8Rules: Set[Rule] = Set(wire[HogCCLureRule], wire[HighHPUnderAirDefRule], wire[ArcherAnchorRule], wire[AirSnipedDefenseRule])
+  private lazy val th8Rules: Set[Rule] = Set(wire[HogCCLureRule], wire[HighHPUnderAirDefRule], wire[ArcherAnchorRule], wire[AirSnipedDefenseRule], wire[MinimumCompartmentsRule])
   private lazy val th9Rules: Set[Rule] = Set(wire[HogCCLureRule], wire[AirSnipedDefenseRule])
   private lazy val th10Rules: Set[Rule] = Set(wire[HogCCLureRule], wire[AirSnipedDefenseRule])
   private lazy val th11Rules: Set[Rule] = Set(wire[HogCCLureRule], wire[AirSnipedDefenseRule])

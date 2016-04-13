@@ -62,12 +62,7 @@ var mapDisplay2d = (function(document) {
     };
 
     var renderElementRangesByIds = function(mapConfig, ids) {
-        renderElementRanges(
-            mapConfig,
-            _.filter(model.getReport().village.elements, function (element) {
-                return _.contains(ids, element.id);
-            })
-        );
+        renderElementRanges(mapConfig, model.getVillageElementsByIds(ids));
     };
 
     var renderElementRangesByTypeName = function(mapConfig, typeName) {
@@ -100,6 +95,9 @@ var mapDisplay2d = (function(document) {
             case 'AirSnipedDefense':
                 renderAirSnipedDefense(result, mapConfig);
                 break;
+            case 'MinimumCompartments':
+                renderMinimumCompartments(result, mapConfig);
+                break;
             default:
                 console.error('Don\'t know how to render active rule: ' + result.name);
         }
@@ -113,6 +111,42 @@ var mapDisplay2d = (function(document) {
             )
         ];
         display.cache(0, 0, 1000, 1000);
+    };
+
+    var renderMinimumCompartments = function(result, mapConfig) {
+        _.each(
+            result.compartments,
+            function(compartment) {
+                var colour = randomColour(compartment.walls.join("|"));
+
+                var innerDisplay = new createjs.Shape();
+                innerDisplay.graphics.beginFill(colour);
+                _.each(compartment.innerTiles, function(innerTile) {
+                    innerDisplay.graphics.drawRect(
+                        innerTile.x * mapConfig.tileSize,
+                        innerTile.y * mapConfig.tileSize,
+                        mapConfig.tileSize,
+                        mapConfig.tileSize
+                    );
+                });
+                innerDisplay.alpha = 0.85;
+                extrasContainer.addChild(innerDisplay);
+
+                var wallDisplay = new createjs.Shape();
+                wallDisplay.graphics.beginFill(colour);
+                _.each(compartment.walls, function(wallId) {
+                    var element = model.getVillageElementById(wallId);
+                    wallDisplay.graphics.drawRect(
+                        element.block.x * mapConfig.tileSize,
+                        element.block.y * mapConfig.tileSize,
+                        mapConfig.tileSize,
+                        mapConfig.tileSize
+                    );
+                });
+                wallDisplay.alpha = 0.5;
+                extrasContainer.addChild(wallDisplay);
+            }
+        );
     };
 
     var renderAirSnipedDefense = function(result, mapConfig) {

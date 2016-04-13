@@ -23,6 +23,19 @@ var model = (function() {
     var getReport = function() {
         return currentReport;
     };
+    
+    var getVillageElementById = function(id) {
+        return _.find(
+            currentReport.village.elements,
+            function(element) { return element.id == id; }
+        );
+    };
+    
+    var getVillageElementsByIds = function(ids) {
+        return _.filter(currentReport.village.elements, function (element) {
+            return _.contains(ids, element.id);
+        });
+    };
 
     var hasReport = function() {
         return currentReport != null;
@@ -53,6 +66,8 @@ var model = (function() {
         setReport: setReport,
         hasReport: hasReport,
         clearReport: clearReport,
+        getVillageElementById: getVillageElementById,
+        getVillageElementsByIds: getVillageElementsByIds,
 
         hasActiveRule: hasActiveRule,
         getActiveRuleName: getActiveRuleName,
