@@ -1,5 +1,6 @@
 package org.danielholmes.coc.baseanalyser.model
 
+import org.danielholmes.coc.baseanalyser.util.ElementsBuilder
 import org.scalatest._
 
 class VillageSpec extends FlatSpec with Matchers {
@@ -44,5 +45,29 @@ class VillageSpec extends FlatSpec with Matchers {
     village.coordinatesAllowedToDropTroop should not contain TileCoordinate(4, 1)
     village.coordinatesAllowedToDropTroop should not contain TileCoordinate(4, 2)
     village.coordinatesAllowedToDropTroop should not contain TileCoordinate(4, 3)
+  }
+
+  it should "return no compartments for empty village" in {
+    Village.empty.wallCompartments should be (empty)
+  }
+
+  it should "return no compartments for village with walls but no compartments" in {
+    ElementsBuilder.villageFromString("WWW\nW W\n WW", Tile(1, 1), Wall(1, _)).wallCompartments should be (empty)
+  }
+
+  it should "return single simple compartment" in {
+    val walls = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(1, 1), Wall(1, _))
+    Village(walls.map(_.asInstanceOf[Element])).wallCompartments should be (Set(WallCompartment(
+      walls, Set(Tile(2, 2))
+    )))
+  }
+
+  it should "return multiple compartments" in {
+    val walls1 = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(1, 1), Wall(1, _))
+    val walls2 = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(11, 1), Wall(1, _))
+    Village((walls1 ++ walls2).map(_.asInstanceOf[Element])).wallCompartments should be (Set(
+      WallCompartment(walls1, Set(Tile(2, 2))),
+      WallCompartment(walls2, Set(Tile(12, 2)))
+    ))
   }
 }

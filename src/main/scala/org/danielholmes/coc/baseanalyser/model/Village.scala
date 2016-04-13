@@ -17,13 +17,51 @@ case class Village(elements: Set[Element]) {
 
   lazy val buildings = elements.filter(_.isInstanceOf[Building]).map(_.asInstanceOf[Building])
 
-  /* private */ lazy val tilesNotAllowedToDropTroop = elements.flatMap(_.preventTroopDropBlock.tiles)
+  private lazy val tilesNotAllowedToDropTroop = elements.flatMap(_.preventTroopDropBlock.tiles)
 
-  /* private */ lazy val tilesAllowedToDropTroop = Tile.All -- tilesNotAllowedToDropTroop
+  private lazy val tilesAllowedToDropTroop = Tile.All -- tilesNotAllowedToDropTroop
 
   lazy val coordinatesAllowedToDropTroop: Set[TileCoordinate] = tilesAllowedToDropTroop.flatMap(_.allCoordinates) ++ TileCoordinate.AllEdge
+
+  lazy val wallCompartments: Set[WallCompartment] = {
+    val innerTiles = Tile.All -- outerTiles -- walls.map(_.block.tile)
+    if (walls.isEmpty || innerTiles.isEmpty) {
+      Set.empty
+    } else {
+      detectAllCompartments(innerTiles, Set.empty)
+    }
+  }
+
+  private lazy val walls: Set[Wall] = elements.filter(_.isInstanceOf[Wall]).map(_.asInstanceOf[Wall])
+
+  private lazy val outerTiles: Set[Tile] = detectCompartment(Tile.AllOutsideMap).innerTiles
+
+  private def detectAllCompartments(innerTiles: Set[Tile], current: Set[WallCompartment]): Set[WallCompartment] = {
+    if (innerTiles.isEmpty) return current
+    val compartment = detectCompartment(Set(innerTiles.head))
+    detectAllCompartments(innerTiles -- compartment.innerTiles, current + compartment)
+  }
+
+  private def detectCompartment(toProcess: Set[Tile]): WallCompartment = {
+    detectCompartment(toProcess, Set.empty, Set.empty)
+  }
+
+  private def detectCompartment(toProcess: Set[Tile], currentInnerTiles: Set[Tile], currentWalls: Set[Wall]): WallCompartment = {
+    if (toProcess.isEmpty) return WallCompartment(currentWalls, currentInnerTiles)
+    val notSeenTouching = toProcess.head
+      .touchingTiles
+      .diff(currentInnerTiles)
+
+    val touchingWalls = walls.filter(wall => notSeenTouching.contains(wall.block.tile))
+
+    detectCompartment(
+      toProcess.tail ++ notSeenTouching -- touchingWalls.map(_.block.tile),
+      currentInnerTiles + toProcess.head,
+      currentWalls ++ touchingWalls
+    )
+  }
 }
 
 object Village {
-val empty = Village(Set.empty)
+  val empty = Village(Set.empty)
 }

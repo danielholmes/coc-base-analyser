@@ -4,7 +4,7 @@ import org.danielholmes.coc.baseanalyser.model.{Element, TileCoordinate, TileSiz
 
 object Dragon {
   def getCoordinatesCanAttackElementFrom(element: Element): Set[TileCoordinate] = {
-    element.block
+    element.hitBlock
       .expandBy(TileSize(1))
       .coordinates
   }

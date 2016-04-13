@@ -8,23 +8,17 @@
 .panel .glyphicon-remove-sign {
     color: #dd4444;
 }
-.panel .toggle-header {
+.panel .do-show {
     display: none;
     float: right;
     color: #dd4444;
     font-size: 12px;
 }
-.panel.failed .toggle-header.do-show {
+.panel.failed .do-show {
     display: block;
 }
-.panel.failed .toggle-header.do-hide {
+.panel.failed.active .do-show {
     display: none;
-}
-.panel.failed.active .toggle-header.do-show {
-    display: none;
-}
-.panel.failed.active .toggle-header.do-hide {
-    display: block;
 }
 
 .panel .panel-heading {

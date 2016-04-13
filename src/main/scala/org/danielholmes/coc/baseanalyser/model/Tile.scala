@@ -8,6 +8,15 @@ case class Tile(x: Int, y: Int) {
 
   lazy val isWithinMap = AllInMap.contains(this)
 
+  lazy val touchingTiles = {
+    Range.inclusive(x - 1, x + 1)
+      .flatMap(tileX => Range.inclusive(y - 1, y + 1).map(tileY => Tuple2(tileX, tileY)))
+      .filter(possible => possible._1 >= 0 && possible._1 <= Tile.Max.toInt && possible._2 >= 0 && possible._2 <= Tile.Max.toInt)
+      .map(coord => Tile(coord._1, coord._2))
+      .filterNot(_ == this)
+      .toSet
+  }
+
   def matrixOfTilesTo(other: Tile): Set[Tile] = {
     matrixOfTilesTo(other, 1)
   }
@@ -48,6 +57,7 @@ object Tile {
   val MapOrigin = Origin.offset(OutsideBorder, OutsideBorder)
   val MapEnd = MapOrigin.offset(MapSize - 1, MapSize - 1)
   val AllInMap = MapOrigin.matrixOfTilesTo(End)
+  val AllOutsideMap = All -- AllInMap
 
   def fromCoordinate(mapTileCoordinate: TileCoordinate): Tile = {
     Tile(mapTileCoordinate.x, mapTileCoordinate.y)

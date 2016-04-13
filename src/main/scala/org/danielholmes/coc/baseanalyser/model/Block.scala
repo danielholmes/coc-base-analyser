@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class Block(private val tile: Tile, val size: TileSize) {
+case class Block(val tile: Tile, val size: TileSize) {
   require(tile != null, "coordinate musn't be null")
   require(size != null, "size musn't be null")
   require(tile.x + size.toInt <= TileCoordinate.Max.toInt, s"x coord ${tile.x} + ${size.toInt} must be within coordinate system")
