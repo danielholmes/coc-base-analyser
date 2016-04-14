@@ -1,5 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class Wall(level: Int, tile: Tile) extends Element {
-  val size = TileSize(1)
+import org.scalactic.anyvals.PosInt
+
+case class Wall(level: PosInt, tile: Tile) extends Element {
+  val size: PosInt = 1
 }

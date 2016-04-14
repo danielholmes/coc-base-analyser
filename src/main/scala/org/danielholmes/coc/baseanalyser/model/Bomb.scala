@@ -1,5 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class Bomb(level: Int, tile: Tile) extends Trap {
-  val size = TileSize(1)
+import org.scalactic.anyvals.PosInt
+
+case class Bomb(level: PosInt, tile: Tile) extends Trap {
+  val size: PosInt = 1
 }

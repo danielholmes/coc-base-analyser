@@ -2,7 +2,6 @@ package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
 
-// TODO: Consider a channel through a base - currently thinks thats an exposed bk
 class BKSwappableRule extends Rule {
   val CloseEnoughToSwap = 5.0
 

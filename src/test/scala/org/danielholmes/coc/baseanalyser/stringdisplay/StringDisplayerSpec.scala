@@ -15,7 +15,7 @@ class StringDisplayerSpec extends FlatSpec with Matchers {
     val result = displayer.build(Village(Set(TownHall(1, Tile(1, 1)))))
     for (row <- 2 to 5) {
       for (col <- 2 to 5) {
-        result.charAt(row * DrawnRowSize.toInt + col) should be('#')
+        result.charAt(row * DrawnRowSize + col) should be('#')
       }
     }
   }
@@ -24,7 +24,7 @@ class StringDisplayerSpec extends FlatSpec with Matchers {
     val result = displayer.build(Village(Set(ArcherTower(1, Tile(41, 41)))))
     for (row <- 42 to 44) {
       for (col <- 42 to 44) {
-        result.charAt(row * DrawnRowSize.toInt + col) should be('A')
+        result.charAt(row * DrawnRowSize + col) should be('A')
       }
     }
   }

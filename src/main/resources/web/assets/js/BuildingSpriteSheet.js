@@ -168,7 +168,7 @@ var BuildingSpriteSheet = function(image) {
             height: 49,
             gap: 10
         },
-        "TeslaTower": {
+        "HiddenTesla": {
             x: 0,
             y: 1491,
             width: 49,

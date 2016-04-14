@@ -1,13 +1,14 @@
 package org.danielholmes.coc.baseanalyser.model
 
+import org.scalactic.anyvals.PosInt
+
 case class Village(elements: Set[Element]) {
   require(
     !Block.anyIntersect(elements.map(_.block)),
     s"Elements musn't overlap (currently ${Block.getAnyIntersection(elements.map(_.block)).get} overlaps"
   )
 
-  val townHallLevel = elements.find(_.isInstanceOf[TownHall])
-    .map(_.asInstanceOf[TownHall])
+  val townHallLevel: Option[PosInt] = elements.find(_.isInstanceOf[TownHall])
     .map(_.level)
 
   val clanCastle = elements.find(_.isInstanceOf[ClanCastle])

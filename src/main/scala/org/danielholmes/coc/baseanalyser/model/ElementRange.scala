@@ -1,8 +1,10 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class ElementRange(coordinate: MapCoordinate, outerSize: TileSize, innerSize: TileSize = TileSize(0)) {
+import org.scalactic.anyvals.{PosInt, PosZInt}
+
+case class ElementRange(coordinate: MapCoordinate, outerSize: PosInt, innerSize: PosZInt = 0) {
   def contains(testCoordinate: TileCoordinate): Boolean = {
-    testCoordinate.distanceTo(coordinate) < outerSize.toInt
+    testCoordinate.distanceTo(coordinate) < outerSize
   }
 
   def touches(tile: Tile) = tile.allCoordinates.exists(contains)

@@ -1,5 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class TownHall(level: Int, tile: Tile) extends Building {
-  val size = TileSize(4)
+import org.scalactic.anyvals.PosInt
+
+case class TownHall(level: PosInt, tile: Tile) extends Building {
+  val size: PosInt = 4
 }

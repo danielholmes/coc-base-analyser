@@ -1,5 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class SpringTrap(level: Int, tile: Tile) extends Trap {
-  val size = TileSize(1)
+import org.scalactic.anyvals.PosInt
+
+case class SpringTrap(level: PosInt, tile: Tile) extends Trap {
+  val size: PosInt = 1
 }

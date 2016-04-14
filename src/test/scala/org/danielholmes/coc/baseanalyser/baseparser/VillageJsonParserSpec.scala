@@ -2,6 +2,7 @@ package org.danielholmes.coc.baseanalyser.baseparser
 
 import org.danielholmes.coc.baseanalyser.model._
 import org.scalatest._
+import org.scalactic.anyvals.{PosInt, PosZInt}
 
 class VillageJsonParserSpec extends FlatSpec with Matchers {
   val buildingFactory = StubElementFactory
@@ -34,11 +35,11 @@ class VillageJsonParserSpec extends FlatSpec with Matchers {
 object StubElementFactory extends ElementFactory {
   def build(raw: RawBuilding): Option[Element] = {
     Some(raw)
-      .filter(value => value.data != 999999)
-      .map(value => StubBaseElement(value.lvl, Tile(value.x, value.y)))
+      .filter(_.data != 999999)
+      .map(r => StubBaseElement(PosInt.from(r.lvl).get, Tile(PosZInt.from(r.x).get, PosZInt.from(r.y).get)))
   }
 }
 
-case class StubBaseElement(level: Int, tile: Tile) extends Element {
-  val size: TileSize = new TileSize(3)
+case class StubBaseElement(level: PosInt, tile: Tile) extends Element {
+  val size: PosInt = 3
 }

@@ -1,7 +1,9 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class BarbarianKing(level: Int, tile: Tile) extends Hero {
-  lazy val range = ElementRange(block.centre, TileSize(8))
+import org.scalactic.anyvals.PosInt
+
+case class BarbarianKing(level: PosInt, tile: Tile) extends Hero {
+  lazy val range = ElementRange(block.centre, 8)
   val targets = Set(Target.Ground)
-  val size = TileSize(3)
+  val size: PosInt = 3
 }

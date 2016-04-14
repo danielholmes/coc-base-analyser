@@ -1,20 +1,19 @@
 package org.danielholmes.coc.baseanalyser.model
 
-trait Element {
-  require(level >= 1, s"level $level should be >= 1")
-  // Doesnt work, size isn't available yet
-  //require(block.isWithinMap, s"block $block must be within map")
+import org.scalactic.anyvals.PosInt
 
-  val level: Int
+trait Element {
+  val level: PosInt
 
   protected val tile: Tile
-  val size: TileSize
+  val size: PosInt
   lazy val block = Block(tile, size)
 
-  lazy val preventTroopDropSize: TileSize = size + 2
+  lazy val preventTroopDropSize: PosInt = PosInt.from(size + 2).get
   lazy val preventTroopDropBlock = block.expandToSize(preventTroopDropSize)
 
-  lazy val hitSize: TileSize = size
+  // TODO: Hit size not relevant for non-traps, maybe need new heirarchy element
+  lazy val hitSize: PosInt = size
   lazy val hitBlock = Block(tile, hitSize)
 
   def findClosestHitCoordinate(from: TileCoordinate): TileCoordinate = {

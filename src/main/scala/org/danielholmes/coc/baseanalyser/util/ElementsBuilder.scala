@@ -1,27 +1,28 @@
 package org.danielholmes.coc.baseanalyser.util
 
 import org.danielholmes.coc.baseanalyser.model.{Element, Tile, Village}
+import org.scalactic.anyvals.{PosInt, PosZInt}
 
 object ElementsBuilder {
-  def rectangle[T <: Element](origin: Tile, xTimes: Int, yTimes: Int, step: Int, builder: (Tile) => T): Set[T] = {
-    ElementsBuilder.repeatX(origin, xTimes, step, builder) ++
-      ElementsBuilder.repeatX(origin.offset(0, yTimes - 1), xTimes, step, builder) ++
-      ElementsBuilder.repeatY(origin.offset(0, step), yTimes - 2, step, builder) ++
-      ElementsBuilder.repeatY(origin.offset(xTimes - 1, step), yTimes - 2, step, builder)
+  def rectangle[T <: Element](origin: Tile, width: PosInt, height: PosInt, step: PosInt, builder: (Tile) => T): Set[T] = {
+    ElementsBuilder.repeatX(origin, width, step, builder) ++
+      ElementsBuilder.repeatX(origin.offset(0, height - 1), width, step, builder) ++
+      ElementsBuilder.repeatY(origin.offset(0, step), PosInt.from(height - 2).get, step, builder) ++
+      ElementsBuilder.repeatY(origin.offset(width - 1, step), PosInt.from(height - 2).get, step, builder)
   }
 
-  def repeatX[T <: Element](origin: Tile, times: Int, step: Int, builder: (Tile) => T): Set[T] = {
+  def repeatX[T <: Element](origin: Tile, times: PosInt, step: PosInt, builder: (Tile) => T): Set[T] = {
     Range(0, times)
       .map(origin.x + _ * step)
-      .map(Tile(_, origin.y))
+      .map((x: Int) => Tile(PosZInt.from(x).get, origin.y))
       .map(builder.apply)
       .toSet
   }
 
-  private def repeatY[T <: Element](origin: Tile, times: Int, step: Int, builder: (Tile) => T): Set[T] = {
+  private def repeatY[T <: Element](origin: Tile, times: PosInt, step: PosInt, builder: (Tile) => T): Set[T] = {
     Range(0, times)
       .map(origin.y + _ * step)
-      .map(Tile(origin.x, _))
+      .map((y: Int) => Tile(origin.x, PosZInt.from(y).get))
       .map(builder.apply)
       .toSet
   }
@@ -33,7 +34,7 @@ object ElementsBuilder {
         row._1
           .zipWithIndex
           .filter(_._1 != ' ')
-          .map(col => builder.apply(Tile(origin.x + col._2, origin.y + row._2)))
+          .map(col => builder.apply(Tile(PosZInt.from(origin.x + col._2).get, PosZInt.from(origin.y + row._2).get)))
       })
       .toSet
   }

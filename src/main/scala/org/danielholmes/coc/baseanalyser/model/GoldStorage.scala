@@ -1,5 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class GoldStorage(level: Int, tile: Tile) extends Building {
-  val size = TileSize(3)
+import org.scalactic.anyvals.PosInt
+
+case class GoldStorage(level: PosInt, tile: Tile) extends Building {
+  val size: PosInt = 3
 }

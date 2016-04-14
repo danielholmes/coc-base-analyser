@@ -1,7 +1,9 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class Mortar(val level: Int, tile: Tile) extends Defense {
-  lazy val range = ElementRange(block.centre, TileSize(11), TileSize(4))
-  val size = TileSize(3)
+import org.scalactic.anyvals.PosInt
+
+case class Mortar(level: PosInt, tile: Tile) extends Defense {
+  lazy val range = ElementRange(block.centre, 11, 4)
+  val size: PosInt = 3
   val targets = Set(Target.Ground)
 }

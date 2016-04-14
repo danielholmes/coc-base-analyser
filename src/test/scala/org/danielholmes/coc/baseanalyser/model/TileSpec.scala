@@ -1,10 +1,11 @@
 package org.danielholmes.coc.baseanalyser.model
 
 import org.scalatest._
+import org.scalactic.anyvals.PosZInt
 
 class TileSpec extends FlatSpec with Matchers {
   "Tile" should "return correct matrix of tiles" in {
-    Tile(2, 2).matrixOfTilesInDirection(TileSize(2), TileSize(2)) should contain theSameElementsAs
+    Tile(2, 2).matrixOfTilesInDirection(2, 2) should contain theSameElementsAs
       Set(Tile(2, 2), Tile(2, 3), Tile(3, 2), Tile(3, 3))
   }
 
@@ -25,9 +26,9 @@ class TileSpec extends FlatSpec with Matchers {
 
   it should "return correct touching tiles at end" in {
     Tile(Tile.MaxCoordinate, Tile.MaxCoordinate).touchingTiles should be (Set(
-      Tile(Tile.MaxCoordinate - 1, Tile.MaxCoordinate - 1),
-      Tile(Tile.MaxCoordinate - 1, Tile.MaxCoordinate),
-      Tile(Tile.MaxCoordinate, Tile.MaxCoordinate - 1)
+      Tile(PosZInt.from(Tile.MaxCoordinate - 1).get, PosZInt.from(Tile.MaxCoordinate - 1).get),
+      Tile(PosZInt.from(Tile.MaxCoordinate - 1).get, Tile.MaxCoordinate),
+      Tile(Tile.MaxCoordinate, PosZInt.from(Tile.MaxCoordinate - 1).get)
     ))
   }
 

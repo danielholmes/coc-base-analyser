@@ -9,7 +9,7 @@ case class HogTargeting(startPosition: TileCoordinate, targeting: Element) {
   lazy val distance = startPosition.distanceTo(hitPoint)
 
   def cutsRadius(radius: ElementRange): Boolean = {
-    asSegment.distance(coordinateAsPoint(radius.coordinate)) < radius.outerSize.toInt
+    asSegment.distance(coordinateAsPoint(radius.coordinate)) < radius.outerSize
   }
 
   private val asLine = new Line(coordinateAsPoint(startPosition), coordinateAsPoint(hitPoint), 0.01)

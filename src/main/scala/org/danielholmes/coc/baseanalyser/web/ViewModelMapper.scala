@@ -130,11 +130,11 @@ class ViewModelMapper {
   }
 
   private def viewModel(range: ElementRange): RangeViewModel = {
-    RangeViewModel(range.innerSize.toInt, range.outerSize.toInt)
+    RangeViewModel(range.innerSize, range.outerSize)
   }
 
   private def viewModel(block: Block): BlockViewModel = {
-    BlockViewModel(block.x, block.y, block.size.toInt)
+    BlockViewModel(block.x, block.y, block.size)
   }
 
   private def viewModel(coord: TileCoordinate): TileCoordinateViewModel = {

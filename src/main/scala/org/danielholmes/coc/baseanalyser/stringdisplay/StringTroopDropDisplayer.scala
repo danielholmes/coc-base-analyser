@@ -6,7 +6,7 @@ class StringTroopDropDisplayer {
   def build(village: Village): String = {
     build(
       village.coordinatesAllowedToDropTroop.toSeq,
-      List.fill[Char](TileCoordinate.Max.toInt + 1, TileCoordinate.Max.toInt + 1) { ' ' }
+      List.fill[Char](TileCoordinate.MaxCoordinate + 1, TileCoordinate.MaxCoordinate + 1) { ' ' }
     ).map(_ :+ "\n")
       .map(_.mkString(""))
       .mkString("")

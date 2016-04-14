@@ -30,7 +30,7 @@ class StringDisplayer {
     drawBoundary(
       drawCCRadius(
         base,
-        drawElements(base.elements.toList, List.fill[Char](Tile.MaxCoordinate.toInt + 1, Tile.MaxCoordinate.toInt + 1) { ' ' })
+        drawElements(base.elements.toList, List.fill[Char](Tile.MaxCoordinate + 1, Tile.MaxCoordinate + 1) { ' ' })
       )
     )
   }
@@ -47,7 +47,7 @@ class StringDisplayer {
 
   private def drawCCRadius(radius: ElementRange, current: List[List[Char]], tiles: Seq[Tile]): List[List[Char]] = {
     if (tiles.isEmpty) return current
-    if (Math.abs(tiles.head.toMapCoordinate.distanceTo(radius.coordinate) - radius.outerSize.toInt) > 0.5) {
+    if (Math.abs(tiles.head.toMapCoordinate.distanceTo(radius.coordinate) - radius.outerSize) > 0.5) {
       return drawCCRadius(radius, current, tiles.tail)
     }
     drawCCRadius(
@@ -93,7 +93,7 @@ class StringDisplayer {
       case _: Mortar => 'M'
       case _: ArcherQueen => 'Q'
       case _: AirSweeper => 'S'
-      case _: TeslaTower => 'T'
+      case _: HiddenTesla => 'T'
       case _: WizardTower => 'W'
       case _: XBow => 'X'
       case _: ClanCastle => '@'
@@ -131,5 +131,5 @@ object StringDisplayer {
     Console.YELLOW
   )
 
-  private val HorizontalWall: List[Char] = (WallCorner :: List.fill[Char](TileCoordinate.Max.toInt) { WallHor }) :+ WallCorner
+  private val HorizontalWall: List[Char] = (WallCorner :: List.fill[Char](TileCoordinate.MaxCoordinate) { WallHor }) :+ WallCorner
 }

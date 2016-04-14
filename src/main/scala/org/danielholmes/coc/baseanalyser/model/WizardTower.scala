@@ -1,7 +1,9 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class WizardTower(level: Int, tile: Tile) extends Defense {
-  lazy val range = ElementRange(block.centre, TileSize(8))
+import org.scalactic.anyvals.PosInt
+
+case class WizardTower(level: PosInt, tile: Tile) extends Defense {
+  lazy val range = ElementRange(block.centre, 8)
   val targets = Target.Both
-  val size = TileSize(3)
+  val size: PosInt = 3
 }

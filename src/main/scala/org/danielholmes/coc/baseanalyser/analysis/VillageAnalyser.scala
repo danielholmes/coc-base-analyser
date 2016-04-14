@@ -1,8 +1,9 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model.Village
+import org.scalactic.anyvals.PosInt
 
-class VillageAnalyser(private val rulesByThLevel: Map[Int, Set[Rule]]) {
+class VillageAnalyser(private val rulesByThLevel: Map[PosInt, Set[Rule]]) {
   def analyse(village: Village): Option[AnalysisReport] = {
     village.townHallLevel
       .flatMap(rulesByThLevel.get)
