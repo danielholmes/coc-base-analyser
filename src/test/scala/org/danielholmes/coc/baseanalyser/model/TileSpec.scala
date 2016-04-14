@@ -1,7 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model
 
 import org.scalatest._
-import org.scalactic.anyvals.PosZInt
+import org.scalactic.anyvals.{PosZInt, PosZDouble}
 
 class TileSpec extends FlatSpec with Matchers {
   "Tile" should "return correct matrix of tiles" in {
@@ -33,15 +33,15 @@ class TileSpec extends FlatSpec with Matchers {
   }
 
   it should "return correct distance to touching" in {
-    Tile(1, 0).distanceTo(Tile(2, 0)) should be (0.0)
+    Tile(1, 0).distanceTo(Tile(2, 0)) should be (PosZDouble(0))
   }
 
   it should "return correct distance to x difference" in {
-    Tile(0, 0).distanceTo(Tile(11, 0)) should be (10.0)
+    Tile(0, 0).distanceTo(Tile(11, 0)) should be (PosZDouble(10))
   }
 
   it should "return correct distance to diagonal" in {
-    Tile(10, 10).distanceTo(Tile(6, 5)) should be (5.0)
+    Tile(10, 10).distanceTo(Tile(6, 5)) should be (PosZDouble(5))
   }
 
   it should "return correct shortest tile path to straight" in {

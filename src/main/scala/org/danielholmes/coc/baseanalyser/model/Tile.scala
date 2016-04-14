@@ -12,8 +12,8 @@ trait Tile {
   val isWithinMap: Boolean
   val touchingTiles: Set[Tile]
   val centre: MapCoordinate
-  def distanceTo(other: Tile): Double
-  def centreDistanceTo(other: Tile): Double
+  def distanceTo(other: Tile): PosZDouble
+  def centreDistanceTo(other: Tile): PosZDouble
   def manhattanDistanceTo(other: Tile): PosZInt
   def shortestTilePathTo(other: Tile, wallTiles: Set[Tile]): Option[List[Tile]]
   def matrixOfTilesTo(other: Tile): Set[Tile]
@@ -66,11 +66,11 @@ object Tile {
 
     lazy val centre = MapCoordinate(PosZDouble.from(x + 0.5).get, PosZDouble.from(y + 0.5).get)
 
-    def distanceTo(other: Tile): Double = {
+    def distanceTo(other: Tile): PosZDouble = {
       allCoordinates.flatMap(otherCoord => other.allCoordinates.map(_.distanceTo(otherCoord))).min
     }
 
-    def centreDistanceTo(other: Tile): Double = centre.distanceTo(other.centre)
+    def centreDistanceTo(other: Tile): PosZDouble = centre.distanceTo(other.centre)
 
     def manhattanDistanceTo(other: Tile): PosZInt = PosZInt.from(Math.abs(other.x - x) + Math.abs(other.y - y)).get
 

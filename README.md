@@ -45,8 +45,14 @@ then deploy it manually through the AWS console:
 
 ## General TODO
  - ui overhaul: select clan -> load players, select player, click go
- - find a way to instance pool/memoize Tile - many instances atm especially with path finding
-  - also TileSize
+ - Better spritesheet/rendering
+   - http://clashofclansbuilder.com/build?latest=true (individual buildings - in proportion)
+    - http://clashofclansbuilder.com/assets/builder/objects/158_13_toolbar.png
+    - http://clashofclansbuilder.com/assets/builder/objects/158_1_toolbar.png
+   - http://coc2.clashofclans-tools.com/coc-buildings-trans.png (not consistent scale)
+     - http://www.clashofclans-tools.com/Layout-Builder
+     - http://coc2.clashofclans-tools.com/coc-buildings-1-trans.png
+     
  
  - switch to new, dedicated credentials of own
  - 3d render

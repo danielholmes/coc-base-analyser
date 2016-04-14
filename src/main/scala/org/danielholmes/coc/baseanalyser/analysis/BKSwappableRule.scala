@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.scalactic.anyvals.PosZDouble
 
 class BKSwappableRule extends Rule {
   val CloseEnoughToSwap = 5.0
@@ -22,7 +23,7 @@ class BKSwappableRule extends Rule {
       (village.wallCompartments.forall(!_.contains(tile)) && closestDropDistance(village, tile) <= CloseEnoughToSwap)
   }
 
-  private def closestDropDistance(village: Village, tile: Tile): Double = {
+  private def closestDropDistance(village: Village, tile: Tile): PosZDouble = {
     // Currently hangs, likely something wrong in a star heuristic
     /*village.tilesAllowedToDropTroop
       .flatMap(_.shortestTilePathTo(tile, village.wallTiles))

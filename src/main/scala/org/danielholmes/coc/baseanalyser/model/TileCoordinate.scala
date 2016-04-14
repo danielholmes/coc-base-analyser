@@ -2,15 +2,15 @@ package org.danielholmes.coc.baseanalyser.model
 
 import org.danielholmes.coc.baseanalyser.util.Memo2
 
-import org.scalactic.anyvals.{PosInt, PosZInt}
+import org.scalactic.anyvals.{PosInt, PosZInt, PosZDouble}
 
 // The various ceremony is for instance pooling. See
 // http://stackoverflow.com/questions/20030826/scala-case-class-private-constructor-but-public-apply-method
 trait TileCoordinate {
   val x: PosZInt
   val y: PosZInt
-  def distanceTo(other: TileCoordinate): Double
-  def distanceTo(other: MapCoordinate): Double
+  def distanceTo(other: TileCoordinate): PosZDouble
+  def distanceTo(other: MapCoordinate): PosZDouble
   def offset(xAmount: Int, yAmount: Int): TileCoordinate
   def matrixOfCoordinatesTo(other: TileCoordinate, step: PosInt): Set[TileCoordinate]
   def matrixOfCoordinatesTo(other: TileCoordinate): Set[TileCoordinate]
@@ -43,11 +43,9 @@ object TileCoordinate {
     require((0 to MaxCoordinate).contains(x.toInt), s"TileCoordinates.x must be >= 0 <= $MaxCoordinate, given: $x")
     require((0 to MaxCoordinate).contains(y.toInt), s"TileCoordinates.y must be >= 0 <= $MaxCoordinate, given: $y")
 
-    def distanceTo(other: TileCoordinate): Double = distanceTo(other.toMapCoordinate)
+    def distanceTo(other: TileCoordinate): PosZDouble = distanceTo(other.toMapCoordinate)
 
-    def distanceTo(other: MapCoordinate): Double = {
-      Math.sqrt(Math.pow(x - other.x, 2) + Math.pow(y - other.y, 2))
-    }
+    def distanceTo(other: MapCoordinate): PosZDouble = toMapCoordinate.distanceTo(other)
 
     def offset(xAmount: Int, yAmount: Int): TileCoordinate = {
       TileCoordinate(PosZInt.from(x + xAmount).get, PosZInt.from(y + yAmount).get)
@@ -66,9 +64,7 @@ object TileCoordinate {
         .flatMap(_.xAxisCoordsTo(other, step))
     }
 
-    def matrixOfCoordinatesTo(other: TileCoordinate): Set[TileCoordinate] = {
-      matrixOfCoordinatesTo(other, 1)
-    }
+    def matrixOfCoordinatesTo(other: TileCoordinate): Set[TileCoordinate] = matrixOfCoordinatesTo(other, 1)
 
     def toMapCoordinate = MapCoordinate(x, y)
 
