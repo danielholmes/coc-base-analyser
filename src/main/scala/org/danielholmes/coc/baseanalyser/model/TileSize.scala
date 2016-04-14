@@ -1,5 +1,6 @@
 package org.danielholmes.coc.baseanalyser.model
 
+// TODO: Convert to import org.scalactic.anyvals.PosInt
 // TODO: Look into anyval - http://docs.scala-lang.org/overviews/core/value-classes.html
 case class TileSize(private val size: Int) {
   val toInt = size

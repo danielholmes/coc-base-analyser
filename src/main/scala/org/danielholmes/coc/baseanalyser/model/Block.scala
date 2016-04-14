@@ -2,13 +2,12 @@ package org.danielholmes.coc.baseanalyser.model
 
 case class Block(tile: Tile, size: TileSize) {
   require(tile != null, "coordinate musn't be null")
-  require(size != null, "size musn't be null")
   require(tile.x + size.toInt <= TileCoordinate.Max.toInt, s"x coord ${tile.x} + ${size.toInt} must be within coordinate system")
   require(tile.y + size.toInt <= TileCoordinate.Max.toInt, s"y coord ${tile.y} + ${size.toInt} must be within coordinate system")
 
   val x = tile.x
   val y = tile.y
-  private lazy val oppositeCoordinate = tile.toMapCoordinate.offset(size)
+  private lazy val oppositeCoordinate = tile.toMapCoordinate.offset(size.toInt, size.toInt)
   lazy val oppositeX = oppositeCoordinate.x
   lazy val oppositeY = oppositeCoordinate.y
 
@@ -17,7 +16,7 @@ case class Block(tile: Tile, size: TileSize) {
   lazy val centre = MapCoordinate(x + size.toDouble / 2.0, y + size.toDouble / 2.0)
 
   lazy val internalCoordinates: Set[TileCoordinate] = {
-    if (size < 2) {
+    if (size < TileSize(2)) {
       Set.empty
     } else {
       tile.toMapCoordinate
@@ -58,13 +57,13 @@ case class Block(tile: Tile, size: TileSize) {
     if (newSize == size) return this
     val sizeDiff = newSize - size
     Block(
-      Tile(tile.x - sizeDiff / 2, tile.y - sizeDiff / 2),
+      Tile(tile.x - sizeDiff.toInt / 2, tile.y - sizeDiff.toInt / 2),
       newSize
     )
   }
 
   private lazy val possibleIntersectionPoints: Set[TileCoordinate] = {
-    tile.toMapCoordinate.matrixOfCoordinatesTo(tile.toMapCoordinate.offset(size))
+    tile.toMapCoordinate.matrixOfCoordinatesTo(tile.toMapCoordinate.offset(size.toInt, size.toInt))
   }
 }
 

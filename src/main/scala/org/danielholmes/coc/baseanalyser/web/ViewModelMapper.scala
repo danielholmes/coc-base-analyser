@@ -9,12 +9,11 @@ import org.danielholmes.coc.baseanalyser.model.troops.{ArcherTargeting, HogTarge
 import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
 
 class ViewModelMapper {
-  def viewModel(report: AnalysisReport, time: Duration, memoryUsed: Long): AnalysisReportViewModel = {
+  def viewModel(report: AnalysisReport, time: Duration): AnalysisReportViewModel = {
     AnalysisReportViewModel(
       viewModel(report.village),
       report.results.map(viewModel),
-      time.toMillis,
-      memoryUsed
+      time.toMillis
     )
   }
 
@@ -202,7 +201,7 @@ case class MinimumCompartmentsResultViewModel(success: Boolean, minimumCompartme
 case class BKSwappableResultViewModel(success: Boolean, exposedTiles: Set[TileViewModel], name: String = "BKSwappable") extends RuleResultViewModel
 case class WizardTowersOutOfHoundPositionsResultViewModel(success: Boolean, outOfRange: Set[String], inRange: Set[String], houndPositions: Set[BlockViewModel], name: String = "WizardTowersOutOfHoundPositions") extends RuleResultViewModel
 
-case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel], timeMillis: Long, memoryUsed: Long)
+case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel], timeMillis: Long)
 
 case class CantAnalyseVillageViewModel(village: VillageViewModel, message: String)
 
@@ -257,6 +256,6 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val wizardTowersOutOfHoundPositionsResultFormat = jsonFormat5(WizardTowersOutOfHoundPositionsResultViewModel)
 
   implicit val villageFormat = jsonFormat2(VillageViewModel)
-  implicit val analysisReportFormat = jsonFormat4(AnalysisReportViewModel)
+  implicit val analysisReportFormat = jsonFormat3(AnalysisReportViewModel)
   implicit val cantAnalyseVillageFormat = jsonFormat2(CantAnalyseVillageViewModel)
 }

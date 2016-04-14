@@ -30,7 +30,7 @@ class StringDisplayer {
     drawBoundary(
       drawCCRadius(
         base,
-        drawElements(base.elements.toList, List.fill[Char](Tile.Max.toInt + 1, Tile.Max.toInt + 1) { ' ' })
+        drawElements(base.elements.toList, List.fill[Char](Tile.MaxCoordinate.toInt + 1, Tile.MaxCoordinate.toInt + 1) { ' ' })
       )
     )
   }

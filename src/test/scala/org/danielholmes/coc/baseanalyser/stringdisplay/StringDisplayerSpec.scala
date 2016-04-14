@@ -4,7 +4,7 @@ import org.danielholmes.coc.baseanalyser.model._
 import org.scalatest._
 
 class StringDisplayerSpec extends FlatSpec with Matchers {
-  val DrawnRowSize = Tile.Max + 1 + 2 + 1 // All tiles, borders and a new line char
+  val DrawnRowSize = Tile.MaxCoordinate + 1 + 2 + 1 // All tiles, borders and a new line char
   val displayer = new StringDisplayer
 
   "String Displayer" should "display empty base" in {

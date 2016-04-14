@@ -19,6 +19,8 @@ libraryDependencies ++= {
     "io.spray"            %%  "spray-client"  % sprayV,
     "com.typesafe.akka"   %%  "akka-actor"    % akkaV,
 
+    "org.scalactic" %% "scalactic" % "3.0.0-M15",
+
     "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
 
     "com.softwaremill.macwire" %% "macros" % "2.2.2" % "provided",

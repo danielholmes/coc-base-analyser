@@ -24,10 +24,10 @@ class TileSpec extends FlatSpec with Matchers {
   }
 
   it should "return correct touching tiles at end" in {
-    Tile(Tile.Max, Tile.Max).touchingTiles should be (Set(
-      Tile(Tile.Max - 1, Tile.Max - 1),
-      Tile(Tile.Max - 1, Tile.Max),
-      Tile(Tile.Max, Tile.Max - 1)
+    Tile(Tile.MaxCoordinate, Tile.MaxCoordinate).touchingTiles should be (Set(
+      Tile(Tile.MaxCoordinate - 1, Tile.MaxCoordinate - 1),
+      Tile(Tile.MaxCoordinate - 1, Tile.MaxCoordinate),
+      Tile(Tile.MaxCoordinate, Tile.MaxCoordinate - 1)
     ))
   }
 

@@ -79,7 +79,6 @@ then deploy it manually through the AWS console:
 
 
 ## TH9 Rules
- - Air defs not within WT range - prevent hounds tanking them
  - Air defs not walkable/reachable from outside walls
  - EQ cant connect >2 GB/DGB positions + AQ
  - Jump doesnt connect too many AQ, GB

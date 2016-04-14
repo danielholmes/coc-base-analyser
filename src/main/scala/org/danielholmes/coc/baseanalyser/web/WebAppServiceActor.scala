@@ -29,20 +29,17 @@ class WebAppServiceActor extends Actor with HttpService with Services {
           if (village.isEmpty) {
             complete(StatusCodes.NotFound, s""""IGN $userName not found in approved clans"""")
           } else {
-            val runtime = Runtime.getRuntime
+            // Can't find easy/flexible way to find memory usage
             val start = System.currentTimeMillis
-            val startMemory = runtime.totalMemory - runtime.freeMemory
             val analysis = villageAnalyser.analyse(village.get)
             val end = System.currentTimeMillis
-            val endMemory = runtime.totalMemory - runtime.freeMemory
             if (analysis.isEmpty) {
               complete(StatusCodes.BadRequest, viewModelMapper.viewModel(village.get, s"$userName village can't be analysed - currently only supporting TH8-11"))
             } else {
               complete(
                 viewModelMapper.viewModel(
                   analysis.get,
-                  Duration.ofNanos(end - start),
-                  endMemory - startMemory
+                  Duration.ofNanos(end - start)
                 )
               )
             }
