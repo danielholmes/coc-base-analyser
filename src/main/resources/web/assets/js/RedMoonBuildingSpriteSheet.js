@@ -1,4 +1,4 @@
-var BuildingSpriteSheet = function(image) {
+var RedMoonBuildingSpriteSheet = function(image) {
     var defs = {
         "TownHall": {
             x: 0,

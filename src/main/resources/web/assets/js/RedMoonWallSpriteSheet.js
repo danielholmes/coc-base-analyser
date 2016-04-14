@@ -1,4 +1,4 @@
-var WallSpriteSheet = function(image) {
+var RedMoonWallSpriteSheet = function(image) {
     // TODO: Nearly repeated in building sprite sheet, sheetIndex only difference
     var create = function(element, mapConfig) {
         var sheetDef = {

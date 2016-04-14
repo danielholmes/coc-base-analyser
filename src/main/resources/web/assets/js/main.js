@@ -3,8 +3,10 @@
 $(document).ready(function() {
     preloader.loadAssets(function(queue) {
         mapDisplay2d.setAssets({
-            "buildings": queue.getResult("buildings"),
-            "walls": queue.getResult("walls")
+            "redMoonBuildings": queue.getResult("redMoonBuildings"),
+            "redMoonWalls": queue.getResult("redMoonWalls"),
+            //"spriteSheetImage": queue.getResult("spriteSheetImage"),
+            //"spriteSheetDefs": queue.getResult("spriteSheetDefs")
         });
         ui.render();
     });

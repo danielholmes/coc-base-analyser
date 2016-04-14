@@ -1,0 +1,177 @@
+{
+  "SpellFactory": {
+    "x": 0,
+    "y": 1860,
+    "height": 90,
+    "numLevels": 5,
+    "width": 90
+  },
+  "AirDefense": {
+    "x": 0,
+    "y": 270,
+    "height": 90,
+    "numLevels": 8,
+    "width": 90
+  },
+  "DarkBarrack": {
+    "x": 0,
+    "y": 1650,
+    "height": 90,
+    "numLevels": 6,
+    "width": 90
+  },
+  "Wall": {
+    "x": 0,
+    "y": 690,
+    "height": 30,
+    "numLevels": 11,
+    "width": 30
+  },
+  "DarkElixirCollector": {
+    "x": 0,
+    "y": 1170,
+    "height": 90,
+    "numLevels": 6,
+    "width": 90
+  },
+  "ArmyCamp": {
+    "x": 0,
+    "y": 1410,
+    "height": 150,
+    "numLevels": 8,
+    "width": 150
+  },
+  "Laboratory": {
+    "x": 0,
+    "y": 1740,
+    "height": 120,
+    "numLevels": 8,
+    "width": 120
+  },
+  "TeslaTower": {
+    "x": 0,
+    "y": 450,
+    "height": 90,
+    "numLevels": 8,
+    "width": 90
+  },
+  "Mortar": {
+    "x": 0,
+    "y": 180,
+    "height": 90,
+    "numLevels": 8,
+    "width": 90
+  },
+  "GoldStorage": {
+    "x": 0,
+    "y": 810,
+    "height": 90,
+    "numLevels": 11,
+    "width": 90
+  },
+  "ClanCastle": {
+    "x": 0,
+    "y": 2250,
+    "height": 90,
+    "numLevels": 6,
+    "width": 90
+  },
+  "ArcherTower": {
+    "x": 0,
+    "y": 90,
+    "height": 90,
+    "numLevels": 13,
+    "width": 90
+  },
+  "InfernoTower": {
+    "x": 0,
+    "y": 630,
+    "height": 60,
+    "numLevels": 3,
+    "width": 60
+  },
+  "WizardTower": {
+    "x": 0,
+    "y": 360,
+    "height": 90,
+    "numLevels": 8,
+    "width": 90
+  },
+  "BuilderHut": {
+    "x": 0,
+    "y": 1350,
+    "height": 60,
+    "numLevels": 1,
+    "width": 60
+  },
+  "ElixirCollector": {
+    "x": 0,
+    "y": 990,
+    "height": 90,
+    "numLevels": 12,
+    "width": 90
+  },
+  "DarkElixirStorage": {
+    "x": 0,
+    "y": 1260,
+    "height": 90,
+    "numLevels": 6,
+    "width": 90
+  },
+  "TownHall": {
+    "x": 0,
+    "y": 2130,
+    "height": 120,
+    "numLevels": 10,
+    "width": 120
+  },
+  "ArcherQueen": {
+    "x": 0,
+    "y": 2040,
+    "height": 90,
+    "numLevels": 1,
+    "width": 90
+  },
+  "ElixirStorage": {
+    "x": 0,
+    "y": 900,
+    "height": 90,
+    "numLevels": 11,
+    "width": 90
+  },
+  "BarbarianKing": {
+    "x": 0,
+    "y": 1950,
+    "height": 90,
+    "numLevels": 1,
+    "width": 90
+  },
+  "GoldMine": {
+    "x": 0,
+    "y": 720,
+    "height": 90,
+    "numLevels": 12,
+    "width": 90
+  },
+  "Cannon": {
+    "x": 0,
+    "y": 0,
+    "height": 90,
+    "numLevels": 13,
+    "width": 90
+  },
+  "Barrack": {
+    "x": 0,
+    "y": 1560,
+    "height": 90,
+    "numLevels": 10,
+    "width": 90
+  },
+  "XBow": {
+    "x": 0,
+    "y": 540,
+    "height": 90,
+    "numLevels": 4,
+    "width": 90
+  }
+}

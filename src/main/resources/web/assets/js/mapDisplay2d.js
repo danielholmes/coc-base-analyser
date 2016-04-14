@@ -402,8 +402,9 @@ var mapDisplay2d = (function(document) {
     };
     
     var setAssets = function(newAssets) {
-        buildingSheet = new BuildingSpriteSheet(newAssets.buildings);
-        wallSheet = new WallSpriteSheet(newAssets.walls);
+        buildingSheet = new RedMoonBuildingSpriteSheet(newAssets.redMoonBuildings);
+        //buildingSheet = new SpriteSheet(newAssets.spriteSheetImage, newAssets.spriteSheetDefs);
+        wallSheet = new RedMoonWallSpriteSheet(newAssets.redMoonWalls);
         render();
     };
 
