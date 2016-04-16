@@ -4,11 +4,11 @@ import org.danielholmes.coc.baseanalyser.model.{Element, Tile, Village}
 import org.scalactic.anyvals.{PosInt, PosZInt}
 
 object ElementsBuilder {
-  def rectangle[T <: Element](origin: Tile, width: PosInt, height: PosInt, step: PosInt, builder: (Tile) => T): Set[T] = {
-    ElementsBuilder.repeatX(origin, width, step, builder) ++
-      ElementsBuilder.repeatX(origin.offset(0, height - 1), width, step, builder) ++
-      ElementsBuilder.repeatY(origin.offset(0, step), PosInt.from(height - 2).get, step, builder) ++
-      ElementsBuilder.repeatY(origin.offset(width - 1, step), PosInt.from(height - 2).get, step, builder)
+  def rectangle[T <: Element](origin: Tile, xTimes: PosInt, yTimes: PosInt, step: PosInt, builder: (Tile) => T): Set[T] = {
+    ElementsBuilder.repeatX(origin, xTimes, step, builder) ++
+      ElementsBuilder.repeatX(origin.offset(0, (yTimes - 1) * step), xTimes, step, builder) ++
+      ElementsBuilder.repeatY(origin.offset(0, step), PosInt.from(yTimes - 2).get, step, builder) ++
+      ElementsBuilder.repeatY(origin.offset((xTimes - 1) * step, step), PosInt.from(yTimes - 2).get, step, builder)
   }
 
   def repeatX[T <: Element](origin: Tile, times: PosInt, step: PosInt, builder: (Tile) => T): Set[T] = {

@@ -102,6 +102,6 @@ object Tile {
 
     def offset(xDiff: Int, yDiff: Int): Tile = Tile(PosZInt.from(x + xDiff).get, PosZInt.from(y + yDiff).get)
 
-    override lazy val toString = s"Tile($x, $y)"
+    override lazy val toString = s"Tile(${x.toInt}, ${y.toInt})"
   }
 }

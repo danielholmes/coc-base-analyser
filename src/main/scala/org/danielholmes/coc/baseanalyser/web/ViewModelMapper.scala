@@ -5,7 +5,7 @@ import java.util.{Base64, UUID}
 
 import org.danielholmes.coc.baseanalyser.analysis._
 import org.danielholmes.coc.baseanalyser.model._
-import org.danielholmes.coc.baseanalyser.model.troops.{ArcherTargeting, HogTargeting}
+import org.danielholmes.coc.baseanalyser.model.troops.{ArcherQueenAttacking, ArcherTargeting, HogTargeting}
 import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
 
 class ViewModelMapper {
@@ -67,8 +67,21 @@ class ViewModelMapper {
         w.inRange.map(objectId),
         w.houndPositions.map(_.block).map(viewModel)
       )
+      case q: QueenWalkedAirDefenseRuleResult => QueenWalkedAirDefenseResultViewModel(
+        q.success,
+        q.attackings.map(viewModel),
+        q.nonReachableAirDefs.map(viewModel)
+      )
       case _ => throw new RuntimeException(s"Don't know how to create view model for ${result.getClass.getSimpleName}")
     }
+  }
+
+  private def viewModel(attacking: ArcherQueenAttacking): ArcherQueenAttackingViewModel = {
+    ArcherQueenAttackingViewModel(
+      viewModel(attacking.startPosition),
+      objectId(attacking.targeting),
+      viewModel(attacking.hitPoint)
+    )
   }
 
   private def viewModel(targeting: HogTargeting): HogTargetingViewModel = {
@@ -186,6 +199,7 @@ case class VillageViewModel(elements: Set[ElementViewModel], wallCompartments: S
 
 case class HogTargetingViewModel(startPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 case class ArcherTargetingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
+case class ArcherQueenAttackingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 case class WallCompartmentViewModel(id: String, walls: Set[String], innerTiles: Set[TileViewModel])
 
 sealed trait RuleResultViewModel {
@@ -200,6 +214,7 @@ case class AirSnipedDefenseResultViewModel(success: Boolean, snipedDefenses: Set
 case class MinimumCompartmentsResultViewModel(success: Boolean, minimumCompartments: Int, compartments: Set[String], name: String = "MinimumCompartments") extends RuleResultViewModel
 case class BKSwappableResultViewModel(success: Boolean, exposedTiles: Set[TileViewModel], name: String = "BKSwappable") extends RuleResultViewModel
 case class WizardTowersOutOfHoundPositionsResultViewModel(success: Boolean, outOfRange: Set[String], inRange: Set[String], houndPositions: Set[BlockViewModel], name: String = "WizardTowersOutOfHoundPositions") extends RuleResultViewModel
+case class QueenWalkedAirDefenseResultViewModel(success: Boolean, attackings: Set[ArcherQueenAttackingViewModel], nonReachableAirDefs: Set[ElementViewModel], name: String = "QueenWalkedAirDefense") extends RuleResultViewModel
 
 case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel], timeMillis: Long)
 
@@ -227,6 +242,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
       case m: MinimumCompartmentsResultViewModel => minimumCompartmentsResultFormat.write(m)
       case b: BKSwappableResultViewModel => bkSwappableResultFormat.write(b)
       case w: WizardTowersOutOfHoundPositionsResultViewModel => wizardTowersOutOfHoundPositionsResultFormat.write(w)
+      case q: QueenWalkedAirDefenseResultViewModel => queenWalkedAirDefenseResultFormat.write(q)
       case _ => throw new RuntimeException(s"Don't know how to serialise ${r.getClass.getSimpleName}")
     }
 
@@ -246,6 +262,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val clanCastleElementFormat = jsonFormat6(ClanCastleElementViewModel)
   implicit val archerTargetingFormat = jsonFormat3(ArcherTargetingViewModel)
   implicit val hogTargetingFormat = jsonFormat3(HogTargetingViewModel)
+  implicit val archerQueenAttackingFormat = jsonFormat3(ArcherQueenAttackingViewModel)
 
   implicit val hogCCLureResultFormat = jsonFormat3(HogCCLureResultViewModel)
   implicit val archerAnchorResultFormat = jsonFormat4(ArcherAnchorResultViewModel)
@@ -254,6 +271,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val minimumCompartmentsResultFormat = jsonFormat4(MinimumCompartmentsResultViewModel)
   implicit val bkSwappableResultFormat = jsonFormat3(BKSwappableResultViewModel)
   implicit val wizardTowersOutOfHoundPositionsResultFormat = jsonFormat5(WizardTowersOutOfHoundPositionsResultViewModel)
+  implicit val queenWalkedAirDefenseResultFormat = jsonFormat4(QueenWalkedAirDefenseResultViewModel)
 
   implicit val villageFormat = jsonFormat2(VillageViewModel)
   implicit val analysisReportFormat = jsonFormat3(AnalysisReportViewModel)

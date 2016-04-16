@@ -88,6 +88,37 @@ var mapDisplay2d = (function(document) {
         renderElementRangesByIds(mapConfig, _.union(result.outOfRange, result.inRange));
     };
 
+    var renderQueenWalkedAirDefense = function(result, mapConfig) {
+        eachBuildingDisplay(
+            result.nonReachableAirDefs,
+            function (buildingContainer) {
+                applyColour(buildingContainer, 0, 1, 0);
+            }
+        );
+        eachBuildingDisplay(
+            _.map(result.attackings, function(attacking) { return attacking.targetingId; }),
+            function (buildingContainer) {
+                applyColour(buildingContainer, 1, 0, 0);
+            }
+        );
+        _.each(
+            result.attackings,
+            function(attacking) {
+                var line = new createjs.Shape();
+                line.graphics
+                    .beginStroke("#ff0000")
+                    .moveTo(0, 0)
+                    .lineTo(
+                        (attacking.hitPoint.x - attacking.standingPosition.x) * mapConfig.tileSize,
+                        (attacking.hitPoint.y - attacking.standingPosition.y) * mapConfig.tileSize
+                    );
+                line.x = attacking.standingPosition.x * mapConfig.tileSize;
+                line.y = attacking.standingPosition.y * mapConfig.tileSize;
+                extrasContainer.addChild(line);
+            }
+        );
+    };
+
     var renderActiveRule = function(mapConfig) {
         if (!model.hasActiveRule()) {
             return;
@@ -117,6 +148,9 @@ var mapDisplay2d = (function(document) {
                 break;
             case 'WizardTowersOutOfHoundPositions':
                 renderWizardTowersOutOfHoundPositions(result, mapConfig);
+                break;
+            case 'QueenWalkedAirDefense':
+                renderQueenWalkedAirDefense(result, mapConfig);
                 break;
             default:
                 console.error('Don\'t know how to render active rule: ' + result.name);

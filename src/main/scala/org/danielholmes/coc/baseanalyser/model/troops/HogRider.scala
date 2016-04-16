@@ -22,7 +22,7 @@ object HogRider {
   }
 
   private def getAllClosest(coordinate: TileCoordinate, elements: Set[Element]): Set[Element] = {
-    val groupedByDistance = elements.groupBy(_.hitBlock.distanceFrom(coordinate))
+    val groupedByDistance = elements.groupBy(_.hitBlock.distanceTo(coordinate))
     groupedByDistance.get(groupedByDistance.keySet.min).get
   }
 }

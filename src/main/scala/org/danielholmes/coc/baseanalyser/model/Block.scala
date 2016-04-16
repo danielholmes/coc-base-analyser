@@ -40,7 +40,7 @@ case class Block(tile: Tile, size: PosInt) {
       .distanceTo(from)))
   }
 
-  def distanceFrom(from: TileCoordinate) = {
+  def distanceTo(from: TileCoordinate) = {
     findClosestCoordinate(from).distanceTo(from)
   }
 
@@ -70,17 +70,16 @@ case class Block(tile: Tile, size: PosInt) {
 object Block {
   val Map = Block(Tile.Origin, TileCoordinate.MaxCoordinate)
 
-  def anyIntersect(blocks: Set[Block]): Boolean = {
-    blocks.exists(anyIntersect(_, blocks.toSeq))
+  def firstIntersecting(blocks: Set[Block]): Option[(Block, Block)] = {
+    blocks.map(b => firstIntersecting(b, blocks.toSeq).map((_, b)))
+      .headOption
+      .getOrElse(None)
   }
 
-  def getAnyIntersection(blocks: Set[Block]): Option[Block] = {
-    blocks.find(anyIntersect(_, blocks.toSeq))
-  }
-
-  private def anyIntersect(block: Block, blocks: Seq[Block]): Boolean = {
-    if (blocks.isEmpty) return false
-    if (block == blocks.head) return anyIntersect(block, blocks.tail)
-    block.intersects(blocks.head) || anyIntersect(block, blocks.tail)
+  private def firstIntersecting(block: Block, blocks: Seq[Block]): Option[Block] = {
+    if (blocks.isEmpty) return None
+    if (block == blocks.head) return firstIntersecting(block, blocks.tail)
+    if (block.intersects(blocks.head)) return Some(blocks.head)
+    firstIntersecting(block, blocks.tail)
   }
 }

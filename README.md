@@ -45,14 +45,6 @@ then deploy it manually through the AWS console:
 
 ## General TODO
  - ui overhaul: select clan -> load players, select player, click go
- - Better spritesheet/rendering
-   - http://clashofclansbuilder.com/build?latest=true (individual buildings - in proportion)
-    - http://clashofclansbuilder.com/assets/builder/objects/158_13_toolbar.png
-    - http://clashofclansbuilder.com/assets/builder/objects/158_1_toolbar.png
-   - http://coc2.clashofclans-tools.com/coc-buildings-trans.png (not consistent scale)
-     - http://www.clashofclans-tools.com/Layout-Builder
-     - http://coc2.clashofclans-tools.com/coc-buildings-1-trans.png
-     
  
  - switch to new, dedicated credentials of own
  - 3d render
@@ -60,7 +52,7 @@ then deploy it manually through the AWS console:
  - select rule set types for each TH - farm + arranged
  - pass, warning, fail levels (e.g. for minion anchors)
  - saved result with a url to be able to send someone (save serialised result in db which can be recalled and lasts one 
-   day, ensure to inlude version number so can expire early if need)
+   day, ensure to include version number so can expire early if need)
  - dynamic sizing of canvas still a bit funky - find proper js solution
 
 
@@ -85,7 +77,6 @@ then deploy it manually through the AWS console:
 
 
 ## TH9 Rules
- - Air defs not walkable/reachable from outside walls
  - EQ cant connect >2 GB/DGB positions + AQ
  - Jump doesnt connect too many AQ, GB
  - black bombs within range of queen or air def - to get hounds or suicide drags. red bombs out of range of air defs
@@ -104,3 +95,4 @@ then deploy it manually through the AWS console:
    - war - depending on clan and level, this might be to prevent 1 star, prevent 2 star, or just prevent 3 star
    - trophy?
  - provide weaknesses for attack types. e.g. drags doesnt consider DGB locations, hogs dont consider air def high hp.
+ - queen walk

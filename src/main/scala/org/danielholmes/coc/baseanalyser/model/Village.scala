@@ -3,9 +3,10 @@ package org.danielholmes.coc.baseanalyser.model
 import org.scalactic.anyvals.PosInt
 
 case class Village(elements: Set[Element]) {
+  private val firstIntersect = Block.firstIntersecting(elements.map(_.block))
   require(
-    !Block.anyIntersect(elements.map(_.block)),
-    s"Elements musn't overlap (currently ${Block.getAnyIntersection(elements.map(_.block)).get} overlaps"
+    firstIntersect.isEmpty,
+    s"Elements musn't overlap (currently $firstIntersect overlaps"
   )
 
   val townHallLevel: Option[PosInt] = elements.find(_.isInstanceOf[TownHall])
@@ -37,7 +38,9 @@ case class Village(elements: Set[Element]) {
 
   private lazy val walls: Set[Wall] = elements.filter(_.isInstanceOf[Wall]).map(_.asInstanceOf[Wall])
 
-  private lazy val outerTiles: Set[Tile] = detectCompartment(Tile.AllOutsideMap).innerTiles
+  lazy val outerTiles: Set[Tile] = detectCompartment(Tile.AllOutsideMap).innerTiles
+
+  lazy val outerTileCoordinates: Set[TileCoordinate] = outerTiles.flatMap(_.allCoordinates)
 
   private def detectAllCompartments(innerTiles: Set[Tile], current: Set[WallCompartment]): Set[WallCompartment] = {
     if (innerTiles.isEmpty) return current

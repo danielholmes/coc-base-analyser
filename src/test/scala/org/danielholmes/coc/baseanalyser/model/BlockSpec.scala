@@ -42,24 +42,22 @@ class BlockSpec extends FlatSpec with Matchers {
     Block(Tile.Origin, 2).intersects(Block(Tile(1, 1), 2)) should be (true)
   }
 
-  it should "return true any intersect for no items" in {
-    Block.anyIntersect(Set.empty) should be (false)
-  }
-
   it should "return false any intersect for no items" in {
-    Block.anyIntersect(Set(Block(Tile.Origin, 2))) should be (false)
+    Block.firstIntersecting(Set.empty) should be (empty)
   }
 
   it should "return false any intersect for one item" in {
-    Block.anyIntersect(Set(Block(Tile.Origin, 2))) should be (false)
+    Block.firstIntersecting(Set(Block(Tile.Origin, 2))) should be (empty)
   }
 
   it should "return false any intersect for edge touching items" in {
-    Block.anyIntersect(Set(Block(Tile.Origin, 2), Block(Tile(0, 2), 2))) should be (false)
+    Block.firstIntersecting(Set(Block(Tile.Origin, 2), Block(Tile(0, 2), 2))) should be (empty)
   }
 
   it should "return true any intersect for overlapping items" in {
-    Block.anyIntersect(Set(Block(Tile.Origin, 2), Block(Tile(1, 1), 2))) should be (true)
+    val b1 = Block(Tile.Origin, 2)
+    val b2 = Block(Tile(1, 1), 2)
+    Block.firstIntersecting(Set(b1, b2)) should contain ((b1, b2))
   }
 
   it should "return correct all tiles" in {

@@ -1,15 +1,15 @@
 package org.danielholmes.coc.baseanalyser.model.troops
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.scalactic.anyvals.PosDouble
 
 object Archer {
-  val Range = 3.5
+  val Range = PosDouble(3.5)
 
   def findTarget(coordinate: TileCoordinate, village: Village): Option[ArcherTargeting] = {
-    if (village.isEmpty) return None
     if (village.buildings.isEmpty) return None
-    Some(village.buildings.minBy(_.hitBlock.distanceFrom(coordinate)))
-      .filter(_.hitBlock.distanceFrom(coordinate) <= Range)
+    Some(village.buildings.minBy(_.hitBlock.distanceTo(coordinate)))
+      .filter(_.hitBlock.distanceTo(coordinate) < Range)
       .map(ArcherTargeting(coordinate, _))
   }
 }

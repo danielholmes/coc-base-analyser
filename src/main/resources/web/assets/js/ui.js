@@ -34,6 +34,10 @@ var ui = (function($, model, mapDisplay, window) {
         WizardTowersOutOfHoundPositions: {
             title: "Wizard Towers shouldn't lock onto hounds",
             description: "Wizard Towers are strong against loons, they shouldn't be too close to air defenses where hounds can tank for them for long periods"
+        },
+        QueenWalkedAirDefense: {
+            title: "Air Defenses not Queen Walkable",
+            description: "Air Defenses shouldn't be reachable over a wall by a queen walking outside"
         }
     };
 
