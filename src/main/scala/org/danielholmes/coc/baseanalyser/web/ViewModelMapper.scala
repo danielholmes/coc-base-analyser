@@ -5,7 +5,7 @@ import java.util.{Base64, UUID}
 
 import org.danielholmes.coc.baseanalyser.analysis._
 import org.danielholmes.coc.baseanalyser.model._
-import org.danielholmes.coc.baseanalyser.model.troops.{ArcherQueenAttacking, ArcherTargeting, HogTargeting}
+import org.danielholmes.coc.baseanalyser.model.troops.{ArcherQueenAttacking, ArcherTargeting, HogTargeting, WizardTowerHoundTargeting}
 import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
 
 class ViewModelMapper {
@@ -64,13 +64,13 @@ class ViewModelMapper {
       case w: WizardTowersOutOfHoundPositionsRuleResult => WizardTowersOutOfHoundPositionsResultViewModel(
         w.success,
         w.outOfRange.map(objectId),
-        w.inRange.map(objectId),
+        w.inRange.map(viewModel),
         w.houndPositions.map(_.block).map(viewModel)
       )
       case q: QueenWalkedAirDefenseRuleResult => QueenWalkedAirDefenseResultViewModel(
         q.success,
         q.attackings.map(viewModel),
-        q.nonReachableAirDefs.map(viewModel)
+        q.nonReachableAirDefs.map(objectId)
       )
       case _ => throw new RuntimeException(s"Don't know how to create view model for ${result.getClass.getSimpleName}")
     }
@@ -142,6 +142,10 @@ class ViewModelMapper {
     }
   }
 
+  private def viewModel(targeting: WizardTowerHoundTargeting): WizardTowerHoundTargetingViewModel = {
+    WizardTowerHoundTargetingViewModel(objectId(targeting.tower), objectId(targeting.airDefense))
+  }
+
   private def viewModel(range: ElementRange): RangeViewModel = {
     RangeViewModel(range.innerSize, range.outerSize)
   }
@@ -201,6 +205,7 @@ case class HogTargetingViewModel(startPosition: TileCoordinateViewModel, targeti
 case class ArcherTargetingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 case class ArcherQueenAttackingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 case class WallCompartmentViewModel(id: String, walls: Set[String], innerTiles: Set[TileViewModel])
+case class WizardTowerHoundTargetingViewModel(tower: String, airDefense: String)
 
 sealed trait RuleResultViewModel {
   val name: String
@@ -213,8 +218,8 @@ case class HighHPUnderAirDefResultViewModel(success: Boolean, outOfAirDefRange: 
 case class AirSnipedDefenseResultViewModel(success: Boolean, snipedDefenses: Set[String], airDefenses: Set[String], name: String = "AirSnipedDefense") extends RuleResultViewModel
 case class MinimumCompartmentsResultViewModel(success: Boolean, minimumCompartments: Int, compartments: Set[String], name: String = "MinimumCompartments") extends RuleResultViewModel
 case class BKSwappableResultViewModel(success: Boolean, exposedTiles: Set[TileViewModel], name: String = "BKSwappable") extends RuleResultViewModel
-case class WizardTowersOutOfHoundPositionsResultViewModel(success: Boolean, outOfRange: Set[String], inRange: Set[String], houndPositions: Set[BlockViewModel], name: String = "WizardTowersOutOfHoundPositions") extends RuleResultViewModel
-case class QueenWalkedAirDefenseResultViewModel(success: Boolean, attackings: Set[ArcherQueenAttackingViewModel], nonReachableAirDefs: Set[ElementViewModel], name: String = "QueenWalkedAirDefense") extends RuleResultViewModel
+case class WizardTowersOutOfHoundPositionsResultViewModel(success: Boolean, outOfRange: Set[String], inRange: Set[WizardTowerHoundTargetingViewModel], houndPositions: Set[BlockViewModel], name: String = "WizardTowersOutOfHoundPositions") extends RuleResultViewModel
+case class QueenWalkedAirDefenseResultViewModel(success: Boolean, attackings: Set[ArcherQueenAttackingViewModel], nonReachableAirDefs: Set[String], name: String = "QueenWalkedAirDefense") extends RuleResultViewModel
 
 case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel], timeMillis: Long)
 
@@ -263,6 +268,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val archerTargetingFormat = jsonFormat3(ArcherTargetingViewModel)
   implicit val hogTargetingFormat = jsonFormat3(HogTargetingViewModel)
   implicit val archerQueenAttackingFormat = jsonFormat3(ArcherQueenAttackingViewModel)
+  implicit val WizardTowerHoundTargetingFormat = jsonFormat2(WizardTowerHoundTargetingViewModel)
 
   implicit val hogCCLureResultFormat = jsonFormat3(HogCCLureResultViewModel)
   implicit val archerAnchorResultFormat = jsonFormat4(ArcherAnchorResultViewModel)

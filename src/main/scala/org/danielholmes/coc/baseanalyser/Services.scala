@@ -25,7 +25,6 @@ trait Services {
   private lazy val th9Rules: Set[Rule] = Set(
     wire[HogCCLureRule],
     wire[AirSnipedDefenseRule],
-    wire[BKSwappableRule],
     wire[WizardTowersOutOfHoundPositionsRule],
     wire[QueenWalkedAirDefenseRule]
   )

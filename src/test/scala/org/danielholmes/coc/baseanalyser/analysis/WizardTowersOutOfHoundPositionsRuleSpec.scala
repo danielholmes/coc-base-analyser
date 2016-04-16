@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.troops.WizardTowerHoundTargeting
 import org.danielholmes.coc.baseanalyser.util.ElementsBuilder
 import org.scalatest._
 
@@ -26,7 +27,7 @@ class WizardTowersOutOfHoundPositionsRuleSpec extends FlatSpec with Matchers {
     val ad = AirDefense(1, Tile(1, 1))
     val result = rule.analyse(Village(Set(ad, wt)))
     result.success should be (false)
-    result should be (WizardTowersOutOfHoundPositionsRuleResult(Set.empty, Set(wt), Set(ad)))
+    result should be (WizardTowersOutOfHoundPositionsRuleResult(Set.empty, Set(WizardTowerHoundTargeting(wt, ad)), Set(ad)))
   }
 
   it should "return succeed for wt out of range of air def" in {

@@ -79,13 +79,21 @@ var mapDisplay2d = (function(document) {
                 applyColour(buildingContainer, 0, 1, 0);
             }
         );
+
+        var inRangeTowerIds = _.map(result.inRange, function(targeting) { return targeting.tower; });
         eachBuildingDisplay(
-            result.inRange,
+            inRangeTowerIds,
             function (buildingContainer) {
                 applyColour(buildingContainer, 1, 0, 0);
             }
         );
-        renderElementRangesByIds(mapConfig, _.union(result.outOfRange, result.inRange));
+        eachBuildingDisplay(
+            _.map(result.inRange, function(targeting) { return targeting.airDefense; }),
+            function (buildingContainer) {
+                applyColour(buildingContainer, 1, 0.5, 0.5);
+            }
+        );
+        renderElementRangesByIds(mapConfig, _.union(inRangeTowerIds, result.outOfRange));
     };
 
     var renderQueenWalkedAirDefense = function(result, mapConfig) {
@@ -173,31 +181,33 @@ var mapDisplay2d = (function(document) {
             return;
         }
 
-        var exposedMask = new createjs.Shape();
-        exposedMask.graphics.beginFill("#00ff00");
-        _.each(result.exposedTiles, function(tile) {
-            exposedMask.graphics.drawRect(
-                tile.x * mapConfig.tileSize,
-                tile.y * mapConfig.tileSize,
-                mapConfig.tileSize,
-                mapConfig.tileSize
-            );
-        });
+        if (!result.success) {
+            var exposedMask = new createjs.Shape();
+            exposedMask.graphics.beginFill("#00ff00");
+            _.each(result.exposedTiles, function (tile) {
+                exposedMask.graphics.drawRect(
+                    tile.x * mapConfig.tileSize,
+                    tile.y * mapConfig.tileSize,
+                    mapConfig.tileSize,
+                    mapConfig.tileSize
+                );
+            });
 
-        var bkRadiusFill = new createjs.Shape();
-        bkRadiusFill.graphics
-            .beginFill("#ff0000")
-            .drawCircle(
-                0,
-                0,
-                bk.range.outer * mapConfig.tileSize
-            );
-        bkRadiusFill.x = (bk.block.x + bk.block.size / 2) * mapConfig.tileSize;
-        bkRadiusFill.y = (bk.block.y + bk.block.size / 2) * mapConfig.tileSize;
-        bkRadiusFill.alpha = 0.6;
-        bkRadiusFill.mask = exposedMask;
+            var bkRadiusFill = new createjs.Shape();
+            bkRadiusFill.graphics
+                .beginFill("#ff0000")
+                .drawCircle(
+                    0,
+                    0,
+                    bk.range.outer * mapConfig.tileSize
+                );
+            bkRadiusFill.x = (bk.block.x + bk.block.size / 2) * mapConfig.tileSize;
+            bkRadiusFill.y = (bk.block.y + bk.block.size / 2) * mapConfig.tileSize;
+            bkRadiusFill.alpha = 0.6;
+            bkRadiusFill.mask = exposedMask;
 
-        extrasContainer.addChild(bkRadiusFill);
+            extrasContainer.addChild(bkRadiusFill);
+        }
 
         renderElementRangesByTypeName(mapConfig, "BarbarianKing");
     };
@@ -331,12 +341,16 @@ var mapDisplay2d = (function(document) {
             _.map(
                 ids,
                 function (id) {
-                    return _.find(
+                    var building = _.find(
                         buildingsContainer.children,
                         function (buildingContainer) {
                             return buildingContainer.id == id;
                         }
                     );
+                    if (building == null) {
+                        console.error("No building with id " + id);
+                    }
+                    return building;
                 }
             ),
             operation
