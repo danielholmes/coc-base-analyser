@@ -44,7 +44,6 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - Choose between current war layout or active village
  - URL updates when different choice with user id and base type
  - visiting # url directly shows analysis
 

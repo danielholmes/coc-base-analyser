@@ -1,5 +1,6 @@
 package org.danielholmes.coc.baseanalyser.baseparser
 
+import org.danielholmes.coc.baseanalyser.model.Layout
 import org.danielholmes.coc.baseanalyser.model.Village
 import spray.json._
 
@@ -65,6 +66,15 @@ case class RawBuilding(
 )
 case class RawElement(data: Int, lvl: Int, x: Int, y: Int)
 
-case class Villages(home: Village, war: Option[Village])
+case class Villages(home: Village, war: Option[Village]) {
+  import Layout._
+
+  def getByLayout(layout: Layout): Option[Village] = {
+    layout match {
+      case War => war
+      case Home => Some(home)
+    }
+  }
+}
 
 class InvalidJsonException(cause : Throwable) extends Exception(cause)

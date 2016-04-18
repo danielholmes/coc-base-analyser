@@ -2,19 +2,20 @@ package org.danielholmes.coc.baseanalyser.apigatherer
 
 import org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParser
 import org.danielholmes.coc.baseanalyser.model.Village
+import org.danielholmes.coc.baseanalyser.model.Layout.Layout
 
 // Consider caching in future, for player name -> id and/or clan details results
 class VillageGatherer(private val serviceAgent: ClanSeekerServiceAgent, private val villageParser: VillageJsonParser) {
   private val PermittedClanIds = Set(154621406673L, 128850679685L, 103079424453L, 227634713283L) // OH Alpha, OH Genesis, uncool, Aerial Assault
 
-  def gatherByUserName(userName: String): Option[Village] = {
+  def gatherByUserName(userName: String, layout: Layout): Option[Village] = {
     getPlayerIdByUserName(userName)
       .map(serviceAgent.getPlayerVillage)
       .map(_.player)
       .map(_.village)
       .map(_.raw)
       .map(villageParser.parse)
-      .map(_.home)
+      .flatMap(_.getByLayout(layout))
   }
 
   private def getPlayerIdByUserName(userName: String): Option[Long] = {

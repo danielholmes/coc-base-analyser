@@ -9,6 +9,7 @@ import spray.http._
 import MediaTypes._
 import spray.httpx.SprayJsonSupport._
 import ViewModelProtocol._
+import org.danielholmes.coc.baseanalyser.model.Layout
 
 class WebAppServiceActor extends Actor with HttpService with Services {
   def actorRefFactory = context
@@ -23,25 +24,30 @@ class WebAppServiceActor extends Actor with HttpService with Services {
       pathPrefix("assets") {
         getFromResourceDirectory("web/assets")
       } ~
-      path("village-analysis" / Segment) { userName =>
+      path("village-analysis" / Segment / Segment) { (userName, layoutCode) =>
         respondWithMediaType(`application/json`) {
-          val village = villageGatherer.gatherByUserName(userName)
-          if (village.isEmpty) {
-            complete(StatusCodes.NotFound, s""""IGN $userName not found in approved clans"""")
+          val layout = Layout.getByCode(layoutCode)
+          if (layout.isEmpty) {
+            complete(StatusCodes.NotFound, s""""Layout type $layoutCode unknown"""")
           } else {
-            // Can't find easy/flexible way to find memory usage
-            val start = System.currentTimeMillis
-            val analysis = villageAnalyser.analyse(village.get)
-            val end = System.currentTimeMillis
-            if (analysis.isEmpty) {
-              complete(StatusCodes.BadRequest, viewModelMapper.viewModel(village.get, s"$userName village can't be analysed - currently only supporting TH8-11"))
+            val village = villageGatherer.gatherByUserName(userName, layout.get)
+            if (village.isEmpty) {
+              complete(StatusCodes.NotFound, s""""IGN $userName not found in approved clans"""")
             } else {
-              complete(
-                viewModelMapper.viewModel(
-                  analysis.get,
-                  Duration.ofNanos(end - start)
+              // Can't find easy/flexible way to find memory usage
+              val start = System.currentTimeMillis
+              val analysis = villageAnalyser.analyse(village.get)
+              val end = System.currentTimeMillis
+              if (analysis.isEmpty) {
+                complete(StatusCodes.BadRequest, viewModelMapper.viewModel(village.get, s"$userName village can't be analysed - currently only supporting TH8-11"))
+              } else {
+                complete(
+                  viewModelMapper.viewModel(
+                    analysis.get,
+                    Duration.ofNanos(end - start)
+                  )
                 )
-              )
+              }
             }
           }
         }

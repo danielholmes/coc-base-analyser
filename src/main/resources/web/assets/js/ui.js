@@ -166,7 +166,7 @@ var ui = (function($, model, mapDisplay, window) {
                 model.clearActiveRuleName();
             }
         });
-        searchForm.on("submit", function () {
+        searchForm.on("submit", function() {
             if (runningAnalysis) {
                 return false;
             }
@@ -175,7 +175,8 @@ var ui = (function($, model, mapDisplay, window) {
             model.clearReport();
 
             var userName = userNameField.val();
-            $.getJSON("/village-analysis/" + encodeURI(userName))
+            var layout = searchForm.find('input[name=layout]:checked').val();
+            $.getJSON("/village-analysis/" + encodeURI(userName) + "/" + layout)
                 .done(function (response) {
                     // TODO: Maybe make jstorage part of model, or its own preferences module
                     $.jStorage.set(USER_NAME_KEY, userName);
