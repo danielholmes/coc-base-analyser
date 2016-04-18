@@ -33,7 +33,7 @@ import ClanSeekerProtocol._
 // ?userId=55845388039&userToken=bp9a6dt8tawn6mbsp69jec8j7cszfd7968df82ka
 class ClanSeekerAkkaServiceAgent extends ClanSeekerServiceAgent {
   private val rootUrl: String = "http://api.clanseeker.co"
-  private val timeout = 10.seconds
+  private val timeout = 15.seconds
 
   def getClanDetails(id: Long): ClanDetailsResponse = {
     implicit val system = ActorSystem()

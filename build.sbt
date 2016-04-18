@@ -1,3 +1,5 @@
+import sbt.Keys
+
 name := "coc-base-analyser"
 
 version := "0.1"
@@ -30,6 +32,8 @@ libraryDependencies ++= {
     "org.scalatest"       % "scalatest_2.11" % "2.2.6" % "test"
   )
 }
+
+Keys.`package` <<= (Keys.`package` in Compile) dependsOn (test in Test)
 
 /*
 webappPostProcess := {
