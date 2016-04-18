@@ -44,8 +44,7 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - URL updates when different choice with user id and base type
- - visiting # url directly shows analysis
+ - change js to use classes and instances rather than global modules
 
  - iterate through all players' current war bases and provide tabulated report with links to shown issues
  

@@ -154,9 +154,9 @@ var ui = (function($, model, mapDisplay, window) {
     $(document).ready(function () {
         var searchForm = $("#searchForm");
         searchButton = searchForm.find("button[type='submit']");
+
         var userNameField = $("#userNameField");
         var USER_NAME_KEY = "userName";
-        userNameField.val($.jStorage.get(USER_NAME_KEY, ""));
 
         $("#results-panel-group").on("show.bs.collapse", function(event) {
             model.setActiveRuleName($(event.target).data("rule-name"));
@@ -180,6 +180,7 @@ var ui = (function($, model, mapDisplay, window) {
                 .done(function (response) {
                     // TODO: Maybe make jstorage part of model, or its own preferences module
                     $.jStorage.set(USER_NAME_KEY, userName);
+                    history.pushState(null, null, "#" + encodeURI(userName) + "/" + layout);
                     model.setReport(response);
                 })
                 .fail(function (response) {
@@ -207,7 +208,16 @@ var ui = (function($, model, mapDisplay, window) {
             return false;
         });
 
-        //console.log("TODO: Remove");searchForm.submit();
+
+
+        if (location.hash.indexOf("#") == 0 && location.hash.split("/").length == 2) {
+            var hashValues = location.hash.substring(1).split("/");
+            userNameField.val(hashValues[0]);
+            searchForm.find("input[name=layout][value=" + hashValues[1] + "]").prop("checked", true);
+            searchForm.submit();
+        } else {
+            userNameField.val($.jStorage.get(USER_NAME_KEY, ""));
+        }
     });
 
     // Analysis Progress
