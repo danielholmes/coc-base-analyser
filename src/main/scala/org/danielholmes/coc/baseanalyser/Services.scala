@@ -4,16 +4,16 @@ import org.danielholmes.coc.baseanalyser.analysis._
 import org.danielholmes.coc.baseanalyser.apigatherer.{ClanSeekerAkkaServiceAgent, HardcodedClanSeekerServiceAgent, VillageGatherer}
 import org.danielholmes.coc.baseanalyser.baseparser.{HardCodedElementFactory, VillageJsonParser}
 import org.danielholmes.coc.baseanalyser.stringdisplay.{StringDisplayer, StringTroopDropDisplayer}
-import org.danielholmes.coc.baseanalyser.web.ViewModelMapper
+import org.danielholmes.coc.baseanalyser.web.{PermittedClan, ViewModelMapper}
 import org.scalactic.anyvals.PosInt
 
 trait Services {
   import com.softwaremill.macwire._
 
-  private lazy val clanSeekerServiceAgent = wire[ClanSeekerAkkaServiceAgent]
+  lazy val clanSeekerServiceAgent = wire[ClanSeekerAkkaServiceAgent]
   //private lazy val clanSeekerServiceAgent = wire[HardcodedClanSeekerServiceAgent]
   private lazy val elementFactory = wire[HardCodedElementFactory]
-  private lazy val villageJsonParser = wire[VillageJsonParser]
+  lazy val villageJsonParser = wire[VillageJsonParser]
   private lazy val th8Rules: Set[Rule] = Set(
     wire[HogCCLureRule],
     wire[HighHPUnderAirDefRule],
@@ -37,6 +37,11 @@ trait Services {
     PosInt(11) -> th11Rules
   )
 
+  lazy val permittedClans = Set[PermittedClan](
+    PermittedClan("alpha", "OneHive Alpha", 154621406673L),
+    PermittedClan("genesis", "OneHive Genesis", 128850679685L)
+    // 154621406673L, 128850679685L, 103079424453L, 227634713283L) // OH Alpha, OH Genesis, uncool, Aerial Assault
+  )
   lazy val villageAnalyser = wire[VillageAnalyser]
   lazy val villageGatherer = wire[VillageGatherer]
   lazy val stringDisplayer = wire[StringDisplayer]

@@ -11,7 +11,7 @@ class VillageGatherer(private val serviceAgent: ClanSeekerServiceAgent, private 
   def gatherByUserName(userName: String, layout: Layout): Option[Village] = {
     getPlayerIdByUserName(userName)
       .map(serviceAgent.getPlayerVillage)
-      .map(_.player)
+      .flatMap(_.player)
       .map(_.village)
       .map(_.raw)
       .map(villageParser.parse)

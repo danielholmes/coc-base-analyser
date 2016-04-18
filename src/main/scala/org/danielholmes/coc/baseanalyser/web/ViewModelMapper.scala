@@ -9,6 +9,20 @@ import org.danielholmes.coc.baseanalyser.model.troops.{ArcherQueenAttacking, Arc
 import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
 
 class ViewModelMapper {
+  def viewModel(reports: Set[AnalysisReport], time: Duration): BulkAnalysisViewModel = {
+    BulkAnalysisViewModel(
+      reports.map(r => AnalysisReportSummaryViewModel(
+        r.village.townHallLevel.get,
+        r.results.map(viewModel)
+            .map(v => ResultSummaryViewModel(
+              v.name,
+              v.success
+            ))
+      )),
+      time.toMillis
+    )
+  }
+
   def viewModel(report: AnalysisReport, time: Duration): AnalysisReportViewModel = {
     AnalysisReportViewModel(
       viewModel(report.village),
@@ -221,6 +235,11 @@ case class BKSwappableResultViewModel(success: Boolean, exposedTiles: Set[TileVi
 case class WizardTowersOutOfHoundPositionsResultViewModel(success: Boolean, outOfRange: Set[String], inRange: Set[WizardTowerHoundTargetingViewModel], houndPositions: Set[BlockViewModel], name: String = "WizardTowersOutOfHoundPositions") extends RuleResultViewModel
 case class QueenWalkedAirDefenseResultViewModel(success: Boolean, attackings: Set[ArcherQueenAttackingViewModel], nonReachableAirDefs: Set[String], name: String = "QueenWalkedAirDefense") extends RuleResultViewModel
 
+case class ResultSummaryViewModel(name: String, success: Boolean)
+case class AnalysisReportSummaryViewModel(townHallLevel: Int, resultSummaries: Set[ResultSummaryViewModel])
+
+case class BulkAnalysisViewModel(reports: Set[AnalysisReportSummaryViewModel], timeMillis: Long)
+
 case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel], timeMillis: Long)
 
 case class CantAnalyseVillageViewModel(village: VillageViewModel, message: String)
@@ -282,4 +301,8 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val villageFormat = jsonFormat2(VillageViewModel)
   implicit val analysisReportFormat = jsonFormat3(AnalysisReportViewModel)
   implicit val cantAnalyseVillageFormat = jsonFormat2(CantAnalyseVillageViewModel)
+
+  implicit val resultSummaryFormat = jsonFormat2(ResultSummaryViewModel)
+  implicit val analysisReportSummaryFormat = jsonFormat2(AnalysisReportSummaryViewModel)
+  implicit val bulkAnalysisFormat = jsonFormat2(BulkAnalysisViewModel)
 }
