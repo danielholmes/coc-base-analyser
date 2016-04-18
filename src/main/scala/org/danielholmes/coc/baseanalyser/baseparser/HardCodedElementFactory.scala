@@ -4,9 +4,7 @@ import org.danielholmes.coc.baseanalyser.model._
 import org.scalactic.anyvals.{PosZInt, PosInt}
 
 class HardCodedElementFactory extends ElementFactory {
-
-
-  private def levelAndCoordinateConstructor(constructor: (PosInt, Tile) => Element): (RawBuilding => Element) = {
+  private def levelAndCoordinateConstructor(constructor: (PosInt, Tile) => Element): (RawElement => Element) = {
     raw => constructor(elementLevel(raw.lvl), elementTile(raw))
   }
 
@@ -14,9 +12,9 @@ class HardCodedElementFactory extends ElementFactory {
 
   private val zeroCoordinateSystemOffset = -2
 
-  private def elementTile(raw: RawBuilding) = Tile(PosZInt.from(raw.x + zeroCoordinateSystemOffset).get, PosZInt.from(raw.y + zeroCoordinateSystemOffset).get)
+  private def elementTile(raw: RawElement) = Tile(PosZInt.from(raw.x + zeroCoordinateSystemOffset).get, PosZInt.from(raw.y + zeroCoordinateSystemOffset).get)
 
-  private val elementConstructorByCode: Map[Int, RawBuilding => Element] = Map(
+  private val elementConstructorByCode: Map[Int, RawElement => Element] = Map(
     // Buildings
     1000001 -> levelAndCoordinateConstructor(TownHall),
     1000000 -> levelAndCoordinateConstructor(ArmyCamp),
@@ -39,7 +37,7 @@ class HardCodedElementFactory extends ElementFactory {
     //1000018 -> GoblinHut,
     1000019 -> levelAndCoordinateConstructor(HiddenTesla),
     1000020 -> levelAndCoordinateConstructor(SpellFactory),
-    1000021 -> ((raw: RawBuilding) => XBow.both(elementLevel(raw.lvl), elementTile(raw))),
+    1000021 -> ((raw: RawElement) => XBow.both(elementLevel(raw.lvl), elementTile(raw))),
     1000022 -> levelAndCoordinateConstructor(BarbarianKing),
     1000023 -> levelAndCoordinateConstructor(DarkElixirCollector),
     1000024 -> levelAndCoordinateConstructor(DarkElixirStorage),
@@ -61,7 +59,7 @@ class HardCodedElementFactory extends ElementFactory {
     12000008 -> levelAndCoordinateConstructor(SkeletonTrap)
   )
 
-  def build(raw: RawBuilding): Option[Element] = {
+  def build(raw: RawElement): Option[Element] = {
     Some(raw)
       .filter(shouldInclude)
       .map(
@@ -71,7 +69,7 @@ class HardCodedElementFactory extends ElementFactory {
       )
   }
 
-  private def shouldInclude(raw: RawBuilding): Boolean = {
+  private def shouldInclude(raw: RawElement): Boolean = {
     Set("1800", "800").forall(!raw.data.toString.startsWith(_))
   }
 }

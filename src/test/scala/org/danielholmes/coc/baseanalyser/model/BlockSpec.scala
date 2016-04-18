@@ -57,7 +57,7 @@ class BlockSpec extends FlatSpec with Matchers {
   it should "return true any intersect for overlapping items" in {
     val b1 = Block(Tile.Origin, 2)
     val b2 = Block(Tile(1, 1), 2)
-    Block.firstIntersecting(Set(b1, b2)) should contain ((b1, b2))
+    Block.firstIntersecting(Set(b1, b2)).get should be ((b2, b1))
   }
 
   it should "return correct all tiles" in {

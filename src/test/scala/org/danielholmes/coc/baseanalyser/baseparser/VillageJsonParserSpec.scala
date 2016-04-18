@@ -16,24 +16,35 @@ class VillageJsonParserSpec extends FlatSpec with Matchers {
   }
 
   it should "return empty village is empty input" in {
-    parser.parse("""{"buildings":[]}""") should be (Village.empty)
+    val villages = parser.parse("""{"war_base": false, "buildings":[]}""")
+
+    villages should be (Villages(Village.empty, None))
   }
 
   it should "return simple village" in {
-    val result = parser.parse("""{"exp_ver":1,"buildings":[{ "data": 1000001, "lvl": 1, "x": 21, "y": 20 }]}""")
+    val result = parser.parse("""{"exp_ver":1, "war_base": false, "buildings":[{ "data": 1000001, "lvl": 1, "x": 21, "y": 20 }]}""")
 
-    result should be (Village(Set(new StubBaseElement(1, Tile(21, 20)))))
+    result should be (Villages(Village(Set(new StubBaseElement(1, Tile(21, 20)))), None))
   }
 
   it should "return village without ignored elements" in {
-    val result = parser.parse("""{"exp_ver":1,"buildings":[{ "data": 999999, "lvl": 1, "x": 21, "y": 20 }]}""")
+    val result = parser.parse("""{"exp_ver":1, "war_base": false, "buildings":[{ "data": 999999, "lvl": 1, "x": 21, "y": 20 }]}""")
 
-    result should be (Village.empty)
+    result should be (Villages(Village.empty, None))
+  }
+
+  it should "return war village" in {
+    val result = parser.parse("""{"exp_ver":1, "war_layout": 4,"war_base": true, "buildings":[{ "data": 1000001, "lvl": 1, "x": 20, "y": 20, "l4x": 30, "l4y": 30 }]}""")
+
+    result should be (Villages(
+      Village(Set(new StubBaseElement(1, Tile(20, 20)))),
+      Some(Village(Set(new StubBaseElement(1, Tile(30, 30)))))
+    ))
   }
 }
 
 object StubElementFactory extends ElementFactory {
-  def build(raw: RawBuilding): Option[Element] = {
+  def build(raw: RawElement): Option[Element] = {
     Some(raw)
       .filter(_.data != 999999)
       .map(r => StubBaseElement(PosInt.from(r.lvl).get, Tile(PosZInt.from(r.x).get, PosZInt.from(r.y).get)))

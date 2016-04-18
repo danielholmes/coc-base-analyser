@@ -29,7 +29,7 @@ To find available SBT dependency updates run `sbt dependencyUpdates`
 
 `sbt ~tomcat:start`
 
-Available at http://localhost:8080/ . Run container:start each time something is changed
+Available at (http://localhost:8080)
 
 
 ## Production deployment
@@ -44,6 +44,15 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
+ - Choose between current war layout or active village
+ - URL updates when different choice with user id and base type
+ - visiting # url directly shows analysis
+
+ - iterate through all players' current war bases and provide tabulated report with links to shown issues
+ 
+ - clarify AQ range - see iphoto screenshot of greg raid
+
+ - exception error monitoring
  - ui overhaul: select clan -> load players, select player, click go
  
  - switch to new, dedicated credentials of own
