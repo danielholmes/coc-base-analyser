@@ -44,6 +44,7 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
+ - exception error monitoring
  - analysis performance, currently too slow on bulk
  - change js to use classes and instances rather than global modules
  - tweaks to rules. Several issues on dakotas current war base
@@ -51,18 +52,17 @@ then deploy it manually through the AWS console:
    - BK is protected
    - Archer anchor line goes to general block of army camp, not hit block
  
- - clarify AQ range - see iphoto screenshot of greg raid
+ - clarify AQ range - see iphoto screenshot of greg raid. possibly shown on ppetes war base
 
- - exception error monitoring
  - ui overhaul: select clan -> load players, select player, click go
  
+ - trap access (if leadership go for it)
  - switch to new, dedicated credentials of own
  - 3d render
- - trap access (if leadership go for it)
- - select rule set types for each TH - farm + arranged
- - pass, warning, fail levels (e.g. for minion anchors)
  - saved result with a url to be able to send someone (save serialised result in db which can be recalled and lasts one 
    day, ensure to include version number so can expire early if need)
+ - separate rule groups for farm vs arranged
+ - pass, warning, fail levels (e.g. for minion anchors)
  - dynamic sizing of canvas still a bit funky - find proper js solution
 
 
