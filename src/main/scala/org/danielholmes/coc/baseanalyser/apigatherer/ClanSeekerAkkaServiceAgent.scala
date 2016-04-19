@@ -19,12 +19,12 @@ object ClanSeekerProtocol extends DefaultJsonProtocol {
   implicit val ClanDetailsFormat = jsonFormat2(ClanDetails)
   implicit val ClanDetailsResponseFormat = jsonFormat1(ClanDetailsResponse)
 
-  case class Village(raw: String)
-  case class PlayerVillage(village: Village)
+  case class RawVillage(raw: String)
+  case class PlayerVillage(avatar: AvatarSummary, village: RawVillage)
   case class PlayerVillageResponse(player: Option[PlayerVillage])
 
-  implicit val VillageFormat = jsonFormat1(Village)
-  implicit val PlayerVillageFormat = jsonFormat1(PlayerVillage)
+  implicit val VillageFormat = jsonFormat1(RawVillage)
+  implicit val PlayerVillageFormat = jsonFormat2(PlayerVillage)
   implicit val PlayerVillageResponseFormat = jsonFormat1(PlayerVillageResponse)
 }
 import ClanSeekerProtocol._
@@ -33,7 +33,7 @@ import ClanSeekerProtocol._
 // ?userId=55845388039&userToken=bp9a6dt8tawn6mbsp69jec8j7cszfd7968df82ka
 class ClanSeekerAkkaServiceAgent extends ClanSeekerServiceAgent {
   private val rootUrl: String = "http://api.clanseeker.co"
-  private val timeout = 30.seconds
+  private val timeout = 1.minute
 
   def getClanDetails(id: Long): ClanDetailsResponse = {
     implicit val system = ActorSystem()

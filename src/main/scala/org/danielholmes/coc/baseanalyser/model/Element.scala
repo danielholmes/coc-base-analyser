@@ -16,6 +16,7 @@ trait Element {
   lazy val hitSize: PosInt = size
   lazy val hitBlock = Block(tile, hitSize)
 
+  // TODO: Think this is wrong, see line drawn on dakota's war base
   def findClosestHitCoordinate(from: TileCoordinate): TileCoordinate = {
     hitBlock.findClosestCoordinate(from)
   }

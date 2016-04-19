@@ -24,19 +24,33 @@ $(document).ready(function() {
                             return $('<div />').append($('<h3 />').html(pair[0]))
                                 .append(
                                     $('<table />')
+                                        .addClass("table")
+                                        .addClass("table-bordered")
                                         .append(
                                             $('<thead />').append(
-                                                $('<tr />').append(_.map(rules, function(rule) { return $('<th />').append(rule); }))
+                                                $('<tr />')
+                                                    .append($('<th />').append('Name'))
+                                                    .append($('<th />').append('Report'))
+                                                    .append(_.map(rules, function(rule) { return $('<th />').append(rule); }))
                                             )
                                         )
                                         .append(
                                             _.map(
                                                 pair[1],
                                                 function(report) {
+                                                    var link = "/#" + encodeURI(report.userName) + "/war";
+                                                    var allSuccess = _.all(report['resultSummaries'], function(summary) { return summary['success']; });
                                                     return $('<tr />')
+                                                        .addClass(allSuccess ? 'success' : 'fail')
+                                                        .append($('<td />').append(report.userName))
+                                                        .append($('<td />').append($('<a />').attr("href", link).attr("target", "_blank").append(link)))
                                                         .append(
-                                                            _.map(report.resultSummaries, function(summary) {
-                                                                $('<td />').append(summary.success)
+                                                            _.map(report['resultSummaries'], function(summary) {
+                                                                return $('<td />')
+                                                                    .append(
+                                                                        $('<span />').addClass('glyphicon')
+                                                                            .addClass(summary.success ? '' : 'glyphicon-remove-sign')
+                                                                    );
                                                             })
                                                         );
                                                 }

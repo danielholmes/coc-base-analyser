@@ -3,11 +3,13 @@ package org.danielholmes.coc.baseanalyser.apigatherer
 import org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParser
 import org.danielholmes.coc.baseanalyser.model.Village
 import org.danielholmes.coc.baseanalyser.model.Layout.Layout
+import org.danielholmes.coc.baseanalyser.web.PermittedClan
 
-// Consider caching in future, for player name -> id and/or clan details results
-class VillageGatherer(private val serviceAgent: ClanSeekerServiceAgent, private val villageParser: VillageJsonParser) {
-  private val PermittedClanIds = Set(154621406673L, 128850679685L, 103079424453L, 227634713283L) // OH Alpha, OH Genesis, uncool, Aerial Assault
-
+class VillageGatherer(
+  private val serviceAgent: ClanSeekerServiceAgent,
+  private val villageParser: VillageJsonParser,
+  private val permittedClans: Set[PermittedClan]
+) {
   def gatherByUserName(userName: String, layout: Layout): Option[Village] = {
     getPlayerIdByUserName(userName)
       .map(serviceAgent.getPlayerVillage)
@@ -19,17 +21,17 @@ class VillageGatherer(private val serviceAgent: ClanSeekerServiceAgent, private 
   }
 
   private def getPlayerIdByUserName(userName: String): Option[Long] = {
-    getPlayerIdByUserNameCaseInsensitive(userName, PermittedClanIds.toSeq)
+    getPlayerIdByUserNameCaseInsensitive(userName, permittedClans.toSeq)
   }
 
-  private def getPlayerIdByUserNameCaseInsensitive(userName: String, clanIds: Seq[Long]): Option[Long] = {
-    if (clanIds.isEmpty) return None
-    serviceAgent.getClanDetails(clanIds.head)
+  private def getPlayerIdByUserNameCaseInsensitive(userName: String, clansToCheck: Seq[PermittedClan]): Option[Long] = {
+    if (clansToCheck.isEmpty) return None
+    serviceAgent.getClanDetails(clansToCheck.head.id)
       .clan
       .players
       .map(_.avatar)
       .find(_.userName.equalsIgnoreCase(userName))
       .map(_.userId)
-      .orElse(getPlayerIdByUserNameCaseInsensitive(userName, clanIds.tail))
+      .orElse(getPlayerIdByUserNameCaseInsensitive(userName, clansToCheck.tail))
   }
 }

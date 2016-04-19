@@ -9,16 +9,14 @@ import org.danielholmes.coc.baseanalyser.model.troops.{ArcherQueenAttacking, Arc
 import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
 
 class ViewModelMapper {
-  def viewModel(reports: Set[AnalysisReport], time: Duration): BulkAnalysisViewModel = {
-    BulkAnalysisViewModel(
-      reports.map(r => AnalysisReportSummaryViewModel(
-        r.village.townHallLevel.get,
-        r.results.map(viewModel)
-            .map(v => ResultSummaryViewModel(
-              v.name,
-              v.success
-            ))
-      )),
+  def viewModel(report: ClanAnalysisReport, time: Duration): ClanAnalysisReportViewModel = {
+    ClanAnalysisReportViewModel(
+      report.players
+        .map(p => AnalysisReportSummaryViewModel(
+          p.userName,
+          p.townHallLevel,
+          p.villageReport.map(_.results.map(viewModel).map(v => ResultSummaryViewModel(v.name, v.success)))
+        )),
       time.toMillis
     )
   }
@@ -69,7 +67,8 @@ class ViewModelMapper {
       case m: MinimumCompartmentsRuleResult => MinimumCompartmentsResultViewModel(
         m.success,
         m.minimumCompartments,
-        m.compartments.map(objectId)
+        m.compartments.map(objectId),
+        s"At least ${m.minimumCompartments} compartments (${m.compartments.size})"
       )
       case b: BKSwappableRuleResult => BKSwappableResultViewModel(
         b.success,
@@ -226,19 +225,74 @@ sealed trait RuleResultViewModel {
   val success: Boolean
 }
 
-case class HogCCLureResultViewModel(success: Boolean, targetings: Set[HogTargetingViewModel], name: String = "HogCCLure") extends RuleResultViewModel
-case class ArcherAnchorResultViewModel(success: Boolean, targetings: Set[ArcherTargetingViewModel], aimingDefenses: Set[String], name: String = "ArcherAnchor") extends RuleResultViewModel
-case class HighHPUnderAirDefResultViewModel(success: Boolean, outOfAirDefRange: Set[String], inAirDefRange: Set[String], name: String = "HighHPUnderAirDef") extends RuleResultViewModel
-case class AirSnipedDefenseResultViewModel(success: Boolean, snipedDefenses: Set[String], airDefenses: Set[String], name: String = "AirSnipedDefense") extends RuleResultViewModel
-case class MinimumCompartmentsResultViewModel(success: Boolean, minimumCompartments: Int, compartments: Set[String], name: String = "MinimumCompartments") extends RuleResultViewModel
-case class BKSwappableResultViewModel(success: Boolean, exposedTiles: Set[TileViewModel], name: String = "BKSwappable") extends RuleResultViewModel
-case class WizardTowersOutOfHoundPositionsResultViewModel(success: Boolean, outOfRange: Set[String], inRange: Set[WizardTowerHoundTargetingViewModel], houndPositions: Set[BlockViewModel], name: String = "WizardTowersOutOfHoundPositions") extends RuleResultViewModel
-case class QueenWalkedAirDefenseResultViewModel(success: Boolean, attackings: Set[ArcherQueenAttackingViewModel], nonReachableAirDefs: Set[String], name: String = "QueenWalkedAirDefense") extends RuleResultViewModel
+case class HogCCLureResultViewModel(
+  success: Boolean,
+  targetings: Set[HogTargetingViewModel],
+  name: String = "HogCCLure",
+  title: String = "No Easy CC Lure",
+  description: String = "There should be no spaces that allow a hog or giant to lure without first having to destroy a defense"
+) extends RuleResultViewModel
+case class ArcherAnchorResultViewModel(
+  success: Boolean,
+  targetings: Set[ArcherTargetingViewModel],
+  aimingDefenses: Set[String],
+  name: String = "ArcherAnchor",
+  title: String = "No Archer Anchors",
+  description: String = "There should be no unprotected archer anchors"
+) extends RuleResultViewModel
+case class HighHPUnderAirDefResultViewModel(
+  success: Boolean,
+  outOfAirDefRange: Set[String],
+  inAirDefRange: Set[String],
+  name: String = "HighHPUnderAirDef",
+  title: String = "High HP covered by Air Defenses",
+  description: String = "All high HP buildings should be within range of your air defenses"
+) extends RuleResultViewModel
+case class AirSnipedDefenseResultViewModel(
+  success: Boolean,
+  snipedDefenses: Set[String],
+  airDefenses: Set[String],
+  name: String = "AirSnipedDefense",
+  title: String = "Ground Defenses covered for Air",
+  description: String = "No ground only defenses should be reachable by minions or loons"
+) extends RuleResultViewModel
+case class MinimumCompartmentsResultViewModel(
+  success: Boolean,
+  minimumCompartments: Int,
+  compartments: Set[String],
+  title: String,
+  description: String = "GoWiPe can be slowed down by having enough compartments to hold it up",
+  name: String = "MinimumCompartments"
+) extends RuleResultViewModel
+case class BKSwappableResultViewModel(
+  success: Boolean,
+  exposedTiles: Set[TileViewModel],
+  name: String = "BKSwappable",
+  title: String = "BK should be protected",
+  description: String = "The BK's range should be inside walls so he can't be lureed out and killed early as part of a tanking BK or KS"
+) extends RuleResultViewModel
+case class WizardTowersOutOfHoundPositionsResultViewModel(
+  success: Boolean,
+  outOfRange: Set[String],
+  inRange: Set[WizardTowerHoundTargetingViewModel],
+  houndPositions: Set[BlockViewModel],
+  name: String = "WizardTowersOutOfHoundPositions",
+  title: String = "Wizard Towers shouldn't lock onto hounds",
+  description: String = "Wizard Towers are strong against loons, they shouldn't be too close to air defenses where hounds can tank for them for long periods"
+) extends RuleResultViewModel
+case class QueenWalkedAirDefenseResultViewModel(
+  success: Boolean,
+  attackings: Set[ArcherQueenAttackingViewModel],
+  nonReachableAirDefs: Set[String],
+  name: String = "QueenWalkedAirDefense",
+  title: String = "Air Defenses not Queen Walkable",
+  description: String = "Air Defenses shouldn't be reachable over a wall by a queen walking outside"
+) extends RuleResultViewModel
 
 case class ResultSummaryViewModel(name: String, success: Boolean)
-case class AnalysisReportSummaryViewModel(townHallLevel: Int, resultSummaries: Set[ResultSummaryViewModel])
+case class AnalysisReportSummaryViewModel(userName: String, townHallLevel: Int, resultSummaries: Option[Set[ResultSummaryViewModel]])
 
-case class BulkAnalysisViewModel(reports: Set[AnalysisReportSummaryViewModel], timeMillis: Long)
+case class ClanAnalysisReportViewModel(reports: Set[AnalysisReportSummaryViewModel], timeMillis: Long)
 
 case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel], timeMillis: Long)
 
@@ -289,20 +343,20 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val archerQueenAttackingFormat = jsonFormat3(ArcherQueenAttackingViewModel)
   implicit val WizardTowerHoundTargetingFormat = jsonFormat2(WizardTowerHoundTargetingViewModel)
 
-  implicit val hogCCLureResultFormat = jsonFormat3(HogCCLureResultViewModel)
-  implicit val archerAnchorResultFormat = jsonFormat4(ArcherAnchorResultViewModel)
-  implicit val highHPUnderAirDefResultFormat = jsonFormat4(HighHPUnderAirDefResultViewModel)
-  implicit val airSnipedDefenseResultFormat = jsonFormat4(AirSnipedDefenseResultViewModel)
-  implicit val minimumCompartmentsResultFormat = jsonFormat4(MinimumCompartmentsResultViewModel)
-  implicit val bkSwappableResultFormat = jsonFormat3(BKSwappableResultViewModel)
-  implicit val wizardTowersOutOfHoundPositionsResultFormat = jsonFormat5(WizardTowersOutOfHoundPositionsResultViewModel)
-  implicit val queenWalkedAirDefenseResultFormat = jsonFormat4(QueenWalkedAirDefenseResultViewModel)
+  implicit val hogCCLureResultFormat = jsonFormat5(HogCCLureResultViewModel)
+  implicit val archerAnchorResultFormat = jsonFormat6(ArcherAnchorResultViewModel)
+  implicit val highHPUnderAirDefResultFormat = jsonFormat6(HighHPUnderAirDefResultViewModel)
+  implicit val airSnipedDefenseResultFormat = jsonFormat6(AirSnipedDefenseResultViewModel)
+  implicit val minimumCompartmentsResultFormat = jsonFormat6(MinimumCompartmentsResultViewModel)
+  implicit val bkSwappableResultFormat = jsonFormat5(BKSwappableResultViewModel)
+  implicit val wizardTowersOutOfHoundPositionsResultFormat = jsonFormat7(WizardTowersOutOfHoundPositionsResultViewModel)
+  implicit val queenWalkedAirDefenseResultFormat = jsonFormat6(QueenWalkedAirDefenseResultViewModel)
 
   implicit val villageFormat = jsonFormat2(VillageViewModel)
   implicit val analysisReportFormat = jsonFormat3(AnalysisReportViewModel)
   implicit val cantAnalyseVillageFormat = jsonFormat2(CantAnalyseVillageViewModel)
 
   implicit val resultSummaryFormat = jsonFormat2(ResultSummaryViewModel)
-  implicit val analysisReportSummaryFormat = jsonFormat2(AnalysisReportSummaryViewModel)
-  implicit val bulkAnalysisFormat = jsonFormat2(BulkAnalysisViewModel)
+  implicit val analysisReportSummaryFormat = jsonFormat3(AnalysisReportSummaryViewModel)
+  implicit val bulkAnalysisFormat = jsonFormat2(ClanAnalysisReportViewModel)
 }

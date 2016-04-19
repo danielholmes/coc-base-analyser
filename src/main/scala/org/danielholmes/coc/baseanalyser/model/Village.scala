@@ -9,6 +9,8 @@ case class Village(elements: Set[Element]) {
     s"Elements musn't overlap (currently $firstIntersect overlaps"
   )
 
+  // It's a real world base, it has a town hall level. Maybe this should be a requirement? Only reason doesnt exist is
+  // for testing which is a poor excuse to harm data model
   val townHallLevel: Option[PosInt] = elements.find(_.isInstanceOf[TownHall])
     .map(_.level)
 

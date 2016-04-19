@@ -44,9 +44,12 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
+ - analysis performance, currently too slow on bulk
  - change js to use classes and instances rather than global modules
-
- - iterate through all players' current war bases and provide tabulated report with links to shown issues
+ - tweaks to rules. Several issues on dakotas current war base
+   - 7oc cannon not minion hittable
+   - BK is protected
+   - Archer anchor line goes to general block of army camp, not hit block
  
  - clarify AQ range - see iphoto screenshot of greg raid
 

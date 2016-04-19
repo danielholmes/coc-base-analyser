@@ -26,30 +26,26 @@ class WebAppServiceActor extends Actor with HttpService with Services {
         getFromResource("web/index.html")
       } ~
       path("war-bases" / Segment) { (clanCode) =>
-        getFromResource("web/war-bases.html")
+        if (permittedClans.exists(_.code == clanCode)) {
+          getFromResource("web/war-bases.html")
+        } else {
+          complete(StatusCodes.NotFound, s""""Clan $clanCode not found"""")
+        }
       } ~
       pathPrefix("assets") {
         getFromResourceDirectory("web/assets")
       } ~
       path("clan-war-bases-analysis" / Segment) { (clanCode) =>
-        val start = System.currentTimeMillis
-        permittedClans.find(_.code == clanCode)
-          .map(clan => clanSeekerServiceAgent.getClanDetails(clan.id))
-          .map(details => details.clan.players.map(_.avatar.userId))
-          // Can make par here but clan seeker service doesnt seem to be up to it
-          .map(userIds => userIds.par.map(userId => clanSeekerServiceAgent.getPlayerVillage(userId)))
-          .map(_.filter(_.player.nonEmpty).map(_.player.get))
-          .map(_.map(p => villageJsonParser.parse(p.village.raw)))
-          .map(_.map(_.war))
-          .map(_.filter(_.nonEmpty))
-          .map(_.map(_.get))
-          .map(_.map(villageAnalyser.analyse))
-          .map(_.filter(_.nonEmpty))
-          .map(_.map(_.get).seq)
-          // TODO: Only need success for rules, and player name and TH level and only need one overall time
-          .map(viewModelMapper.viewModel(_, Duration.ofMillis(System.currentTimeMillis - start)))
-          .map(complete(_))
-          .getOrElse(complete(StatusCodes.NotFound, s""""Clan code $clanCode unknown""""))
+        respondWithMediaType(`application/json`) {
+          val clan = permittedClans.find(_.code == clanCode)
+          if (clan.isEmpty) {
+            complete(StatusCodes.NotFound, s""""Clan $clanCode not found"""")
+          } else {
+            val start = System.currentTimeMillis
+            val report = clan.map(_.id).flatMap(clanWarVillagesAnalyser.analyse).get
+            complete(viewModelMapper.viewModel(report, Duration.ofMillis(System.currentTimeMillis - start)))
+          }
+        }
       } ~
       path("village-analysis" / Segment / Segment) { (userName, layoutCode) =>
         respondWithMediaType(`application/json`) {

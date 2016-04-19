@@ -10,10 +10,10 @@ import org.scalactic.anyvals.PosInt
 trait Services {
   import com.softwaremill.macwire._
 
-  lazy val clanSeekerServiceAgent = wire[ClanSeekerAkkaServiceAgent]
+  private lazy val clanSeekerServiceAgent = wire[ClanSeekerAkkaServiceAgent]
   //private lazy val clanSeekerServiceAgent = wire[HardcodedClanSeekerServiceAgent]
   private lazy val elementFactory = wire[HardCodedElementFactory]
-  lazy val villageJsonParser = wire[VillageJsonParser]
+  private lazy val villageJsonParser = wire[VillageJsonParser]
   private lazy val th8Rules: Set[Rule] = Set(
     wire[HogCCLureRule],
     wire[HighHPUnderAirDefRule],
@@ -39,10 +39,12 @@ trait Services {
 
   lazy val permittedClans = Set[PermittedClan](
     PermittedClan("alpha", "OneHive Alpha", 154621406673L),
-    PermittedClan("genesis", "OneHive Genesis", 128850679685L)
-    // 154621406673L, 128850679685L, 103079424453L, 227634713283L) // OH Alpha, OH Genesis, uncool, Aerial Assault
+    PermittedClan("genesis", "OneHive Genesis", 128850679685L),
+    PermittedClan("uncool", "Uncool", 103079424453L),
+    PermittedClan("aerial", "Aerial Assault", 227634713283L)
   )
   lazy val villageAnalyser = wire[VillageAnalyser]
+  lazy val clanWarVillagesAnalyser = wire[ClanWarVillagesAnalyser]
   lazy val villageGatherer = wire[VillageGatherer]
   lazy val stringDisplayer = wire[StringDisplayer]
   lazy val stringTroopDropDisplayer = wire[StringTroopDropDisplayer]

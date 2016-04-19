@@ -6,41 +6,6 @@ var ui = (function($, model, mapDisplay, window) {
     var sizeValid = false;
     var activeRuleValid = false;
 
-    var rules = {
-        ArcherAnchor: {
-            title: "No Archer Anchors",
-            description: "There should be no unprotected archer anchors"
-        },
-        HogCCLure: {
-            title: "No Easy CC Lure",
-            description: "There should be no spaces that allow a hog or giant to lure without first having to destroy a defense"
-        },
-        HighHPUnderAirDef: {
-            title: "High HP covered by Air Defenses",
-            description: "All high HP buildings should be within range of your air defenses"
-        },
-        AirSnipedDefense: {
-            title: "Ground Defenses covered for Air",
-            description: "No ground only defenses should be reachable by minions or loons"
-        },
-        MinimumCompartments: {
-            title: "At least {{minimumCompartments}} compartments ({{compartments.length}})",
-            description: "GoWiPe can be slowed down by having enough compartments to hold it up"
-        },
-        BKSwappable: {
-            title: "BK should be protected",
-            description: "The BK's range should be inside walls so he can't be lureed out and killed early as part of a tanking BK or KS"
-        },
-        WizardTowersOutOfHoundPositions: {
-            title: "Wizard Towers shouldn't lock onto hounds",
-            description: "Wizard Towers are strong against loons, they shouldn't be too close to air defenses where hounds can tank for them for long periods"
-        },
-        QueenWalkedAirDefense: {
-            title: "Air Defenses not Queen Walkable",
-            description: "Air Defenses shouldn't be reachable over a wall by a queen walking outside"
-        }
-    };
-
     var renderTemplate = function (selector, vars) {
         var template = $(selector).html();
         Mustache.parse(template);
@@ -104,18 +69,12 @@ var ui = (function($, model, mapDisplay, window) {
         var panels = _.map(
             model.getReport().results,
             function (result) {
-                var rule = rules[result.name];
-                if (rule == null) {
-                    console.error("Can't represent " + result.name);
-                    return $("<div></div>");
-                }
-
                 return $(renderTemplate(
                     "#result-panel",
                     {
                         id: result.name,
-                        title: Mustache.render(rule.title, result),
-                        description: Mustache.render(rule.description, result),
+                        title: result.title,
+                        description: result.description,
                         ruleName: result.name,
                         success: result.success
                     }
