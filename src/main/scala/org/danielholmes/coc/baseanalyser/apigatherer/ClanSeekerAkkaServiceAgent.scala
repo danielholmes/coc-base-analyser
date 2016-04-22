@@ -47,6 +47,13 @@ class ClanSeekerAkkaServiceAgent extends ClanSeekerServiceAgent {
     }
   }
 
+  def getPlayerVillageWithRetries(id: Long, retries: Int): PlayerVillageResponse = {
+    val response = getPlayerVillage(id)
+    if (response.player.isDefined || retries == 0) return response
+    Thread.sleep(100)
+    getPlayerVillageWithRetries(id, retries - 1)
+  }
+
   def getPlayerVillage(id: Long): PlayerVillageResponse = {
     implicit val system = ActorSystem()
     import system.dispatcher // execution context for futures

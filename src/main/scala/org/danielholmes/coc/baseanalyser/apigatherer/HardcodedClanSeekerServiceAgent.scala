@@ -42,6 +42,8 @@ class HardcodedClanSeekerServiceAgent extends ClanSeekerServiceAgent {
     )
   }
 
+  def getPlayerVillageWithRetries(id: Long, retries: Int): PlayerVillageResponse = getPlayerVillage(id)
+
   def getPlayerVillage(id: Long): PlayerVillageResponse = {
     if (id < 100L) {
       return PlayerVillageResponse(

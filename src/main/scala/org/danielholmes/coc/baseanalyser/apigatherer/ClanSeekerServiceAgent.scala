@@ -6,4 +6,6 @@ trait ClanSeekerServiceAgent {
   def getClanDetails(id: Long): ClanDetailsResponse
 
   def getPlayerVillage(id: Long): PlayerVillageResponse
+
+  def getPlayerVillageWithRetries(id: Long, retries: Int): PlayerVillageResponse
 }

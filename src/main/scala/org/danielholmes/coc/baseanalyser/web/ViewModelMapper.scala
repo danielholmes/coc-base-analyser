@@ -6,9 +6,20 @@ import java.util.{Base64, UUID}
 import org.danielholmes.coc.baseanalyser.analysis._
 import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.model.troops.{ArcherQueenAttacking, ArcherTargeting, HogTargeting, WizardTowerHoundTargeting}
+import spray.http.Uri
 import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
 
 class ViewModelMapper {
+  def viewModel(uri: Uri, e: Exception): ExceptionViewModel = {
+    ExceptionViewModel(
+      uri.toString,
+      e.getClass.getName,
+      e.getMessage,
+      e.getStackTrace.map((el: StackTraceElement) => s"${el.getClassName}.${el.getMethodName} - ${el.getFileName}:${el.getLineNumber}")
+        .toList
+    )
+  }
+
   def viewModel(report: ClanAnalysisReport, time: Duration): ClanAnalysisReportViewModel = {
     ClanAnalysisReportViewModel(
       report.players
@@ -68,7 +79,7 @@ class ViewModelMapper {
         m.success,
         m.minimumCompartments,
         m.compartments.map(objectId),
-        s"At least ${m.minimumCompartments} compartments (${m.compartments.size})"
+        s"At least ${m.minimumCompartments.toInt} compartments (${m.compartments.size})"
       )
       case b: BKSwappableRuleResult => BKSwappableResultViewModel(
         b.success,
@@ -298,6 +309,8 @@ case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleR
 
 case class CantAnalyseVillageViewModel(village: VillageViewModel, message: String)
 
+case class ExceptionViewModel(uri: String, exceptionType: String, message: String, trace: List[String])
+
 object ViewModelProtocol extends DefaultJsonProtocol {
   implicit  object ElementJsonFormat extends RootJsonFormat[ElementViewModel] {
     def write(e: ElementViewModel) = e match {
@@ -359,4 +372,6 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val resultSummaryFormat = jsonFormat2(ResultSummaryViewModel)
   implicit val analysisReportSummaryFormat = jsonFormat3(AnalysisReportSummaryViewModel)
   implicit val bulkAnalysisFormat = jsonFormat2(ClanAnalysisReportViewModel)
+
+  implicit val exceptionFormat = jsonFormat4(ExceptionViewModel)
 }
