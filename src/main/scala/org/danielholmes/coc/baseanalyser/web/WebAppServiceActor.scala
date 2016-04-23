@@ -30,9 +30,9 @@ class WebAppServiceActor extends Actor with HttpService with Services {
   implicit def exceptionHandler(implicit log: LoggingContext) =
     ExceptionHandler {
       case e: Exception =>
-        println("Exception")
         respondWithMediaType(`application/json`) {
           requestUri { uri =>
+            log.error(e, e.getMessage)
             complete(StatusCodes.InternalServerError, viewModelMapper.viewModel(uri, e))
           }
         }

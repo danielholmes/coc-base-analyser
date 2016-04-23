@@ -14,7 +14,14 @@ trait Element {
 
   // TODO: Hit size not relevant for non-traps, maybe need new heirarchy element
   lazy val hitSize: PosInt = size
-  lazy val hitBlock = Block(tile, hitSize)
+  lazy val hitBlock = {
+    if (hitSize == size) {
+      block
+    } else {
+      val posOffset = PosInt.from((size - hitSize) / 2).get
+      Block(tile.offset(posOffset, posOffset), hitSize)
+    }
+  }
 
   // TODO: Think this is wrong, see line drawn on dakota's war base
   def findClosestHitCoordinate(from: TileCoordinate): TileCoordinate = {

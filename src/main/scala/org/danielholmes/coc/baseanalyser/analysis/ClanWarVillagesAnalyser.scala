@@ -12,8 +12,8 @@ class ClanWarVillagesAnalyser(
   private val villageAnalyser: VillageAnalyser
 ) {
   def analyse(id: Long): Option[ClanAnalysisReport] = {
-    Some(clanSeekerServiceAgent.getClanDetails(id))
-      .map(_.clan.players)
+    clanSeekerServiceAgent.getClanDetails(id)
+      .map(_.players)
       .map(analysePlayers)
       .map(ClanAnalysisReport)
   }
@@ -26,7 +26,7 @@ class ClanWarVillagesAnalyser(
 
   private def analysePlayer(playerId: Long): PlayerAnalysisReport = {
     // Since player id came from clan details api, going to assume it exists
-    val player = clanSeekerServiceAgent.getPlayerVillageWithRetries(playerId, 3).player
+    val player = clanSeekerServiceAgent.getPlayerVillage(playerId)
         .getOrElse(throw new RuntimeException(s"No player with id $playerId"))
     val villages = villageJsonParser.parse(player.village.raw)
     PlayerAnalysisReport(

@@ -44,13 +44,16 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - exception error monitoring
- - analysis performance, currently too slow on bulk
- - change js to use classes and instances rather than global modules
  - tweaks to rules. Several issues on dakotas current war base
    - 7oc cannon not minion hittable
-   - BK is protected
    - Archer anchor line goes to general block of army camp, not hit block
+   - BK exposure
+   - air exposure (see valaar)
+   - extra rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
+       - maybe as a % of compartmented area
+ 
+ - analysis performance, currently too slow on bulk
+ - change js to use classes and instances rather than global modules
  
  - clarify AQ range - see iphoto screenshot of greg raid. possibly shown on ppetes war base
 

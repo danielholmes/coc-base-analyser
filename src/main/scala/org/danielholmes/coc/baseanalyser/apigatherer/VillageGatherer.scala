@@ -12,8 +12,7 @@ class VillageGatherer(
 ) {
   def gatherByUserName(userName: String, layout: Layout): Option[Village] = {
     getPlayerIdByUserName(userName)
-      .map(serviceAgent.getPlayerVillage)
-      .flatMap(_.player)
+      .flatMap(serviceAgent.getPlayerVillage)
       .map(_.village)
       .map(_.raw)
       .map(villageParser.parse)
@@ -27,7 +26,7 @@ class VillageGatherer(
   private def getPlayerIdByUserNameCaseInsensitive(userName: String, clansToCheck: Seq[PermittedClan]): Option[Long] = {
     if (clansToCheck.isEmpty) return None
     serviceAgent.getClanDetails(clansToCheck.head.id)
-      .clan
+      .getOrElse(throw new RuntimeException(s"Clan ${clansToCheck.head.name} not found in API"))
       .players
       .map(_.avatar)
       .find(_.userName.equalsIgnoreCase(userName))
