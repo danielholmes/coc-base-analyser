@@ -16,7 +16,7 @@ class VillageJsonParser(elementFactory: ElementFactory) {
     try {
       val rawVillage = input.parseJson.convertTo[RawVillage]
       Villages(
-        parseVillage(rawVillage, b => RawElement(b.data, b.lvl, b.x, b.y)),
+        parseVillage(rawVillage, b => Some(RawElement(b.data, b.lvl, b.x, b.y))),
         rawVillage.war_layout
           .map(layoutIndex => parseVillage(rawVillage, b => parseWarElement(b, layoutIndex)))
       )
@@ -26,28 +26,30 @@ class VillageJsonParser(elementFactory: ElementFactory) {
     }
   }
 
-  private def parseVillage(raw: RawVillage, factory: (RawBuilding) => RawElement): Village = {
+  private def parseVillage(raw: RawVillage, factory: (RawBuilding) => Option[RawElement]): Village = {
     Village(
       raw.buildings
         .map(factory)
+        .filter(_.isDefined)
+        .map(_.get)
         .map(elementFactory.build)
         .filter(_.nonEmpty)
         .map(_.get)
     )
   }
 
-  private def parseWarElement(raw: RawBuilding, index: Int): RawElement = {
-    val coords = parseWarCoordinates(raw, index)
-    RawElement(raw.data, raw.lvl, coords._1, coords._2)
+  private def parseWarElement(raw: RawBuilding, index: Int): Option[RawElement] = {
+    parseWarCoordinates(raw, index)
+        .map(coords => RawElement(raw.data, raw.lvl, coords._1, coords._2))
   }
 
-  private def parseWarCoordinates(raw: RawBuilding, index: Int): (Int, Int) = {
+  private def parseWarCoordinates(raw: RawBuilding, index: Int): Option[(Int, Int)] = {
     index match {
-      case 1 => (raw.l1x.get, raw.l1y.get)
-      case 2 => (raw.l2x.get, raw.l2y.get)
-      case 3 => (raw.l3x.get, raw.l3y.get)
-      case 4 => (raw.l4x.get, raw.l4y.get)
-      case 5 => (raw.l5x.get, raw.l5y.get)
+      case 1 => raw.l1x.map(x => (x, raw.l1y.get))
+      case 2 => raw.l2x.map(x => (x, raw.l2y.get))
+      case 3 => raw.l3x.map(x => (x, raw.l3y.get))
+      case 4 => raw.l4x.map(x => (x, raw.l4y.get))
+      case 5 => raw.l5x.map(x => (x, raw.l5y.get))
       case _ => throw new RuntimeException(s"Unknown war layout $index")
     }
   }

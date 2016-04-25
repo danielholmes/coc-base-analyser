@@ -20,15 +20,10 @@ class ViewModelMapper {
     )
   }
 
-  def viewModel(report: ClanAnalysisReport, time: Duration): ClanAnalysisReportViewModel = {
-    ClanAnalysisReportViewModel(
-      report.players
-        .map(p => AnalysisReportSummaryViewModel(
-          p.userName,
-          p.townHallLevel,
-          p.villageReport.map(_.results.map(viewModel).map(v => ResultSummaryViewModel(v.name, v.success)))
-        )),
-      time.toMillis
+  def analysisSummary(userName: String, report: AnalysisReport, time: Duration): AnalysisReportSummaryViewModel = {
+    AnalysisReportSummaryViewModel(
+      report.village.townHallLevel.get,
+      report.results.map(viewModel).map(v => ResultSummaryViewModel(v.name, v.success))
     )
   }
 
@@ -301,9 +296,7 @@ case class QueenWalkedAirDefenseResultViewModel(
 ) extends RuleResultViewModel
 
 case class ResultSummaryViewModel(name: String, success: Boolean)
-case class AnalysisReportSummaryViewModel(userName: String, townHallLevel: Int, resultSummaries: Option[Set[ResultSummaryViewModel]])
-
-case class ClanAnalysisReportViewModel(reports: Set[AnalysisReportSummaryViewModel], timeMillis: Long)
+case class AnalysisReportSummaryViewModel(townHallLevel: Int, resultSummaries: Set[ResultSummaryViewModel])
 
 case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel], timeMillis: Long)
 
@@ -370,8 +363,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val cantAnalyseVillageFormat = jsonFormat2(CantAnalyseVillageViewModel)
 
   implicit val resultSummaryFormat = jsonFormat2(ResultSummaryViewModel)
-  implicit val analysisReportSummaryFormat = jsonFormat3(AnalysisReportSummaryViewModel)
-  implicit val bulkAnalysisFormat = jsonFormat2(ClanAnalysisReportViewModel)
+  implicit val analysisReportSummaryFormat = jsonFormat2(AnalysisReportSummaryViewModel)
 
   implicit val exceptionFormat = jsonFormat4(ExceptionViewModel)
 }

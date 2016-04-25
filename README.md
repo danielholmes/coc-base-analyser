@@ -44,13 +44,16 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
+ - To plain text version of summary page
+ - Change general ui - no search box (comes in via url). Url to include clan code
+ 
  - tweaks to rules. Several issues on dakotas current war base
    - 7oc cannon not minion hittable
-   - Archer anchor line goes to general block of army camp, not hit block
-   - BK exposure
+   - BK exposure - currently triggers for slight area outside of wall without trash in front of it
    - air exposure (see valaar)
    - extra rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
        - maybe as a % of compartmented area
+   - wizard tower hound rule too strict. maybe only require 2/4
  
  - analysis performance, currently too slow on bulk
  - change js to use classes and instances rather than global modules

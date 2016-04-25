@@ -41,6 +41,15 @@ class VillageJsonParserSpec extends FlatSpec with Matchers {
       Some(Village(Set(new StubBaseElement(1, Tile(30, 30)))))
     ))
   }
+
+  it should "return war village without not yet placed buildings" in {
+    val result = parser.parse("""{"exp_ver":1, "war_layout": 4,"war_base": true, "buildings":[{ "data": 1000001, "lvl": 1, "x": 20, "y": 20, "l4x": 30, "l4y": 30 }, { "data": 1000001, "lvl": 2, "x": 40, "y": 40 }]}""")
+
+    result should be (Villages(
+      Village(Set(new StubBaseElement(1, Tile(20, 20)), new StubBaseElement(2, Tile(40, 40)))),
+      Some(Village(Set(new StubBaseElement(1, Tile(30, 30)))))
+    ))
+  }
 }
 
 object StubElementFactory extends ElementFactory {

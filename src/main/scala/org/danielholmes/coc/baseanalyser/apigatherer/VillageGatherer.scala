@@ -5,6 +5,7 @@ import org.danielholmes.coc.baseanalyser.model.Village
 import org.danielholmes.coc.baseanalyser.model.Layout.Layout
 import org.danielholmes.coc.baseanalyser.web.PermittedClan
 
+@Deprecated // too inefficient
 class VillageGatherer(
   private val serviceAgent: ClanSeekerServiceAgent,
   private val villageParser: VillageJsonParser,

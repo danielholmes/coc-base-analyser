@@ -1,5 +1,6 @@
 package org.danielholmes.coc.baseanalyser.web
 
+import java.io.StringWriter
 import java.time.Duration
 
 import akka.actor.Actor
@@ -12,6 +13,8 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 import spray.httpx.SprayJsonSupport._
 import ViewModelProtocol._
+import com.github.mustachejava.DefaultMustacheFactory
+import com.twitter.mustache.ScalaObjectHandler
 import org.danielholmes.coc.baseanalyser.model.Layout
 import spray.util.LoggingContext
 
@@ -38,17 +41,36 @@ class WebAppServiceActor extends Actor with HttpService with Services {
         }
     }
 
+  case class Basic(name: String)
+
   val route: Route =
     handleExceptions(exceptionHandler) {
       compressResponse() {
-        pathSingleSlash {
-          getFromResource("web/index.html")
-        } ~
-        path("war-bases" / Segment) { (clanCode) =>
-          if (permittedClans.exists(_.code == clanCode)) {
-            getFromResource("web/war-bases.html")
-          } else {
-            complete(StatusCodes.NotFound, s""""Clan $clanCode not found"""")
+        respondWithMediaType(`text/html`) {
+          pathSingleSlash {
+            getFromResource("web/index.html")
+          } ~
+          path("war-bases" / Segment) { (clanCode) =>
+            permittedClans.find(_.code == clanCode)
+              .flatMap(clan => clanSeekerServiceAgent.getClanDetails(clan.id))
+              .map(clanDetails =>
+                get {
+                  val mf = new DefaultMustacheFactory()
+                  mf.setObjectHandler(new ScalaObjectHandler())
+                  val mustache = mf.compile("web/war-bases.mustache")
+                  val writer = new StringWriter()
+                  val vars = Map(
+                    "name" -> clanDetails.name,
+                    "players" -> clanDetails.players
+                        .map(p => Map("id" -> p.avatar.userId, "ign" -> p.avatar.userName))
+                  )
+                  mustache.execute(writer, vars).flush()
+                  complete(writer.toString)
+                }
+              )
+              .getOrElse(
+                complete(StatusCodes.NotFound, s"Clan with code $clanCode not found")
+              )
           }
         } ~
         pathPrefix("assets") {
@@ -67,15 +89,31 @@ class WebAppServiceActor extends Actor with HttpService with Services {
           // we simply let the request drop to provoke a timeout
         } ~
         respondWithMediaType(`application/json`) {
-          path("clan-war-bases-analysis" / Segment) { (clanCode) =>
-            val clan = permittedClans.find(_.code == clanCode)
-            if (clan.isEmpty) {
-              complete(StatusCodes.NotFound, s""""Clan $clanCode not found"""")
-            } else {
-              val start = System.currentTimeMillis
-              val report = clan.map(_.id).flatMap(clanWarVillagesAnalyser.analyse).get
-              complete(viewModelMapper.viewModel(report, Duration.ofMillis(System.currentTimeMillis - start)))
-            }
+          // Note: bypasses approved clan checks
+          path("village-analysis" / LongNumber / "war" / "summary") { (playerId) =>
+            clanSeekerServiceAgent.getPlayerVillage(playerId)
+              .map(player => {
+                villageJsonParser.parse(player.village.raw)
+                  .war
+                  .map(village => {
+                    // Can't find easy/flexible way to find memory usage
+                    val start = System.currentTimeMillis
+                    villageAnalyser.analyse(village)
+                      .map(analysis => {
+                        complete(viewModelMapper.analysisSummary(
+                          player.avatar.userName,
+                          analysis,
+                          Duration.ofMillis(System.currentTimeMillis - start)
+                        ))
+                      })
+                      .getOrElse(complete(
+                        StatusCodes.BadRequest,
+                        "village can't be analysed - currently only supporting TH8-11"
+                      ))
+                  })
+                  .getOrElse(complete(StatusCodes.NotFound, s""""Player has no war base""""))
+              })
+              .getOrElse(complete(StatusCodes.NotFound, s""""Player not found""""))
           } ~
           path("village-analysis" / Segment / Segment) { (userName, layoutCode) =>
             val layout = Layout.getByCode(layoutCode)

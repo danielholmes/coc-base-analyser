@@ -25,8 +25,8 @@ var mapDisplay2d = (function(document) {
                 elements,
                 function (elementToDraw) {
                     var allInfo = new createjs.Container();
-                    var circle = new createjs.Shape();
-                    circle.graphics
+                    var outerCircle = new createjs.Shape();
+                    outerCircle.graphics
                         .beginStroke("#ffffff")
                         .beginFill("rgba(255,255,255,0.05)")
                         .drawCircle(
@@ -34,7 +34,20 @@ var mapDisplay2d = (function(document) {
                             0,
                             elementToDraw.range.outer * mapConfig.tileSize
                         );
-                    allInfo.addChild(circle);
+                    allInfo.addChild(outerCircle);
+
+                    if (elementToDraw.range.inner) {
+                        var innerCircle = new createjs.Shape();
+                        innerCircle.graphics
+                            .beginStroke("#ff5555")
+                            .beginFill("rgba(255,80,80,0.05)")
+                            .drawCircle(
+                                0,
+                                0,
+                                elementToDraw.range.inner * mapConfig.tileSize
+                            );
+                        allInfo.addChild(innerCircle);
+                    }
 
                     var lineSize = 1;
                     var vert = new createjs.Shape();
