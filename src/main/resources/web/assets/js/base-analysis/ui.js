@@ -171,7 +171,7 @@ var ui = (function($, model, mapDisplay, window) {
 
         if (location.hash.indexOf("#") == 0 && location.hash.split("/").length == 2) {
             var hashValues = location.hash.substring(1).split("/");
-            userNameField.val(hashValues[0]);
+            userNameField.val(decodeURI(hashValues[0]));
             searchForm.find("input[name=layout][value=" + hashValues[1] + "]").prop("checked", true);
             searchForm.submit();
         } else {
