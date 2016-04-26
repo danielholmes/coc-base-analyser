@@ -1,50 +1,60 @@
 package org.danielholmes.coc.baseanalyser.apigatherer
 
 import org.danielholmes.coc.baseanalyser.apigatherer.ClanSeekerProtocol._
+import org.danielholmes.coc.baseanalyser.web.PermittedClan
 
-class HardcodedClanSeekerServiceAgent extends ClanSeekerServiceAgent {
+class HardcodedClanSeekerServiceAgent(private val permittedClans: Set[PermittedClan]) extends ClanSeekerServiceAgent {
   def getClanDetails(id: Long): Option[ClanDetails] = {
-    Some(
-      ClanDetails(
-        "Dummy Clan",
-        Set(
-          PlayerSummary(AvatarSummary("Dakota", 1L)),
-          PlayerSummary(AvatarSummary("kottonmouth", 2L)),
-          PlayerSummary(AvatarSummary("Valaar", 3L)),
-          PlayerSummary(AvatarSummary("Mesoscalevortex", 4L)),
-          PlayerSummary(AvatarSummary("Kajla", 5L)),
-          PlayerSummary(AvatarSummary("a Noob", 6L)),
-          PlayerSummary(AvatarSummary("Ricochet", 7L)),
-          PlayerSummary(AvatarSummary("Lazy Ninja", 8L)),
-          PlayerSummary(AvatarSummary("san", 9L)),
-          PlayerSummary(AvatarSummary("Robbie", 10L)),
-          PlayerSummary(AvatarSummary("Kendrall", 11L)),
-          PlayerSummary(AvatarSummary("Spike Dragon", 12L)),
-          PlayerSummary(AvatarSummary("Jamie", 13L)),
-          PlayerSummary(AvatarSummary("joshua", 14L)),
-          PlayerSummary(AvatarSummary("Kiara Kong", 15L)),
-          PlayerSummary(AvatarSummary("ice ice baby", 16L)),
-          PlayerSummary(AvatarSummary("lifesong", 17L)),
-          PlayerSummary(AvatarSummary("Diaz", 18L)),
+    permittedClans.find(_.id == id)
+      .filter(_.code != "uncool")
+      .map(clan =>
+        ClanDetails(
+          clan.name,
+          Set(
+            PlayerSummary(AvatarSummary("Dakota", 1L)),
+            PlayerSummary(AvatarSummary("kottonmouth", 2L)),
+            PlayerSummary(AvatarSummary("Valaar", 3L)),
+            PlayerSummary(AvatarSummary("Mesoscalevortex", 4L)),
+            PlayerSummary(AvatarSummary("Kajla", 5L)),
+            PlayerSummary(AvatarSummary("a Noob", 6L)),
+            PlayerSummary(AvatarSummary("Ricochet", 7L)),
+            PlayerSummary(AvatarSummary("Lazy Ninja", 8L)),
+            PlayerSummary(AvatarSummary("san", 9L)),
+            PlayerSummary(AvatarSummary("Robbie", 10L)),
+            PlayerSummary(AvatarSummary("Kendrall", 11L)),
+            PlayerSummary(AvatarSummary("Spike Dragon", 12L)),
+            PlayerSummary(AvatarSummary("Jamie", 13L)),
+            PlayerSummary(AvatarSummary("joshua", 14L)),
+            PlayerSummary(AvatarSummary("Kiara Kong", 15L)),
+            PlayerSummary(AvatarSummary("ice ice baby", 16L)),
+            PlayerSummary(AvatarSummary("lifesong", 17L)),
+            PlayerSummary(AvatarSummary("Diaz", 18L)),
 
-          PlayerSummary(AvatarSummary("I AM SPARTA!!1!", 100L)),
-          PlayerSummary(AvatarSummary("rektscrub", 102L)),
-          PlayerSummary(AvatarSummary("Darth Noobus", 103L)),
-          PlayerSummary(AvatarSummary("greg", 104L)),
-          PlayerSummary(AvatarSummary("Max", 105L)),
-          PlayerSummary(AvatarSummary("ppete", 106L)),
-          PlayerSummary(AvatarSummary("Vicious", 107L)),
-          PlayerSummary(AvatarSummary("Riggs", 108L)),
+            PlayerSummary(AvatarSummary("I AM SPARTA!!1!", 100L)),
+            PlayerSummary(AvatarSummary("rektscrub", 102L)),
+            PlayerSummary(AvatarSummary("Darth Noobus", 103L)),
+            PlayerSummary(AvatarSummary("greg", 104L)),
+            PlayerSummary(AvatarSummary("Max", 105L)),
+            PlayerSummary(AvatarSummary("ppete", 106L)),
+            PlayerSummary(AvatarSummary("Vicious", 107L)),
+            PlayerSummary(AvatarSummary("Riggs", 108L)),
 
-          PlayerSummary(AvatarSummary("Some Mini", 1000L))
+            PlayerSummary(AvatarSummary("Some Mini", 1000L))
+          )
         )
-
       )
-    )
   }
 
   def getPlayerVillage(id: Long): Option[PlayerVillage] = {
-    val avatarSummary = AvatarSummary(getClanDetails(-1L).get.players.find(_.avatar.userId == id).get.avatar.userName, id)
+    val avatarSummary = permittedClans.map(_.id)
+      .map(getClanDetails(_))
+      .filter(_.isDefined)
+      .map(_.get)
+      .flatMap(_.players)
+      .find(_.avatar.userId == id)
+      .map(p => AvatarSummary(p.avatar.userName, p.avatar.userId))
+      .get
+
     if (id < 100L) {
       return Some(PlayerVillage(
         avatarSummary,

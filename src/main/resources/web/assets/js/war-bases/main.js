@@ -9,6 +9,11 @@ $(document).ready(function() {
     var resultsContainer = $("#results");
     var problemsContainer = $("#problems");
 
+    var addResult = function(result) {
+        results.push(result);
+        render();
+    };
+
     var loadPlayer = function(player) {
         jQuery.getJSON("/village-analysis/" + encodeURI(player.id) + "/war/summary")
             .always(function() {
@@ -16,26 +21,32 @@ $(document).ready(function() {
                 load();
             })
             .done(function(report) {
-                results.push({
+                addResult({
                     player: player,
                     report: report
                 });
-                render();
             })
             .fail(function(response) {
                 if (response.status == 404 || response.status == 400) {
-                    results.push({
+                    addResult({
                         player: player,
                         error: response.responseJSON
                     });
-                    render();
-                } else {
-                    results.push({
-                        player: player,
-                        error: "Some error encountered, please try again"
-                    });
-                    render();
+                    return;
                 }
+
+                if (response.status == 503) {
+                    addResult({
+                        player: player,
+                        error: "Game Servers connection not available, try again later"
+                    });
+                    return;
+                }
+
+                addResult({
+                    player: player,
+                    error: "Some error encountered, please try again"
+                });
             });
     };
 
@@ -72,7 +83,7 @@ $(document).ready(function() {
                 }
 
                 if (result.report == null) {
-                    problemsContainer.show();
+                    problemsContainer.removeClass("hidden").show();
                     var problemId = "problem-" + result.player.id;
                     if (problemsContainer.find("#" + problemId).size() == 0) {
                         problemsContainer.append($("<div />").attr("id", problemId).html(result.player.ign + ": " + result.error));
@@ -100,11 +111,10 @@ $(document).ready(function() {
                 );
 
                 var anyError = _.some(result.report.resultSummaries, function(summary) { return !summary.success; });
-                var link = "/#" + encodeURI(result.player.ign) + "/war";
                 $("<tr />").attr("id", rowId)
                     .addClass(anyError ? 'danger' : '')
                     .append($("<td />").append(result.player.ign))
-                    .append($("<td />").append($("<a />").attr("href", link).attr("target", "_blank").html(link)))
+                    .append($("<td />").append($("<a />").attr("href", result.player.analysisUrl).attr("target", "_blank").html(result.player.analysisUrl)))
                     .append(
                         _.map(
                             _.sortBy(result.report.resultSummaries, function(summary) { return ruleOrder.indexOf(summary.name); }),

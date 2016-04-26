@@ -44,10 +44,8 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - Explicit connection to supercell down error - unreliable, please try again later, etc
- - Change general ui - no search box (comes in via url). Url to include clan code
- - Rule naming handling overhaul - to benefit war bases summary
- 
+ - range should be trait - circular + radius circular (and sweeper later)
+ - TH11 not working (?) - see vietha76 and check has eagle artillery
  - tweaks to rules. Several issues on dakotas current war base
    - 7oc cannon not minion hittable
    - BK exposure - currently triggers for slight area outside of wall without trash in front of it
@@ -56,9 +54,13 @@ then deploy it manually through the AWS console:
        - maybe as a % of compartmented area
    - wizard tower hound rule too strict. maybe only require 2/4
  
- - TH11 not working (?) - see vietha76
+ - Rule naming handling overhaul - to benefit war bases summary
+ - Explicit connection to supercell down error - unreliable, please try again later, etc
+ - Change general ui - no search box (comes in via url). Url to include clan code so can do less lookup queries
+ 
  - analysis performance, currently too slow
   - hog cc lure analysis - dont need all external tiles - just need outer coords touching drop boundary
+  - look at built in @tailrec
  - change js to use classes and instances rather than global modules
  
  - clarify AQ range - see iphoto screenshot of greg raid. possibly shown on ppetes war base

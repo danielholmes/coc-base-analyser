@@ -33,9 +33,7 @@ object ClanSeekerProtocol extends DefaultJsonProtocol {
 }
 import ClanSeekerProtocol._
 
-// Having problems with types when refactor into common functionality
-// Details for berserker. Note that kicks off account though
-// ?userId=55845388039&userToken=bp9a6dt8tawn6mbsp69jec8j7cszfd7968df82ka
+// TODO: Having problems with types when refactor into common functionality, but should refactor this
 class ClanSeekerAkkaServiceAgent extends ClanSeekerServiceAgent {
   private val rootUrl: String = "http://api.clanseeker.co"
   private val timeout = 1.minute
@@ -49,7 +47,7 @@ class ClanSeekerAkkaServiceAgent extends ClanSeekerServiceAgent {
       val response = pipeline(Get(s"$rootUrl/clan_details?id=$id"))
       val result = Await.result(response, timeout)
       if (result.clan.isDefined || attemptNumber == 3) return result.clan
-      Thread.sleep(100 * attemptNumber)
+      Thread.sleep(400 * attemptNumber)
       attempt(attemptNumber + 1)
     }
 
@@ -69,7 +67,7 @@ class ClanSeekerAkkaServiceAgent extends ClanSeekerServiceAgent {
       val response = pipeline(Get(s"$rootUrl/player_village?id=$id"))
       val result = Await.result(response, timeout)
       if (result.player.isDefined || attemptNumber == 3) return result.player
-      Thread.sleep(100 * attemptNumber)
+      Thread.sleep(400 * attemptNumber)
       attempt(attemptNumber + 1)
     }
 

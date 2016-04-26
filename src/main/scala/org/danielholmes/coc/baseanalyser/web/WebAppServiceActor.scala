@@ -13,6 +13,7 @@ import scala.concurrent.duration._
 import spray.httpx.SprayJsonSupport._
 import ViewModelProtocol._
 import org.danielholmes.coc.baseanalyser.model.Layout
+import org.danielholmes.coc.baseanalyser.util.{GameConnectionNotAvailableException, UrlUtils}
 import spray.util.LoggingContext
 
 class WebAppServiceActor extends Actor with HttpService with Services {
@@ -29,13 +30,24 @@ class WebAppServiceActor extends Actor with HttpService with Services {
 
   implicit def exceptionHandler(implicit log: LoggingContext) =
     ExceptionHandler {
-      case e: Exception =>
-        respondWithMediaType(`application/json`) {
-          requestUri { uri =>
-            log.error(e, e.getMessage)
-            complete(StatusCodes.InternalServerError, viewModelMapper.exception(uri, e))
+        case g: GameConnectionNotAvailableException =>
+          respondWithMediaType(`application/json`) {
+            log.error(g, g.getMessage)
+            complete(
+              StatusCodes.ServiceUnavailable,
+              Map(
+                "message" -> "Connection to Game Servers not available",
+                "details" -> "We're currently using a third party service for this which can be unreliable. It's usually only temporary though and worth trying again shortly"
+              )
+            )
           }
-        }
+        case e: Exception =>
+          respondWithMediaType(`application/json`) {
+            requestUri { uri =>
+              log.error(e, uri.toString + " - " + e.getMessage)
+              complete(StatusCodes.InternalServerError, viewModelMapper.exception(uri, e))
+            }
+          }
     }
 
   case class Basic(name: String)
@@ -47,20 +59,61 @@ class WebAppServiceActor extends Actor with HttpService with Services {
           pathSingleSlash {
             getFromResource("web/index.html")
           } ~
-          path("war-bases" / Segment) { (clanCode) =>
+          path("clans" / Segment) { (clanCode) =>
             permittedClans.find(_.code == clanCode)
-              .flatMap(clan => clanSeekerServiceAgent.getClanDetails(clan.id))
+              .map(clan =>
+                clanSeekerServiceAgent.getClanDetails(clan.id)
+                  .getOrElse(throw new GameConnectionNotAvailableException)
+              )
               .map(clanDetails =>
                 get {
-                  val response = mustacheRenderer.render(
-                    "web/war-bases.mustache",
-                    Map(
-                      "name" -> clanDetails.name,
-                      "players" -> clanDetails.players
-                        .map(p => Map("id" -> p.avatar.userId, "ign" -> p.avatar.userName))
+                  complete(
+                    mustacheRenderer.render(
+                      "web/clan.mustache",
+                      Map(
+                        "name" -> clanDetails.name,
+                        "bulkAnalysisUrl" -> s"/clans/$clanCode/war-bases",
+                        "players" -> clanDetails.players
+                          .toSeq
+                          .sortBy(_.avatar.userName.toLowerCase)
+                          .map(p => Map(
+                            "ign" -> p.avatar.userName,
+                            "analysisUrl" -> s"/#${UrlUtils.encode(p.avatar.userName)}/war"
+                          ))
+                      )
                     )
                   )
-                  complete(response)
+                }
+              )
+              .getOrElse(
+                complete(StatusCodes.NotFound, s"Clan with code $clanCode not found")
+              )
+          } ~
+          path("war-bases" / Segment) { clanCode =>
+            redirect(s"/clans/$clanCode/war-bases", StatusCodes.MovedPermanently)
+          } ~
+          path("clans" / Segment / "war-bases") { clanCode =>
+            permittedClans.find(_.code == clanCode)
+              .map(clan =>
+                clanSeekerServiceAgent.getClanDetails(clan.id)
+                  .getOrElse(throw new GameConnectionNotAvailableException)
+              )
+              .map(clanDetails =>
+                get {
+                  complete(
+                    mustacheRenderer.render(
+                      "web/war-bases.mustache",
+                      Map(
+                        "name" -> clanDetails.name,
+                        "players" -> clanDetails.players
+                          .map(p => Map(
+                            "id" -> p.avatar.userId,
+                            "ign" -> p.avatar.userName,
+                            "analysisUrl" -> s"/#${UrlUtils.encode(p.avatar.userName)}/war"
+                          ))
+                      )
+                    )
+                  )
                 }
               )
               .getOrElse(
@@ -103,7 +156,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                       })
                       .getOrElse(complete(
                         StatusCodes.BadRequest,
-                        "village can't be analysed - currently only supporting TH8-11"
+                        s"Currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}"
                       ))
                   })
                   .getOrElse(complete(StatusCodes.NotFound, s""""Player has no war base""""))
