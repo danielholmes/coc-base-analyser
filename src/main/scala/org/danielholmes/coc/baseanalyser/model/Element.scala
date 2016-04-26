@@ -23,10 +23,6 @@ trait Element {
     }
   }
 
-  def findClosestHitCoordinate(from: TileCoordinate): TileCoordinate = {
-    findClosestHitCoordinate(from.toMapCoordinate)
-  }
-
   def findClosestHitCoordinate(from: MapCoordinate): TileCoordinate = {
     hitBlock.findClosestCoordinate(from)
   }

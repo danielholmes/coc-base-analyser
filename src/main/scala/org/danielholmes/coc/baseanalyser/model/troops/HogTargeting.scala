@@ -1,7 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model.troops
 
-import org.apache.commons.math3.geometry.euclidean.twod.{Line, Segment, Vector2D}
-import org.danielholmes.coc.baseanalyser.model.{Element, ElementRange, MapCoordinate, TileCoordinate}
+import org.apache.commons.math3.geometry.euclidean.twod.{Line, Segment}
+import org.danielholmes.coc.baseanalyser.model.{Element, ElementRange, TileCoordinate}
 
 case class HogTargeting(startPosition: TileCoordinate, targeting: Element) {
   lazy val hitPoint = targeting.findClosestHitCoordinate(startPosition)
@@ -12,9 +12,7 @@ case class HogTargeting(startPosition: TileCoordinate, targeting: Element) {
     range.cutBy(asSegment)
   }
 
-  private val asLine = new Line(coordinateAsPoint(startPosition), coordinateAsPoint(hitPoint), 0.01)
+  private val asLine = new Line(startPosition.toVector2D, hitPoint.toVector2D, 0.01)
 
-  private val asSegment = new Segment(coordinateAsPoint(startPosition), coordinateAsPoint(hitPoint), asLine)
-
-  private def coordinateAsPoint(coordinate: TileCoordinate): Vector2D = coordinate.toMapCoordinate.toVector2D
+  private val asSegment = new Segment(startPosition.toVector2D, hitPoint.toVector2D, asLine)
 }

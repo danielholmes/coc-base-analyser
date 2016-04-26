@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser.model.troops
 
-import org.danielholmes.coc.baseanalyser.model.{Element, MapCoordinate}
+import org.danielholmes.coc.baseanalyser.model.{Element, MapCoordinate, TileCoordinate}
 import org.scalactic.anyvals.PosDouble
 
 object Minion {
@@ -8,7 +8,7 @@ object Minion {
   private val DiagonalRange = Math.sqrt(Range / 2)
 
   def getAttackPositions(element: Element): Set[MapCoordinate] = {
-    element.hitBlock.allCoordinates.map(_.toMapCoordinate) ++
+    element.hitBlock.allCoordinates.map(TileCoordinate.widenToMapCoordinate) ++
       element.hitBlock.leftSide.map(_.offset(-Range, 0)) ++
       element.hitBlock.rightSide.map(_.offset(Range, 0)) ++
       element.hitBlock.topSide.map(_.offset(0, -Range)) ++

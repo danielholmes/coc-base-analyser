@@ -4,16 +4,12 @@ import org.apache.commons.math3.geometry.euclidean.twod.Segment
 import org.scalactic.anyvals.PosDouble
 
 case class CircularElementRange(centre: MapCoordinate, size: PosDouble) extends ElementRange {
-  def contains(testCoordinate: TileCoordinate): Boolean = {
-    contains(testCoordinate.toMapCoordinate)
-  }
-
   def contains(testCoordinate: MapCoordinate): Boolean = {
     testCoordinate.distanceTo(centre) < size
   }
 
   def touchesEdge(tile: Tile) = {
-    val touchResults = tile.allCoordinates.partition(contains)
+    val touchResults = tile.allCoordinates.partition(contains(_))
     touchResults._1.nonEmpty && touchResults._2.nonEmpty
   }
 

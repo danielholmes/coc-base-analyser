@@ -44,7 +44,6 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - implicit widen for tile coordinate to map coordinate and tile to tile coordinate and tile to map coordinate
  - tweaks to rules. Several issues on dakotas current war base
    - extra rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
        - maybe as a % of compartmented area

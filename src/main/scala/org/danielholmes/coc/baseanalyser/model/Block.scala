@@ -9,9 +9,9 @@ case class Block(tile: Tile, size: PosInt) {
 
   val x = tile.x
   val y = tile.y
-  private lazy val oppositeCoordinate = tile.toTileCoordinate.offset(size, size)
-  lazy val oppositeX = oppositeCoordinate.x
-  lazy val oppositeY = oppositeCoordinate.y
+  private lazy val oppositeTile = tile.offset(size, size)
+  lazy val oppositeX = oppositeTile.x
+  lazy val oppositeY = oppositeTile.y
 
   lazy val isWithinMap = tiles.forall(_.isWithinMap)
 
@@ -21,13 +21,12 @@ case class Block(tile: Tile, size: PosInt) {
     if (size < 2) {
       Set.empty
     } else {
-      tile.toTileCoordinate
-        .offset(1, 1)
-        .matrixOfCoordinatesTo(oppositeCoordinate.offset(-1, -1))
+      tile.offset(1, 1)
+        .matrixOfCoordinatesTo(oppositeTile.offset(-1, -1))
     }
   }
 
-  lazy val topLeft: TileCoordinate = tile.toTileCoordinate
+  lazy val topLeft: TileCoordinate = tile
 
   lazy val topRight = topLeft.offset(size, 0)
 
@@ -46,15 +45,11 @@ case class Block(tile: Tile, size: PosInt) {
 
 
   lazy val allCoordinates: Set[TileCoordinate] = {
-    tile.toTileCoordinate.matrixOfCoordinatesTo(oppositeCoordinate)
+    tile.matrixOfCoordinatesTo(oppositeTile)
   }
 
   lazy val tiles: Set[Tile] = {
     tile.matrixOfTilesInDirection(size, size)
-  }
-
-  def findClosestCoordinate(from: TileCoordinate): TileCoordinate = {
-    findClosestCoordinate(from.toMapCoordinate)
   }
 
   def findClosestCoordinate(from: MapCoordinate): TileCoordinate = {
@@ -85,7 +80,7 @@ case class Block(tile: Tile, size: PosInt) {
   }
 
   private lazy val possibleIntersectionPoints: Set[TileCoordinate] = {
-    tile.toTileCoordinate.matrixOfCoordinatesTo(tile.toTileCoordinate.offset(size, size))
+    tile.matrixOfCoordinatesTo(tile.offset(size, size))
   }
 }
 

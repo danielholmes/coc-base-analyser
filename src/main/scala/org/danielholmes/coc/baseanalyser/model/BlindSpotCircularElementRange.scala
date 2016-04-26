@@ -11,12 +11,8 @@ case class BlindSpotCircularElementRange(centre: MapCoordinate, innerSize: PosDo
     distance >= innerSize && distance < outerSize
   }
 
-  def contains(testCoordinate: TileCoordinate): Boolean = {
-    contains(testCoordinate.toMapCoordinate)
-  }
-
   def touchesEdge(tile: Tile) = {
-    val touchResults = tile.allCoordinates.partition(contains)
+    val touchResults = tile.allCoordinates.partition(contains(_))
     touchResults._1.nonEmpty && touchResults._2.nonEmpty
   }
 

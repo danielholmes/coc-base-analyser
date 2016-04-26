@@ -9,7 +9,6 @@ import org.scalactic.anyvals.{PosInt, PosZInt, PosZDouble}
 trait TileCoordinate {
   val x: PosZInt
   val y: PosZInt
-  def distanceTo(other: TileCoordinate): PosZDouble
   def distanceTo(other: MapCoordinate): PosZDouble
   def offset(xAmount: Int, yAmount: Int): TileCoordinate
   def offset(xAmount: Double, yAmount: Double): MapCoordinate
@@ -17,14 +16,13 @@ trait TileCoordinate {
   def matrixOfCoordinatesTo(other: TileCoordinate): Set[TileCoordinate]
   def xAxisCoordsTo(other: TileCoordinate, step: PosInt): Set[TileCoordinate]
   def yAxisCoordsTo(other: TileCoordinate, step: PosInt): Set[TileCoordinate]
-
-  // TODO: See if can replace with implicit widening (e.g. see PosInt, etc)
-  def toMapCoordinate: MapCoordinate
 }
 
 object TileCoordinate {
   private val applyMemo = Memo2[PosZInt, PosZInt, TileCoordinate](TileCoordinateImpl)
   def apply(x: PosZInt, y: PosZInt): TileCoordinate = applyMemo.apply(x, y)
+
+  implicit def widenToMapCoordinate(coord: TileCoordinate): MapCoordinate = MapCoordinate(coord.x, coord.y)
 
   val MaxCoordinate = PosInt.from(Tile.MaxCoordinate + 1).get
   val Origin = TileCoordinate(0, 0)
@@ -40,15 +38,13 @@ object TileCoordinate {
     // Right
     TileCoordinate(MaxCoordinate, 0).matrixOfCoordinatesTo(TileCoordinate(MaxCoordinate, MaxCoordinate))
 
-  val MapOrigin = Tile.MapOrigin.toTileCoordinate
+  val MapOrigin: TileCoordinate = Tile.MapOrigin
 
   private case class TileCoordinateImpl(x: PosZInt, y: PosZInt) extends TileCoordinate {
     require((0 to MaxCoordinate).contains(x.toInt), s"TileCoordinates.x must be >= 0 <= $MaxCoordinate, given: $x")
     require((0 to MaxCoordinate).contains(y.toInt), s"TileCoordinates.y must be >= 0 <= $MaxCoordinate, given: $y")
 
-    def distanceTo(other: TileCoordinate): PosZDouble = distanceTo(other.toMapCoordinate)
-
-    def distanceTo(other: MapCoordinate): PosZDouble = toMapCoordinate.distanceTo(other)
+    def distanceTo(other: MapCoordinate): PosZDouble = other.distanceTo(this)
 
     def offset(xAmount: Int, yAmount: Int): TileCoordinate = {
       TileCoordinate(PosZInt.from(x + xAmount).get, PosZInt.from(y + yAmount).get)
@@ -72,8 +68,6 @@ object TileCoordinate {
     }
 
     def matrixOfCoordinatesTo(other: TileCoordinate): Set[TileCoordinate] = matrixOfCoordinatesTo(other, 1)
-
-    def toMapCoordinate = MapCoordinate(x, y)
 
     override val toString = s"TileCoordinate($x, $y)"
   }
