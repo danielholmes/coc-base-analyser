@@ -37,4 +37,13 @@ class WizardTowersOutOfHoundPositionsRuleSpec extends FlatSpec with Matchers {
     result.success should be (true)
     result should be (WizardTowersOutOfHoundPositionsRuleResult(Set(wt), Set.empty, Set(ad)))
   }
+
+  it should "return success for half wts in range of air def" in {
+    val wtInRange = WizardTower(1, Tile(4, 4))
+    val wtOutRange = WizardTower(1, Tile(35, 35))
+    val ad = AirDefense(1, Tile(1, 1))
+    val result = rule.analyse(Village(Set(ad, wtInRange, wtOutRange)))
+    result.success should be (true)
+    result should be (WizardTowersOutOfHoundPositionsRuleResult(Set(wtOutRange), Set(WizardTowerHoundTargeting(wtInRange, ad)), Set(ad)))
+  }
 }

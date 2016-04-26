@@ -5,15 +5,15 @@ import org.danielholmes.coc.baseanalyser.model.troops.{HogTargeting, HogRider}
 
 class HogCCLureRule extends Rule {
   def analyse(village: Village): RuleResult = {
-    val clanCastleRadius = village.clanCastle
+    village.clanCastle
       .map(_.range)
-    if (clanCastleRadius.isEmpty) return HogCCLureRuleResult(Set.empty)
-
-    HogCCLureRuleResult(
-      village.coordinatesAllowedToDropTroop
-        .flatMap(HogRider.findTargets(_, village))
-        .filter(_.cutsRadius(clanCastleRadius.get))
-    )
+      .map(range =>
+        village.coordinatesAllowedToDropTroop
+          .flatMap(HogRider.findTargets(_, village))
+          .filter(_.cutsRadius(range))
+      )
+      .map(HogCCLureRuleResult)
+      .getOrElse(HogCCLureRuleResult(Set.empty))
   }
 }
 

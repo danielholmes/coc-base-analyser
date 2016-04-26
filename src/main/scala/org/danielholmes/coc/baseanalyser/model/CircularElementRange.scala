@@ -5,6 +5,10 @@ import org.scalactic.anyvals.PosDouble
 
 case class CircularElementRange(centre: MapCoordinate, size: PosDouble) extends ElementRange {
   def contains(testCoordinate: TileCoordinate): Boolean = {
+    contains(testCoordinate.toMapCoordinate)
+  }
+
+  def contains(testCoordinate: MapCoordinate): Boolean = {
     testCoordinate.distanceTo(centre) < size
   }
 

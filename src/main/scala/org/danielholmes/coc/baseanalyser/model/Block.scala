@@ -9,7 +9,7 @@ case class Block(tile: Tile, size: PosInt) {
 
   val x = tile.x
   val y = tile.y
-  private lazy val oppositeCoordinate = tile.toMapCoordinate.offset(size, size)
+  private lazy val oppositeCoordinate = tile.toTileCoordinate.offset(size, size)
   lazy val oppositeX = oppositeCoordinate.x
   lazy val oppositeY = oppositeCoordinate.y
 
@@ -17,18 +17,36 @@ case class Block(tile: Tile, size: PosInt) {
 
   lazy val centre = MapCoordinate(PosZDouble.from(x + size.toDouble / 2.0).get, PosZDouble.from(y + size.toDouble / 2.0).get)
 
-  lazy val internalCoordinates: Set[TileCoordinate] = {
+  lazy val internalCoordinates = {
     if (size < 2) {
       Set.empty
     } else {
-      tile.toMapCoordinate
+      tile.toTileCoordinate
         .offset(1, 1)
         .matrixOfCoordinatesTo(oppositeCoordinate.offset(-1, -1))
     }
   }
 
+  lazy val topLeft: TileCoordinate = tile.toTileCoordinate
+
+  lazy val topRight = topLeft.offset(size, 0)
+
+  lazy val bottomLeft = topLeft.offset(0, size)
+
+  lazy val bottomRight = bottomLeft.offset(size, 0)
+
+
+  lazy val leftSide = topLeft.matrixOfCoordinatesTo(bottomLeft)
+
+  lazy val rightSide = topRight.matrixOfCoordinatesTo(bottomRight)
+
+  lazy val topSide = topLeft.matrixOfCoordinatesTo(topRight)
+
+  lazy val bottomSide = bottomLeft.matrixOfCoordinatesTo(bottomRight)
+
+
   lazy val allCoordinates: Set[TileCoordinate] = {
-    tile.toMapCoordinate.matrixOfCoordinatesTo(oppositeCoordinate)
+    tile.toTileCoordinate.matrixOfCoordinatesTo(oppositeCoordinate)
   }
 
   lazy val tiles: Set[Tile] = {
@@ -36,6 +54,10 @@ case class Block(tile: Tile, size: PosInt) {
   }
 
   def findClosestCoordinate(from: TileCoordinate): TileCoordinate = {
+    findClosestCoordinate(from.toMapCoordinate)
+  }
+
+  def findClosestCoordinate(from: MapCoordinate): TileCoordinate = {
     possibleIntersectionPoints.min(Ordering.by((_: TileCoordinate)
       .distanceTo(from)))
   }
@@ -63,7 +85,7 @@ case class Block(tile: Tile, size: PosInt) {
   }
 
   private lazy val possibleIntersectionPoints: Set[TileCoordinate] = {
-    tile.toMapCoordinate.matrixOfCoordinatesTo(tile.toMapCoordinate.offset(size, size))
+    tile.toTileCoordinate.matrixOfCoordinatesTo(tile.toTileCoordinate.offset(size, size))
   }
 }
 

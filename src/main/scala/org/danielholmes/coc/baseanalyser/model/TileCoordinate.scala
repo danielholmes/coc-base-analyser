@@ -12,10 +12,13 @@ trait TileCoordinate {
   def distanceTo(other: TileCoordinate): PosZDouble
   def distanceTo(other: MapCoordinate): PosZDouble
   def offset(xAmount: Int, yAmount: Int): TileCoordinate
+  def offset(xAmount: Double, yAmount: Double): MapCoordinate
   def matrixOfCoordinatesTo(other: TileCoordinate, step: PosInt): Set[TileCoordinate]
   def matrixOfCoordinatesTo(other: TileCoordinate): Set[TileCoordinate]
   def xAxisCoordsTo(other: TileCoordinate, step: PosInt): Set[TileCoordinate]
   def yAxisCoordsTo(other: TileCoordinate, step: PosInt): Set[TileCoordinate]
+
+  // TODO: See if can replace with implicit widening (e.g. see PosInt, etc)
   def toMapCoordinate: MapCoordinate
 }
 
@@ -37,7 +40,7 @@ object TileCoordinate {
     // Right
     TileCoordinate(MaxCoordinate, 0).matrixOfCoordinatesTo(TileCoordinate(MaxCoordinate, MaxCoordinate))
 
-  val MapOrigin = Tile.MapOrigin.toMapCoordinate
+  val MapOrigin = Tile.MapOrigin.toTileCoordinate
 
   private case class TileCoordinateImpl(x: PosZInt, y: PosZInt) extends TileCoordinate {
     require((0 to MaxCoordinate).contains(x.toInt), s"TileCoordinates.x must be >= 0 <= $MaxCoordinate, given: $x")
@@ -49,6 +52,10 @@ object TileCoordinate {
 
     def offset(xAmount: Int, yAmount: Int): TileCoordinate = {
       TileCoordinate(PosZInt.from(x + xAmount).get, PosZInt.from(y + yAmount).get)
+    }
+
+    def offset(xAmount: Double, yAmount: Double): MapCoordinate = {
+      MapCoordinate(PosZDouble.from(x + xAmount).get, PosZDouble.from(y + yAmount).get)
     }
 
     def xAxisCoordsTo(other: TileCoordinate, step: PosInt): Set[TileCoordinate] = {

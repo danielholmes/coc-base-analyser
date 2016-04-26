@@ -14,21 +14,22 @@
                     <p>Search for an IGN (can only be within the approved clans) and an analysis will be run on their active village</p>
                     <div class="alert alert-info">
                         <strong>Note!</strong> this is an alpha release. The connection to the game is a bit unreliable
-                        and you might need to refresh sometimes to try it again and get it to work. Hidden Teslas are not
-                        yet implemented, this will be available soon. Any feedback or bug reports are much appreciated
+                        and you might need to refresh sometimes to try it again and get it to work. Hidden Teslas and
+                        traps are not yet implemented, this will be available soon. Any feedback or bug reports are much
+                        appreciated
                     </div>
                     <form id="searchForm" class="form-inline">
                         <div class="form-group">
                             <label for="userNameField">IGN:</label>
-                            <input id="userNameField" type="text" name="userName" required="required" value="" />
+                            <input id="userNameField" class="form-control" type="text" name="userName" required="required" value="" />
                         </div>
                         <div class="form-group">
                             <label>Layout:</label>
                             <label class="radio-inline">
-                                <input name="layout" type="radio" id="layoutHome" value="home" checked="checked" /> Home
+                                <input name="layout" type="radio" class="form-control" id="layoutHome" value="home" checked="checked" /> Home
                             </label>
                             <label class="radio-inline">
-                                <input name="layout" type="radio" id="layoutWar" value="war" /> War
+                                <input name="layout" type="radio" class="form-control" id="layoutWar" value="war" /> War
                             </label>
                         </div>
                         <div class="form-group">

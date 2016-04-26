@@ -263,10 +263,29 @@ var mapDisplay2d = (function(document) {
 
     var renderAirSnipedDefense = function(result, mapConfig) {
         eachBuildingDisplay(
-            result.snipedDefenses,
+            _.pluck(result.attackPositions, 'targetingId'),
             function (buildingContainer) {
                 applyColour(buildingContainer, 1, 0, 0);
             }
+        );
+        _.each(
+            _.map(
+                result.attackPositions,
+                function(targeting) {
+                    var line = new createjs.Shape();
+                    line.graphics
+                        .beginStroke("#ff0000")
+                        .moveTo(0, 0)
+                        .lineTo(
+                            (targeting.hitPoint.x - targeting.startPosition.x) * mapConfig.tileSize,
+                            (targeting.hitPoint.y - targeting.startPosition.y) * mapConfig.tileSize
+                        );
+                    line.x = targeting.startPosition.x * mapConfig.tileSize;
+                    line.y = targeting.startPosition.y * mapConfig.tileSize;
+                    return line;
+                }
+            ),
+            function(display) { extrasContainer.addChild(display); }
         );
         renderElementRangesByIds(mapConfig, result.airDefenses);
     };
@@ -489,19 +508,6 @@ var mapDisplay2d = (function(document) {
         }
 
         render2d();
-
-        /*var size = 150;
-        var shape = new createjs.Shape().set({x:200,y:200});
-        shape.graphics.beginFill("#ff0000").drawCircle(0,0,size);
-        var blurFilter = new createjs.BlurFilter(40, 40, 1);
-        shape.filters = [blurFilter];
-        var bounds = blurFilter.getBounds();
-        shape.cache(-size +bounds.x, -size +bounds.y, 2*size+bounds.width, 2*size+bounds.height);
-        stage.addChild(shape);
-
-        var shape = new createjs.Shape().set({x:400,y:200});
-        shape.graphics.beginFill("#ff0000").drawCircle(0,0,size);
-        stage.addChild(shape);*/
 
         stage.update();
     };

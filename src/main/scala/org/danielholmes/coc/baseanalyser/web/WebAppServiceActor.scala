@@ -57,7 +57,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
       compressResponse() {
         respondWithMediaType(`text/html`) {
           pathSingleSlash {
-            getFromResource("web/index.html")
+            getFromResource("web/base-analysis.html")
           } ~
           path("clans" / Segment) { (clanCode) =>
             permittedClans.find(_.code == clanCode)

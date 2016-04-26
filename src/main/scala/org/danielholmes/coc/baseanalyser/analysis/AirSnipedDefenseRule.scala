@@ -17,12 +17,14 @@ class AirSnipedDefenseRule extends Rule {
   }
 
   private def noDefenseRangesCoverMinion(ground: Set[Defense], air: Set[Defense]): Set[MinionAttackPosition] = {
-    ground.flatMap(nonAirCoveredAttackPositions(_, air))
+    ground.flatMap(bestNonAirCoveredAttackPosition(_, air))
   }
 
-  private def nonAirCoveredAttackPositions(ground: Defense, air: Set[Defense]): Set[MinionAttackPosition] = {
+  private def bestNonAirCoveredAttackPosition(ground: Defense, air: Set[Defense]): Option[MinionAttackPosition] = {
     Minion.getAttackPositions(ground)
-        .filter(position => !air.exists(_.range.contains(position.coordinate)))
+      .filter(coordinate => !air.exists(_.range.contains(coordinate)))
+      .map(MinionAttackPosition(_, ground))
+      .headOption
   }
 }
 

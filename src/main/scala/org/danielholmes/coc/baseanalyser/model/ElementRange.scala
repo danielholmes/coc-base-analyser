@@ -5,6 +5,8 @@ import org.apache.commons.math3.geometry.euclidean.twod.Segment
 trait ElementRange {
   def contains(testCoordinate: TileCoordinate): Boolean
 
+  def contains(testCoordinate: MapCoordinate): Boolean
+
   def cutBy(segment: Segment): Boolean
 
   def touchesEdge(tile: Tile): Boolean

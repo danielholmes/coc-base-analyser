@@ -44,10 +44,8 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
+ - implicit widen for tile coordinate to map coordinate and tile to tile coordinate and tile to map coordinate
  - tweaks to rules. Several issues on dakotas current war base
-   - wizard tower hound rule too strict. maybe only require 2/4
-   - 7oc cannon not minion hittable
-   - air exposure (see valaar)
    - extra rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
        - maybe as a % of compartmented area
    - min compartments should only count compartments with buildings inside them
@@ -88,7 +86,6 @@ then deploy it manually through the AWS console:
    - should also consider air trap placement
    - should also consider air sweeper placement
  - minimum 3 DGB possible spots (including diagonal)
- - sufficient empty space within walls to make attacker guess
  - minion anchors (warning only, no hard fail, once that functionality is built)
  - wb t junction warning
  

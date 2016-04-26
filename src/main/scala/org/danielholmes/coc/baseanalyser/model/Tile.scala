@@ -22,7 +22,7 @@ trait Tile {
   def matrixOfTilesInDirection(width: PosInt, height: PosInt): Set[Tile]
   val toBlock: Block
   val allCoordinates: Set[TileCoordinate]
-  val toMapCoordinate: TileCoordinate
+  val toTileCoordinate: TileCoordinate
   def offset(xDiff: Int, yDiff: Int): Tile
 }
 
@@ -96,9 +96,9 @@ object Tile {
 
     lazy val toBlock = Block(this, 1)
 
-    lazy val allCoordinates = toMapCoordinate.matrixOfCoordinatesTo(toMapCoordinate.offset(1, 1))
+    lazy val allCoordinates = toTileCoordinate.matrixOfCoordinatesTo(toTileCoordinate.offset(1, 1))
 
-    lazy val toMapCoordinate = TileCoordinate(x, y)
+    lazy val toTileCoordinate = TileCoordinate(x, y)
 
     def offset(xDiff: Int, yDiff: Int): Tile = Tile(PosZInt.from(x + xDiff).get, PosZInt.from(y + yDiff).get)
 

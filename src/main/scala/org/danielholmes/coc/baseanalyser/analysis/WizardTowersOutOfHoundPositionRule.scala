@@ -29,5 +29,5 @@ class WizardTowersOutOfHoundPositionsRule extends Rule {
 }
 
 case class WizardTowersOutOfHoundPositionsRuleResult(outOfRange: Set[WizardTower], inRange: Set[WizardTowerHoundTargeting], houndPositions: Set[AirDefense]) extends RuleResult {
-  val success = inRange.isEmpty
+  val success = inRange.size <= outOfRange.size
 }

@@ -5,7 +5,7 @@ import java.util.{Base64, UUID}
 
 import org.danielholmes.coc.baseanalyser.analysis._
 import org.danielholmes.coc.baseanalyser.model._
-import org.danielholmes.coc.baseanalyser.model.troops.{ArcherQueenAttacking, ArcherTargeting, HogTargeting, WizardTowerHoundTargeting}
+import org.danielholmes.coc.baseanalyser.model.troops._
 import spray.http.Uri
 import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
 
@@ -40,6 +40,14 @@ class ViewModelMapper {
     CantAnalyseVillageViewModel(viewModel(village), message)
   }
 
+  private def minionAttackPosition(position: MinionAttackPosition): MinionAttackPositionViewModel = {
+    MinionAttackPositionViewModel(
+      mapCoordinate(position.startPosition),
+      objectId(position.targeting),
+      tileCoordinate(position.hitPoint)
+    )
+  }
+
   private def viewModel(result: RuleResult): RuleResultViewModel = {
     result match {
       case h: HogCCLureRuleResult => HogCCLureResultViewModel(
@@ -68,7 +76,7 @@ class ViewModelMapper {
       )
       case a: AirSnipedDefenseRuleResult => AirSnipedDefenseResultViewModel(
         a.success,
-        a.snipedDefenses.map(_.element).map(objectId),
+        a.snipedDefenses.map(minionAttackPosition),
         a.airDefenses.map(objectId)
       )
       case m: MinimumCompartmentsRuleResult => MinimumCompartmentsResultViewModel(
@@ -79,7 +87,7 @@ class ViewModelMapper {
       )
       case b: BKSwappableRuleResult => BKSwappableResultViewModel(
         b.success,
-        b.exposedTiles.map(viewModel)
+        b.exposedTiles.map(tile)
       )
       case w: WizardTowersOutOfHoundPositionsRuleResult => WizardTowersOutOfHoundPositionsResultViewModel(
         w.success,
@@ -98,25 +106,25 @@ class ViewModelMapper {
 
   private def viewModel(attacking: ArcherQueenAttacking): ArcherQueenAttackingViewModel = {
     ArcherQueenAttackingViewModel(
-      viewModel(attacking.startPosition),
+      tileCoordinate(attacking.startPosition),
       objectId(attacking.targeting),
-      viewModel(attacking.hitPoint)
+      tileCoordinate(attacking.hitPoint)
     )
   }
 
   private def viewModel(targeting: HogTargeting): HogTargetingViewModel = {
     HogTargetingViewModel(
-      viewModel(targeting.startPosition),
+      tileCoordinate(targeting.startPosition),
       objectId(targeting.targeting),
-      viewModel(targeting.hitPoint)
+      tileCoordinate(targeting.hitPoint)
     )
   }
 
   private def viewModel(targeting: ArcherTargeting): ArcherTargetingViewModel = {
     ArcherTargetingViewModel(
-      viewModel(targeting.standingPosition),
+      tileCoordinate(targeting.standingPosition),
       objectId(targeting.targeting),
-      viewModel(targeting.hitPoint)
+      tileCoordinate(targeting.hitPoint)
     )
   }
 
@@ -124,11 +132,11 @@ class ViewModelMapper {
     WallCompartmentViewModel(
       objectId(compartment),
       compartment.walls.map(objectId),
-      compartment.innerTiles.map(viewModel)
+      compartment.innerTiles.map(tile)
     )
   }
 
-  private def viewModel(tile: Tile): TileViewModel = TileViewModel(tile.x, tile.y)
+  private def tile(tile: Tile): TileViewModel = TileViewModel(tile.x, tile.y)
 
   private def viewModel(village: Village): VillageViewModel = {
     VillageViewModel(village.elements.map(viewModel), village.wallCompartments.map(viewModel))
@@ -180,8 +188,12 @@ class ViewModelMapper {
     BlockViewModel(block.x, block.y, block.size)
   }
 
-  private def viewModel(coord: TileCoordinate): TileCoordinateViewModel = {
+  private def tileCoordinate(coord: TileCoordinate): TileCoordinateViewModel = {
     TileCoordinateViewModel(coord.x, coord.y)
+  }
+
+  private def mapCoordinate(coord: MapCoordinate): MapCoordinateViewModel = {
+    MapCoordinateViewModel(coord.x, coord.y)
   }
 
   private def objectId(obj: Object): String = {
@@ -190,6 +202,7 @@ class ViewModelMapper {
 }
 
 case class TileCoordinateViewModel(x: Int, y: Int)
+case class MapCoordinateViewModel(x: Double, y: Double)
 case class RangeViewModel(inner: Double, outer: Double)
 case class BlockViewModel(x: Int, y: Int, size: Int)
 case class TileViewModel(x: Int, y: Int)
@@ -232,6 +245,7 @@ case class ArcherTargetingViewModel(standingPosition: TileCoordinateViewModel, t
 case class ArcherQueenAttackingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 case class WallCompartmentViewModel(id: String, walls: Set[String], innerTiles: Set[TileViewModel])
 case class WizardTowerHoundTargetingViewModel(tower: String, airDefense: String)
+case class MinionAttackPositionViewModel(startPosition: MapCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 
 sealed trait RuleResultViewModel {
   val name: String
@@ -263,7 +277,7 @@ case class HighHPUnderAirDefResultViewModel(
 ) extends RuleResultViewModel
 case class AirSnipedDefenseResultViewModel(
   success: Boolean,
-  snipedDefenses: Set[String],
+  attackPositions: Set[MinionAttackPositionViewModel],
   airDefenses: Set[String],
   name: String = "AirSnipedDefense",
   title: String = "Ground Defenses covered for Air",
@@ -290,8 +304,8 @@ case class WizardTowersOutOfHoundPositionsResultViewModel(
   inRange: Set[WizardTowerHoundTargetingViewModel],
   houndPositions: Set[BlockViewModel],
   name: String = "WizardTowersOutOfHoundPositions",
-  title: String = "Wizard Towers shouldn't lock onto hounds",
-  description: String = "Wizard Towers are strong against loons, they shouldn't be too close to air defenses where hounds can tank for them for long periods"
+  title: String = "Enough Wizard Towers out of hound range",
+  description: String = "Wizard Towers are strong against loons, they shouldn't be too close to air defenses where hounds can tank for them. You should have at least 2 that wont target resting hounds"
 ) extends RuleResultViewModel
 case class QueenWalkedAirDefenseResultViewModel(
   success: Boolean,
@@ -343,6 +357,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   }
 
   implicit val tileCoordinateFormat = jsonFormat2(TileCoordinateViewModel)
+  implicit val mapCoordinateFormat = jsonFormat2(MapCoordinateViewModel)
   implicit val rangeFormat = jsonFormat2(RangeViewModel)
   implicit val blockFormat = jsonFormat3(BlockViewModel)
   implicit val tileFormat = jsonFormat2(TileViewModel)
@@ -352,6 +367,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val defenseElementFormat = jsonFormat6(DefenseElementViewModel)
   implicit val clanCastleElementFormat = jsonFormat6(ClanCastleElementViewModel)
   implicit val archerTargetingFormat = jsonFormat3(ArcherTargetingViewModel)
+  implicit val minionAttackPositionFormat = jsonFormat3(MinionAttackPositionViewModel)
   implicit val hogTargetingFormat = jsonFormat3(HogTargetingViewModel)
   implicit val archerQueenAttackingFormat = jsonFormat3(ArcherQueenAttackingViewModel)
   implicit val WizardTowerHoundTargetingFormat = jsonFormat2(WizardTowerHoundTargetingViewModel)
