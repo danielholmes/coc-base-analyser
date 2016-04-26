@@ -4,6 +4,6 @@ import org.scalactic.anyvals.PosInt
 
 case class AirDefense(level: PosInt, tile: Tile) extends Defense {
   lazy val range = CircularElementRange(block.centre, 10)
-  val targets = Set(Target.Air)
+  val targets = Target.AirOnly
   val size: PosInt = 3
 }

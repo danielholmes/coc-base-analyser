@@ -46,6 +46,8 @@ class HardCodedElementFactory extends ElementFactory {
     1000027 -> levelAndCoordinateConstructor(InfernoTower),
     1000028 -> levelAndCoordinateConstructor(AirSweeper),
     1000029 -> levelAndCoordinateConstructor(DarkSpellFactory),
+    1000030 -> levelAndCoordinateConstructor(GrandWarden),
+    1000031 -> levelAndCoordinateConstructor(EagleArtillery),
 
     // Traps
     12000000 -> levelAndCoordinateConstructor(Bomb),

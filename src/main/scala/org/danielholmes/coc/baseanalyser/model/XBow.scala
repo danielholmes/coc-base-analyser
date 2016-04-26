@@ -12,7 +12,7 @@ case class XBow(level: PosInt, tile: Tile, private val mode: XBowMode) extends D
 
 object XBow {
   def ground(level: PosInt, tile: Tile): XBow = {
-    XBow(level, tile, XBowMode.Ground) //Set(Target.Ground), 14)
+    XBow(level, tile, XBowMode.Ground) //Target.GroundOnly, 14)
   }
 
   def both(level: PosInt, tile: Tile): XBow = {
@@ -26,7 +26,7 @@ object XBowMode extends Enumeration {
   val Ground, Both = Value
 
   def targets(mode: XBowMode): Set[Target] = {
-    if (mode == Ground) return Set(Target.Ground)
+    if (mode == Ground) return Target.GroundOnly
     Target.Both
   }
 

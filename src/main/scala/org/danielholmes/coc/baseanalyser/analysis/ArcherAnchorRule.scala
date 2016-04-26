@@ -3,6 +3,7 @@ package org.danielholmes.coc.baseanalyser.analysis
 import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.model.troops.{ArcherTargeting, Archer}
 
+// TODO: Shouldn't take into account EagleArtillery since wont be activated. Test this
 class ArcherAnchorRule extends Rule {
   def analyse(village: Village): RuleResult = {
     if (village.isEmpty) return ArcherAnchorRuleResult(Set.empty, Set.empty)

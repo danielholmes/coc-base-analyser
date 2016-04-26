@@ -44,7 +44,6 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - TH11 not working (?) - see vietha76 and check has eagle artillery
  - tweaks to rules. Several issues on dakotas current war base
    - 7oc cannon not minion hittable
    - BK exposure - currently triggers for slight area outside of wall without trash in front of it. See hardcoded base for example
@@ -65,6 +64,9 @@ then deploy it manually through the AWS console:
  - clarify AQ range - see iphoto screenshot of greg raid. possibly shown on ppetes war base
  
  - trap access (if leadership go for it) - new, dedicated credentials of own
+ 
+ - TH11 rendering - new levels and warden + eagle
+ 
  - own connection - see UCS server for help creating
  - 3d render
  - separate rule groups for farm vs arranged
