@@ -44,11 +44,10 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - range should be trait - circular + radius circular (and sweeper later)
  - TH11 not working (?) - see vietha76 and check has eagle artillery
  - tweaks to rules. Several issues on dakotas current war base
    - 7oc cannon not minion hittable
-   - BK exposure - currently triggers for slight area outside of wall without trash in front of it
+   - BK exposure - currently triggers for slight area outside of wall without trash in front of it. See hardcoded base for example
    - air exposure (see valaar)
    - extra rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
        - maybe as a % of compartmented area

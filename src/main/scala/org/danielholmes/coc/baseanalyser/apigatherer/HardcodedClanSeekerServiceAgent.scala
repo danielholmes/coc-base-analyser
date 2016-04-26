@@ -22,7 +22,7 @@ class HardcodedClanSeekerServiceAgent(private val permittedClans: Set[PermittedC
             PlayerSummary(AvatarSummary("san", 9L)),
             PlayerSummary(AvatarSummary("Robbie", 10L)),
             PlayerSummary(AvatarSummary("Kendrall", 11L)),
-            PlayerSummary(AvatarSummary("Spike Dragon", 12L)),
+            PlayerSummary(AvatarSummary("SpikeDragon", 12L)),
             PlayerSummary(AvatarSummary("Jamie", 13L)),
             PlayerSummary(AvatarSummary("joshua", 14L)),
             PlayerSummary(AvatarSummary("Kiara Kong", 15L)),

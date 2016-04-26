@@ -7,7 +7,7 @@ import org.scalactic.anyvals.PosInt
 case class XBow(level: PosInt, tile: Tile, private val mode: XBowMode) extends Defense {
   val targets = XBowMode.targets(mode)
   val size: PosInt = 3
-  lazy val range = ElementRange(block.centre, XBowMode.radiusSize(mode))
+  lazy val range = CircularElementRange(block.centre, XBowMode.radiusSize(mode))
 }
 
 object XBow {

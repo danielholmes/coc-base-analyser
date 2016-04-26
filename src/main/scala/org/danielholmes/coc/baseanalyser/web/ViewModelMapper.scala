@@ -15,7 +15,8 @@ class ViewModelMapper {
       uri.toString,
       e.getClass.getName,
       e.getMessage,
-      e.getStackTrace.map((el: StackTraceElement) => s"${el.getClassName}.${el.getMethodName} - ${el.getFileName}:${el.getLineNumber}")
+      e.getStackTrace
+        .map((el: StackTraceElement) => s"${el.getClassName}.${el.getMethodName} - ${el.getFileName}:${el.getLineNumber}")
         .toList
     )
   }
@@ -165,8 +166,14 @@ class ViewModelMapper {
     WizardTowerHoundTargetingViewModel(objectId(targeting.tower), objectId(targeting.airDefense))
   }
 
+  // TODO: Look up compile time checking for matches
   private def viewModel(range: ElementRange): RangeViewModel = {
-    RangeViewModel(range.innerSize, range.outerSize)
+    range match {
+      case c: CircularElementRange => RangeViewModel(0, c.size)
+      case b: BlindSpotCircularElementRange => RangeViewModel(b.innerSize, b.outerSize)
+      case _ => throw new RuntimeException("Can't render element range")
+    }
+
   }
 
   private def viewModel(block: Block): BlockViewModel = {

@@ -39,7 +39,7 @@ var mapDisplay2d = (function(document) {
                     if (elementToDraw.range.inner) {
                         var innerCircle = new createjs.Shape();
                         innerCircle.graphics
-                            .beginStroke("#ff5555")
+                            .beginStroke("#ffaaaa")
                             .beginFill("rgba(255,80,80,0.05)")
                             .drawCircle(
                                 0,

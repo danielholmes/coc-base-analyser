@@ -45,13 +45,13 @@ class StringDisplayer {
     )
   }
 
-  private def drawCCRadius(radius: ElementRange, current: List[List[Char]], tiles: Seq[Tile]): List[List[Char]] = {
+  private def drawCCRadius(range: ElementRange, current: List[List[Char]], tiles: Seq[Tile]): List[List[Char]] = {
     if (tiles.isEmpty) return current
-    if (Math.abs(tiles.head.toMapCoordinate.distanceTo(radius.coordinate) - radius.outerSize) > 0.5) {
-      return drawCCRadius(radius, current, tiles.tail)
+    if (range.touchesEdge(tiles.head)) {
+      return drawCCRadius(range, current, tiles.tail)
     }
     drawCCRadius(
-      radius,
+      range,
       draw(current, tiles.head, '^'),
       tiles.tail
     )

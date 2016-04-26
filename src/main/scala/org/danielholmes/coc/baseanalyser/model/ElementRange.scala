@@ -1,11 +1,13 @@
 package org.danielholmes.coc.baseanalyser.model
 
-import org.scalactic.anyvals.{PosInt, PosZInt}
+import org.apache.commons.math3.geometry.euclidean.twod.Segment
 
-case class ElementRange(coordinate: MapCoordinate, outerSize: PosInt, innerSize: PosZInt = 0) {
-  def contains(testCoordinate: TileCoordinate): Boolean = {
-    testCoordinate.distanceTo(coordinate) < outerSize
-  }
+trait ElementRange {
+  def contains(testCoordinate: TileCoordinate): Boolean
+
+  def cutBy(segment: Segment): Boolean
+
+  def touchesEdge(tile: Tile): Boolean
 
   def touches(tile: Tile) = tile.allCoordinates.exists(contains)
 
