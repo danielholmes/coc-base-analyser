@@ -10,7 +10,7 @@ import spray.http.Uri
 import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
 
 class ViewModelMapper {
-  def viewModel(uri: Uri, e: Exception): ExceptionViewModel = {
+  def exception(uri: Uri, e: Exception): ExceptionViewModel = {
     ExceptionViewModel(
       uri.toString,
       e.getClass.getName,

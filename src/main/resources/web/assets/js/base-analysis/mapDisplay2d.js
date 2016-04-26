@@ -93,7 +93,7 @@ var mapDisplay2d = (function(document) {
             }
         );
 
-        var inRangeTowerIds = _.map(result.inRange, function(targeting) { return targeting.tower; });
+        var inRangeTowerIds = _.pluck(result.inRange, 'tower');
         eachBuildingDisplay(
             inRangeTowerIds,
             function (buildingContainer) {
@@ -101,7 +101,7 @@ var mapDisplay2d = (function(document) {
             }
         );
         eachBuildingDisplay(
-            _.map(result.inRange, function(targeting) { return targeting.airDefense; }),
+            _.pluck(result.inRange, 'airDefense'),
             function (buildingContainer) {
                 applyColour(buildingContainer, 1, 0.5, 0.5);
             }
@@ -117,7 +117,7 @@ var mapDisplay2d = (function(document) {
             }
         );
         eachBuildingDisplay(
-            _.map(result.attackings, function(attacking) { return attacking.targetingId; }),
+            _.pluck(result.attackings, 'targetingId'),
             function (buildingContainer) {
                 applyColour(buildingContainer, 1, 0, 0);
             }

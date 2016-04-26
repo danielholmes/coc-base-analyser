@@ -8,6 +8,9 @@
             .glyphicon-remove-sign {
                 color: #ff5555;
             }
+            button.collapsed .hide-instruction {
+                display:none;
+            }
         </style>
     </head>
     <body>
@@ -15,31 +18,58 @@
             <div class="row">
                 <div class="col-md-12">
                     <h3>{{name}} Bulk War Bases Analysis</h3>
-                    <div id="loading"></div>
-                    <div id="problems" style="display:none">
-                        <h4>Problems</h4>
-                    </div>
-                    <div id="results"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div id="loading" class="col-md-12">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 hidden" id="problems">
+                    <h4>Problems</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div id="results" class="col-md-12">
                 </div>
             </div>
         </div>
 
         <script id="town-hall-container-template" type="x-tmpl-mustache">
-            <div id="[[containerId]]">
-                <h3>Town Hall [[level]]</h3>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>IGN</th>
-                            <th>Analysis</th>
-                            [[#rules]]
-                                <th data-rule="[[.]]" class="result-col col-[[.]]">[[.]]</th>
-                            [[/rules]]
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+            <div id="[[containerId]]" class="row">
+                <div class="col-md-12">
+                    <h4>Town Hall [[level]]</h4>
+
+                    <div class="plain-text-summary">
+                        <button class="btn btn-primary collapsed" type="button" data-toggle="collapse" data-target="#plain-text-summary-[[level]]" aria-expanded="false" aria-controls="plain-text-summary-[[level]]">
+                            Plain Text Summary of Errors
+                            <span class="hide-instruction">(Hide)</span>
+                        </button>
+                        <div id="plain-text-summary-[[level]]" class="collapse">
+                            <button class="btn" data-clipboard-target="#plain-text-summary-text-[[level]]">
+                                Copy to clipboard
+                            </button>
+                            <textarea id="plain-text-summary-text-[[level]]" class="form-control" rows="6" readonly="readonly"></textarea>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>IGN</th>
+                                <th>Analysis</th>
+                                [[#rules]]
+                                    <th data-rule="[[.]]" class="result-col col-[[.]]">[[.]]</th>
+                                [[/rules]]
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </script>
 
@@ -53,6 +83,7 @@
         <script type="text/javascript" src="//code.jquery.com/jquery-2.2.1.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.10/clipboard.min.js"></script>
         <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
         <script type="text/javascript" src="/assets/js/console-polyfill.js"></script>
         <script type="text/javascript" src="/assets/js/war-bases/main.js"></script>

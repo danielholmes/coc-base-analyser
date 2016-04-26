@@ -1,6 +1,5 @@
 package org.danielholmes.coc.baseanalyser.web
 
-import java.io.StringWriter
 import java.time.Duration
 
 import akka.actor.Actor
@@ -13,8 +12,6 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 import spray.httpx.SprayJsonSupport._
 import ViewModelProtocol._
-import com.github.mustachejava.DefaultMustacheFactory
-import com.twitter.mustache.ScalaObjectHandler
 import org.danielholmes.coc.baseanalyser.model.Layout
 import spray.util.LoggingContext
 
@@ -36,7 +33,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
         respondWithMediaType(`application/json`) {
           requestUri { uri =>
             log.error(e, e.getMessage)
-            complete(StatusCodes.InternalServerError, viewModelMapper.viewModel(uri, e))
+            complete(StatusCodes.InternalServerError, viewModelMapper.exception(uri, e))
           }
         }
     }
@@ -55,17 +52,15 @@ class WebAppServiceActor extends Actor with HttpService with Services {
               .flatMap(clan => clanSeekerServiceAgent.getClanDetails(clan.id))
               .map(clanDetails =>
                 get {
-                  val mf = new DefaultMustacheFactory()
-                  mf.setObjectHandler(new ScalaObjectHandler())
-                  val mustache = mf.compile("web/war-bases.mustache")
-                  val writer = new StringWriter()
-                  val vars = Map(
-                    "name" -> clanDetails.name,
-                    "players" -> clanDetails.players
+                  val response = mustacheRenderer.render(
+                    "web/war-bases.mustache",
+                    Map(
+                      "name" -> clanDetails.name,
+                      "players" -> clanDetails.players
                         .map(p => Map("id" -> p.avatar.userId, "ign" -> p.avatar.userName))
+                    )
                   )
-                  mustache.execute(writer, vars).flush()
-                  complete(writer.toString)
+                  complete(response)
                 }
               )
               .getOrElse(

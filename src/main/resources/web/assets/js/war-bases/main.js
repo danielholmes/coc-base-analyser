@@ -62,7 +62,7 @@ $(document).ready(function() {
             $("#loading").html(message);
         }
 
-        // Results
+        // Table Results
         _.each(
             results,
             function(result) {
@@ -73,7 +73,7 @@ $(document).ready(function() {
 
                 if (result.report == null) {
                     problemsContainer.show();
-                    var problemId = "problem-" + result.player.ign;
+                    var problemId = "problem-" + result.player.id;
                     if (problemsContainer.find("#" + problemId).size() == 0) {
                         problemsContainer.append($("<div />").attr("id", problemId).html(result.player.ign + ": " + result.error));
                     }
@@ -90,6 +90,8 @@ $(document).ready(function() {
                         "rules": _.pluck(result.report.resultSummaries, 'name')
                     }));
                     resultsContainer.append(townHallContainer);
+
+                    new Clipboard(townHallContainer.find("[data-clipboard-target]").get(0));
                 }
 
                 var ruleOrder = _.map(
@@ -113,6 +115,12 @@ $(document).ready(function() {
                     )
                     .appendTo(townHallContainer.find("tbody"))
                     .slideDown();
+
+                if (anyError) {
+                    townHallContainer.find(".plain-text-summary")
+                        .find("textarea")
+                        .append(result.player.ign + ": " + _.pluck(result.report.resultSummaries, 'name').join(', ') + "\n");
+                }
             }
         );
     };

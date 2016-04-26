@@ -44,8 +44,9 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - To plain text version of summary page
+ - Explicit connection to supercell down error - unreliable, please try again later, etc
  - Change general ui - no search box (comes in via url). Url to include clan code
+ - Rule naming handling overhaul - to benefit war bases summary
  
  - tweaks to rules. Several issues on dakotas current war base
    - 7oc cannon not minion hittable
@@ -55,21 +56,20 @@ then deploy it manually through the AWS console:
        - maybe as a % of compartmented area
    - wizard tower hound rule too strict. maybe only require 2/4
  
- - analysis performance, currently too slow on bulk
+ - TH11 not working (?) - see vietha76
+ - analysis performance, currently too slow
+  - hog cc lure analysis - dont need all external tiles - just need outer coords touching drop boundary
  - change js to use classes and instances rather than global modules
  
  - clarify AQ range - see iphoto screenshot of greg raid. possibly shown on ppetes war base
-
- - ui overhaul: select clan -> load players, select player, click go
  
- - trap access (if leadership go for it)
- - switch to new, dedicated credentials of own
+ - trap access (if leadership go for it) - new, dedicated credentials of own
+ - own connection - see UCS server for help creating
  - 3d render
- - saved result with a url to be able to send someone (save serialised result in db which can be recalled and lasts one 
-   day, ensure to include version number so can expire early if need)
  - separate rule groups for farm vs arranged
  - pass, warning, fail levels (e.g. for minion anchors)
  - dynamic sizing of canvas still a bit funky - find proper js solution
+ - integration tests
 
 
 ## TH8 TODO Rules
@@ -95,7 +95,13 @@ then deploy it manually through the AWS console:
 ## TH9 Rules
  - EQ cant connect >2 GB/DGB positions + AQ
  - Jump doesnt connect too many AQ, GB
+ - queen needs to be protected from “suicide dragons”
+   Specifically, an air sweeper pointed to protect the queen, or (more commonly) a black mine between the queen and the likely dragon entry point
  - black bombs within range of queen or air def - to get hounds or suicide drags. red bombs out of range of air defs
+ - The defenses around your DGB should be more than 4 tiles from an exterior wall
+   Ensures the defenses aren’t eliminated using a queen walk
+ - Your queen should be in the center of a 9×9 compartment (11×11 if you count walls).
+ - It should require either a jump spell or 2 wall breaker groups in order to access the queen.
 
 
 ## TH10 Rules
