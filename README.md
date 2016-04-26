@@ -45,13 +45,13 @@ then deploy it manually through the AWS console:
 
 ## General TODO
  - tweaks to rules. Several issues on dakotas current war base
+   - wizard tower hound rule too strict. maybe only require 2/4
    - 7oc cannon not minion hittable
    - air exposure (see valaar)
    - extra rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
        - maybe as a % of compartmented area
-   - wizard tower hound rule too strict. maybe only require 2/4
+   - min compartments should only count compartments with buildings inside them
  
- - sp@nd@n14 not being escaped correctly by url encoder scala side
  - BK Trigger rule further tweaks. should show red for all non-compartment tiles floodfilled from triggered
  
  - Rule naming handling overhaul - to benefit war bases summary

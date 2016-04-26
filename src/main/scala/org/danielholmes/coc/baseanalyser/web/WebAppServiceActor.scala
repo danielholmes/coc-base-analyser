@@ -78,7 +78,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                           .sortBy(_.avatar.userName.toLowerCase)
                           .map(p => Map(
                             "ign" -> p.avatar.userName,
-                            "analysisUrl" -> s"/#${UrlUtils.encode(p.avatar.userName)}/war"
+                            "analysisUrl" -> s"/#${UrlUtils.encodeFragment(p.avatar.userName)}/war"
                           ))
                       )
                     )
@@ -110,7 +110,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                           .map(p => Map(
                             "id" -> p.avatar.userId,
                             "ign" -> p.avatar.userName,
-                            "analysisUrl" -> s"/#${UrlUtils.encode(p.avatar.userName)}/war"
+                            "analysisUrl" -> s"/#${UrlUtils.encodeFragment(p.avatar.userName)}/war"
                           ))
                       )
                     )

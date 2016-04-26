@@ -27,7 +27,7 @@ class HardcodedClanSeekerServiceAgent(private val permittedClans: Set[PermittedC
             PlayerSummary(AvatarSummary("joshua", 14L)),
             PlayerSummary(AvatarSummary("Kiara Kong", 15L)),
             PlayerSummary(AvatarSummary("ice ice baby", 16L)),
-            PlayerSummary(AvatarSummary("lifesong", 17L)),
+            PlayerSummary(AvatarSummary("sp@nd@n14", 17L)),
             PlayerSummary(AvatarSummary("Diaz", 18L)),
 
             PlayerSummary(AvatarSummary("I AM SPARTA!!1!", 100L)),

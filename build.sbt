@@ -1,5 +1,3 @@
-import sbt.Keys
-
 name := "coc-base-analyser"
 
 version := "0.1"
@@ -30,6 +28,7 @@ libraryDependencies ++= {
     "com.softwaremill.macwire" %% "proxy" % "2.2.2",
 
     "com.github.spullara.mustache.java" % "scala-extensions-2.11" % "0.9.1",
+    "com.google.guava" % "guava" % "19.0",
 
     "org.scalatest"       % "scalatest_2.11" % "2.2.6" % "test"
   )

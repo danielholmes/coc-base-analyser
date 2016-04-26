@@ -1,10 +1,9 @@
 package org.danielholmes.coc.baseanalyser.util
 
-import java.net.URLEncoder
+import com.google.common.net.UrlEscapers
 
 object UrlUtils {
-  def encode(part: String): String = {
-    URLEncoder.encode(part, "UTF-8")
-      .replace("+", "%20")
+  def encodeFragment(part: String): String = {
+    UrlEscapers.urlFragmentEscaper.escape(part)
   }
 }
