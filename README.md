@@ -46,15 +46,19 @@ then deploy it manually through the AWS console:
 ## General TODO
  - tweaks to rules. Several issues on dakotas current war base
    - 7oc cannon not minion hittable
-   - BK exposure - currently triggers for slight area outside of wall without trash in front of it. See hardcoded base for example
    - air exposure (see valaar)
    - extra rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
        - maybe as a % of compartmented area
    - wizard tower hound rule too strict. maybe only require 2/4
  
+ - sp@nd@n14 not being escaped correctly by url encoder scala side
+ - BK Trigger rule further tweaks. should show red for all non-compartment tiles floodfilled from triggered
+ 
  - Rule naming handling overhaul - to benefit war bases summary
  - Explicit connection to supercell down error - unreliable, please try again later, etc
  - Change general ui - no search box (comes in via url). Url to include clan code so can do less lookup queries
+ 
+ - static analysis
  
  - analysis performance, currently too slow
   - hog cc lure analysis - dont need all external tiles - just need outer coords touching drop boundary
@@ -68,6 +72,7 @@ then deploy it manually through the AWS console:
  - TH11 rendering - new levels and warden + eagle
  
  - own connection - see UCS server for help creating
+ - sbt deploy task
  - 3d render
  - separate rule groups for farm vs arranged
  - pass, warning, fail levels (e.g. for minion anchors)

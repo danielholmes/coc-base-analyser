@@ -4,6 +4,6 @@ import org.scalactic.anyvals.PosInt
 
 case class Cannon(level: PosInt, tile: Tile) extends Defense {
   lazy val range = CircularElementRange(block.centre, 10)
-  val size: PosInt = 3
+  val size = PosInt(3)
   val targets = Target.GroundOnly
 }

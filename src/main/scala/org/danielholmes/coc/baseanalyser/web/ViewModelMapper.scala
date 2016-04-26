@@ -190,7 +190,7 @@ class ViewModelMapper {
 }
 
 case class TileCoordinateViewModel(x: Int, y: Int)
-case class RangeViewModel(inner: Int, outer: Int)
+case class RangeViewModel(inner: Double, outer: Double)
 case class BlockViewModel(x: Int, y: Int, size: Int)
 case class TileViewModel(x: Int, y: Int)
 sealed trait ElementViewModel {

@@ -4,6 +4,8 @@ import org.danielholmes.coc.baseanalyser.model.troops.{Minion, MinionAttackPosit
 import org.danielholmes.coc.baseanalyser.model.{Defense, Target, Village, WallCompartment}
 import org.scalactic.anyvals.PosInt
 
+// TODO: Should only count compartments with buildings inside (since they're the only ones that need to be broken)
+// Also update rule text to reflect this
 class MinimumCompartmentsRule extends Rule {
   val Min = PosInt(8)
 

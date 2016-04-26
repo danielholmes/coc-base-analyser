@@ -60,4 +60,35 @@ class BKSwappableRuleSpec extends FlatSpec with Matchers {
     val result = rule.analyse(Village(elements))
     result.success should be (true)
   }
+
+  it should "return success for only slightly exposed BK" in {
+    val elements =
+      ElementsBuilder.rectangle(Tile(4, 4), 15, 15, 1, Wall(1, _)) ++
+        ElementsBuilder.repeatX(Tile(6, 6), 3, 4, Barrack(1, _)) ++
+        Set[Element](
+          Barrack(1, Tile(6, 10)),
+          BarbarianKing(1, Tile(10, 10)),
+          Barrack(1, Tile(14, 10))
+        ) ++
+        ElementsBuilder.repeatX(Tile(6, 14), 3, 4, Barrack(1, _))
+    val result = rule.analyse(Village(elements))
+    result.success should be (true)
+  }
+
+  it should "return correct exposed tiles for offset BK" in {
+    val elements =
+      ElementsBuilder.rectangle(Tile(4, 4), 14, 15, 1, Wall(1, _)) ++
+        ElementsBuilder.repeatX(Tile(6, 6), 3, 4, Barrack(1, _)) ++
+        Set[Element](
+          Barrack(1, Tile(6, 10)),
+          BarbarianKing(1, Tile(10, 10)),
+          Barrack(1, Tile(14, 10))
+        ) ++
+        ElementsBuilder.repeatX(Tile(6, 14), 3, 4, Barrack(1, _))
+
+    val result = rule.analyse(Village(elements))
+    result.success should be (false)
+    result.asInstanceOf[BKSwappableRuleResult].exposedTiles should contain (Tile(18, 11))
+    result.asInstanceOf[BKSwappableRuleResult].exposedTiles should not contain (Tile(3, 11))
+  }
 }

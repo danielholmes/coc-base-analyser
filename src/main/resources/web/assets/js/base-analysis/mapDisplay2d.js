@@ -554,13 +554,92 @@ var mapDisplay2d = (function(document) {
         }
     }*/
 
-    function render2d() {
+    var renderGrid = function(mapConfig) {
+        var colour = "#ff0000";
+        var alpha = 0.3;
+        var mapIndexes = _.range(mapConfig.totalTiles);
+        _.each(
+            _.map(
+                mapIndexes,
+                function(col) {
+                    var strokeSize = col % 5 == 0 ? 2 : 1;
+                    var line = new createjs.Shape();
+                    line.x = col * mapConfig.tileSize;
+                    line.y = 0;
+                    line.alpha = alpha;
+                    line.graphics
+                        .beginStroke(colour)
+                        .setStrokeStyle(strokeSize)
+                        .moveTo(0, 0)
+                        .lineTo(0, mapConfig.totalTiles * mapConfig.tileSize);
+                    return line;
+                }
+            ),
+            function(display) { extrasContainer.addChild(display); }
+        );
+
+        _.each(
+            _.map(
+                mapIndexes,
+                function(row) {
+                    var strokeSize = row % 5 == 0 ? 2 : 1;
+                    var line = new createjs.Shape();
+                    line.x = 0;
+                    line.y = row * mapConfig.tileSize;
+                    line.alpha = alpha;
+                    line.graphics
+                        .beginStroke(colour)
+                        .setStrokeStyle(strokeSize)
+                        .moveTo(0, 0)
+                        .lineTo(mapConfig.totalTiles * mapConfig.tileSize, 0);
+                    return line;
+                }
+            ),
+            function(display) { extrasContainer.addChild(display); }
+        );
+
+        _.each(
+            _.flatten(
+                _.map(
+                    _.filter(mapIndexes, function(mapIndex) { return mapIndex != 0 && mapIndex % 5 == 0; }),
+                    function(mapIndex) {
+                        var rowLeft = new createjs.Text(mapIndex, "9px monospace", colour);
+                        rowLeft.x = 0;
+                        rowLeft.y = mapIndex * mapConfig.tileSize;
+                        rowLeft.textBaseline = "top";
+
+                        var colTop = new createjs.Text(mapIndex, "9px monospace", colour);
+                        colTop.x = mapIndex * mapConfig.tileSize;
+                        colTop.y = 0;
+                        colTop.textBaseline = "top";
+
+                        var rowRight = new createjs.Text(mapIndex, "9px monospace", colour);
+                        rowRight.x = mapConfig.totalTiles * mapConfig.tileSize;
+                        rowRight.y = mapIndex * mapConfig.tileSize;
+                        rowRight.textBaseline = "top";
+                        rowRight.textAlign = "right";
+
+                        var colBottom = new createjs.Text(mapIndex, "9px monospace", colour);
+                        colBottom.x = mapIndex * mapConfig.tileSize;
+                        colBottom.y = mapConfig.totalTiles * mapConfig.tileSize;
+                        colBottom.textBaseline = "bottom";
+
+                        return [rowLeft, colTop, rowRight, colBottom];
+                    }
+                )
+            ),
+            function(display) { extrasContainer.addChild(display); }
+        );
+    };
+
+    var render2d = function() {
         // TODO: Get map/coordinate system config from api/backend
         var mapTiles = 44;
         var borderTiles = 1;
         var mapConfig = {
             mapTiles: mapTiles,
             borderTiles: borderTiles,
+            totalTiles: mapTiles + borderTiles * 2,
             tileSize: Math.min($(canvas).width(), $(canvas).height()) / (mapTiles + 2 * borderTiles)
         };
         renderGrass(mapConfig);
@@ -568,7 +647,8 @@ var mapDisplay2d = (function(document) {
         render2dPreventTroopDrops(mapConfig);
         render2dImageBuildings(mapConfig);
         renderActiveRule(mapConfig);
-    }
+        //renderGrid(mapConfig);
+    };
     
     return {
         render: render,

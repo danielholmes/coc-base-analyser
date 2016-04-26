@@ -14,5 +14,5 @@ object PrintVillage extends App with Services {
     System.exit(-1)
   }
 
-  println(stringDisplayer.buildColored(village.get))
+  println(stringDisplayer.buildColoured(village.get))
 }

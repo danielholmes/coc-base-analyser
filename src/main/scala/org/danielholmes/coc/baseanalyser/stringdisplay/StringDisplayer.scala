@@ -9,7 +9,7 @@ class StringDisplayer {
     buildString(buildCollection(base))
   }
 
-  def buildColored(base: Village): String = {
+  def buildColoured(base: Village): String = {
     build(base).toIterable
       .map(c => colorChar(c) + c.toString)
       .mkString("") + Console.RESET

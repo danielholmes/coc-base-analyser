@@ -90,7 +90,8 @@ class WebAppServiceActor extends Actor with HttpService with Services {
               )
           } ~
           path("war-bases" / Segment) { clanCode =>
-            redirect(s"/clans/$clanCode/war-bases", StatusCodes.MovedPermanently)
+            // TODO: Remove eventually
+            redirect(s"/clans/$clanCode", StatusCodes.MovedPermanently)
           } ~
           path("clans" / Segment / "war-bases") { clanCode =>
             permittedClans.find(_.code == clanCode)
