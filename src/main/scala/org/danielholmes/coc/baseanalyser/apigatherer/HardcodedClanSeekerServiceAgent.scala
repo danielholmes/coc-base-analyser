@@ -11,35 +11,35 @@ class HardcodedClanSeekerServiceAgent(private val permittedClans: Set[PermittedC
         ClanDetails(
           clan.name,
           Set(
-            PlayerSummary(AvatarSummary("Dakota", 1L)),
-            PlayerSummary(AvatarSummary("kottonmouth", 2L)),
-            PlayerSummary(AvatarSummary("Valaar", 3L)),
-            PlayerSummary(AvatarSummary("Mesoscalevortex", 4L)),
-            PlayerSummary(AvatarSummary("Kajla", 5L)),
-            PlayerSummary(AvatarSummary("a Noob", 6L)),
-            PlayerSummary(AvatarSummary("Ricochet", 7L)),
-            PlayerSummary(AvatarSummary("Lazy Ninja", 8L)),
-            PlayerSummary(AvatarSummary("san", 9L)),
-            PlayerSummary(AvatarSummary("Robbie", 10L)),
-            PlayerSummary(AvatarSummary("Kendrall", 11L)),
-            PlayerSummary(AvatarSummary("SpikeDragon", 12L)),
-            PlayerSummary(AvatarSummary("Jamie", 13L)),
-            PlayerSummary(AvatarSummary("joshua", 14L)),
-            PlayerSummary(AvatarSummary("Kiara Kong", 15L)),
-            PlayerSummary(AvatarSummary("ice ice baby", 16L)),
-            PlayerSummary(AvatarSummary("sp@nd@n14", 17L)),
-            PlayerSummary(AvatarSummary("Diaz", 18L)),
+            PlayerSummary(AvatarSummary("Dakota", 1L, id)),
+            PlayerSummary(AvatarSummary("kottonmouth", 2L, id)),
+            PlayerSummary(AvatarSummary("Valaar", 3L, id)),
+            PlayerSummary(AvatarSummary("Mesoscalevortex", 4L, id)),
+            PlayerSummary(AvatarSummary("Kajla", 5L, id)),
+            PlayerSummary(AvatarSummary("a Noob", 6L, id)),
+            PlayerSummary(AvatarSummary("Ricochet", 7L, id)),
+            PlayerSummary(AvatarSummary("Lazy Ninja", 8L, id)),
+            PlayerSummary(AvatarSummary("san", 9L, id)),
+            PlayerSummary(AvatarSummary("Robbie", 10L, id)),
+            PlayerSummary(AvatarSummary("Kendrall", 11L, id)),
+            PlayerSummary(AvatarSummary("SpikeDragon", 12L, id)),
+            PlayerSummary(AvatarSummary("Jamie", 13L, id)),
+            PlayerSummary(AvatarSummary("joshua", 14L, id)),
+            PlayerSummary(AvatarSummary("Kiara Kong", 15L, id)),
+            PlayerSummary(AvatarSummary("ice ice baby", 16L, id)),
+            PlayerSummary(AvatarSummary("sp@nd@n14", 17L, id)),
+            PlayerSummary(AvatarSummary("Diaz", 18L, id)),
 
-            PlayerSummary(AvatarSummary("I AM SPARTA!!1!", 100L)),
-            PlayerSummary(AvatarSummary("rektscrub", 102L)),
-            PlayerSummary(AvatarSummary("Darth Noobus", 103L)),
-            PlayerSummary(AvatarSummary("greg", 104L)),
-            PlayerSummary(AvatarSummary("Max", 105L)),
-            PlayerSummary(AvatarSummary("ppete", 106L)),
-            PlayerSummary(AvatarSummary("Vicious", 107L)),
-            PlayerSummary(AvatarSummary("Riggs", 108L)),
+            PlayerSummary(AvatarSummary("I AM SPARTA!!1!", 100L, id)),
+            PlayerSummary(AvatarSummary("rektscrub", 102L, id)),
+            PlayerSummary(AvatarSummary("Darth Noobus", 103L, id)),
+            PlayerSummary(AvatarSummary("greg", 104L, id)),
+            PlayerSummary(AvatarSummary("Max", 105L, id)),
+            PlayerSummary(AvatarSummary("ppete", 106L, id)),
+            PlayerSummary(AvatarSummary("Vicious", 107L, id)),
+            PlayerSummary(AvatarSummary("Riggs", 108L, id)),
 
-            PlayerSummary(AvatarSummary("Some Mini", 1000L))
+            PlayerSummary(AvatarSummary("Some Mini", 1000L, id))
           )
         )
       )
@@ -51,8 +51,8 @@ class HardcodedClanSeekerServiceAgent(private val permittedClans: Set[PermittedC
       .filter(_.isDefined)
       .map(_.get)
       .flatMap(_.players)
-      .find(_.avatar.userId == id)
-      .map(p => AvatarSummary(p.avatar.userName, p.avatar.userId))
+      .find(_.avatar.currentHomeId == id)
+      .map(_.avatar)
       .get
 
     if (id < 100L) {

@@ -11,10 +11,10 @@ var preloader = (function() {
 
             queue.on("complete", handleAssetsLoadComplete, this);
             queue.loadManifest([
-                { id: "redMoonBuildings", src:"assets/buildings-sprite.png" },
-                { id: "redMoonWalls", src:"assets/walls.png" },
-                //{ id: "spriteSheetImage", src:"assets/sprite-sheet.png" },
-                //{ id: "spriteSheetDefs", src:"assets/sprite-sheet.json" }
+                { id: "redMoonBuildings", src:"/assets/buildings-sprite.png" },
+                { id: "redMoonWalls", src:"/assets/walls.png" },
+                //{ id: "spriteSheetImage", src:"/assets/sprite-sheet.png" },
+                //{ id: "spriteSheetDefs", src:"/assets/sprite-sheet.json" }
             ]);
         }
     };

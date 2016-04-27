@@ -25,10 +25,7 @@ var model = (function() {
     };
     
     var getVillageElementById = function(id) {
-        return _.find(
-            currentReport.village.elements,
-            function(element) { return element.id == id; }
-        );
+        return _.findWhere(currentReport.village.elements, { 'id': id });
     };
     
     var getVillageElementsByIds = function(ids) {
@@ -44,15 +41,11 @@ var model = (function() {
     };
 
     var getVillageElementsByTypeName = function(typeName) {
-        return _.filter(currentReport.village.elements, function (element) {
-            return element.typeName == typeName;
-        });
+        return _.where(currentReport.village.elements, { 'typeName': typeName });
     };
     
     var getVillageElementByTypeName = function(typeName) {
-        return _.find(currentReport.village.elements, function (element) {
-            return element.typeName == typeName;
-        });
+        return _.findWhere(currentReport.village.elements, { 'typeName': typeName });
     };
 
     var hasReport = function() {
@@ -75,6 +68,12 @@ var model = (function() {
         if (newActiveRuleName == activeRuleName) {
             return;
         }
+
+        if (newActiveRuleName != null && _.findWhere(report.results, { 'name': newActiveRuleName }) == null) {
+            console.error("No rule name in current report:", newActiveRuleName, report);
+            return;
+        }
+
         activeRuleName = newActiveRuleName;
         ruleChanged.dispatch();
     };

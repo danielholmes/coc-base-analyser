@@ -13,12 +13,12 @@ import scala.concurrent.{Await, Future}
 import scala.reflect.{classTag, ClassTag}
 
 object ClanSeekerProtocol extends DefaultJsonProtocol {
-  case class AvatarSummary(userName: String, userId: Long)
+  case class AvatarSummary(userName: String, currentHomeId: Long, clanId: Long)
   case class PlayerSummary(avatar: AvatarSummary)
   case class ClanDetails(name: String, players: Set[PlayerSummary])
   case class ClanDetailsResponse(clan: Option[ClanDetails])
 
-  implicit val AvatarSummaryFormat = jsonFormat2(AvatarSummary)
+  implicit val AvatarSummaryFormat = jsonFormat3(AvatarSummary)
   implicit val PlayerSummaryFormat = jsonFormat1(PlayerSummary)
   implicit val ClanDetailsFormat = jsonFormat2(ClanDetails)
   implicit val ClanDetailsResponseFormat = jsonFormat1(ClanDetailsResponse)

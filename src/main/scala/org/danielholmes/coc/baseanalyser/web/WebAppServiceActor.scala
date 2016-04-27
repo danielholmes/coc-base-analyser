@@ -11,9 +11,13 @@ import akka.util.Timeout
 
 import scala.concurrent.duration._
 import spray.httpx.SprayJsonSupport._
+import spray.json._
 import ViewModelProtocol._
-import org.danielholmes.coc.baseanalyser.model.Layout
-import org.danielholmes.coc.baseanalyser.util.{GameConnectionNotAvailableException, UrlUtils}
+import com.google.common.net.UrlEscapers
+import org.danielholmes.coc.baseanalyser.analysis.AnalysisReport
+import org.danielholmes.coc.baseanalyser.apigatherer.ClanSeekerProtocol.{PlayerSummary, PlayerVillage}
+import org.danielholmes.coc.baseanalyser.model.{Layout, Village}
+import org.danielholmes.coc.baseanalyser.util.GameConnectionNotAvailableException
 import spray.util.LoggingContext
 
 class WebAppServiceActor extends Actor with HttpService with Services {
@@ -50,23 +54,61 @@ class WebAppServiceActor extends Actor with HttpService with Services {
           }
     }
 
-  case class Basic(name: String)
+  private def generatePlayerAnalysisUrl(clanCode: String, player: PlayerSummary) = {
+    s"/clans/${UrlEscapers.urlPathSegmentEscaper().escape(clanCode)}/players/${UrlEscapers.urlPathSegmentEscaper().escape(player.avatar.currentHomeId.toString)}/war"
+  }
+
+  private def getVillageAnalysis(
+      clanCode: String,
+      playerId: Long,
+      layoutCode: String,
+      handler: (PermittedClan, Option[AnalysisReport], Village, PlayerVillage, Long) => StandardRoute
+  ) = {
+    get {
+      permittedClans.find(_.code == clanCode)
+        .map(clan =>
+          Layout.getByCode(layoutCode)
+            .map(layout =>
+              clanSeekerServiceAgent.getPlayerVillage(playerId)
+                .filter(_.avatar.clanId == clan.id)
+                .map(player =>
+                  villageJsonParser.parse(player.village.raw)
+                    .getByLayout(layout)
+                    .map(village => {
+                      val start = System.currentTimeMillis
+                      handler(
+                        clan,
+                        villageAnalyser.analyse(village),
+                        village,
+                        player,
+                        start
+                      )
+                    })
+                    .getOrElse(complete(StatusCodes.NotFound, s"id ${player.avatar.userName} doesn't have $layout village"))
+                )
+                .getOrElse(complete(StatusCodes.NotFound, s"id $playerId not found in clan ${clan.name}"))
+            )
+            .getOrElse(complete(StatusCodes.NotFound, s"Layout type $layoutCode unknown"))
+        )
+        .getOrElse(complete(StatusCodes.NotFound, s"Clan with code $clanCode not found"))
+    }
+  }
 
   val route: Route =
     handleExceptions(exceptionHandler) {
       compressResponse() {
         respondWithMediaType(`text/html`) {
           pathSingleSlash {
-            getFromResource("web/base-analysis.html")
+            getFromResource("web/index.html")
           } ~
           path("clans" / Segment) { (clanCode) =>
-            permittedClans.find(_.code == clanCode)
-              .map(clan =>
-                clanSeekerServiceAgent.getClanDetails(clan.id)
-                  .getOrElse(throw new GameConnectionNotAvailableException)
-              )
-              .map(clanDetails =>
-                get {
+            get {
+              permittedClans.find(_.code == clanCode)
+                .map(clan =>
+                  clanSeekerServiceAgent.getClanDetails(clan.id)
+                    .getOrElse(throw new GameConnectionNotAvailableException)
+                )
+                .map(clanDetails =>
                   complete(
                     mustacheRenderer.render(
                       "web/clan.mustache",
@@ -78,48 +120,84 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                           .sortBy(_.avatar.userName.toLowerCase)
                           .map(p => Map(
                             "ign" -> p.avatar.userName,
-                            "analysisUrl" -> s"/#${UrlUtils.encodeFragment(p.avatar.userName)}/war"
+                            "analysisUrl" -> generatePlayerAnalysisUrl(clanCode, p)
                           ))
                       )
                     )
                   )
-                }
-              )
-              .getOrElse(
-                complete(StatusCodes.NotFound, s"Clan with code $clanCode not found")
-              )
-          } ~
-          path("war-bases" / Segment) { clanCode =>
-            // TODO: Remove eventually
-            redirect(s"/clans/$clanCode", StatusCodes.MovedPermanently)
+                )
+                .getOrElse(
+                  complete(StatusCodes.NotFound, s"Clan with code $clanCode not found")
+                )
+            }
           } ~
           path("clans" / Segment / "war-bases") { clanCode =>
-            permittedClans.find(_.code == clanCode)
-              .map(clan =>
-                clanSeekerServiceAgent.getClanDetails(clan.id)
-                  .getOrElse(throw new GameConnectionNotAvailableException)
-              )
-              .map(clanDetails =>
-                get {
+            get {
+              permittedClans.find(_.code == clanCode)
+                .map(clan =>
+                  clanSeekerServiceAgent.getClanDetails(clan.id)
+                    .getOrElse(throw new GameConnectionNotAvailableException)
+                )
+                .map(clanDetails =>
                   complete(
                     mustacheRenderer.render(
                       "web/war-bases.mustache",
                       Map(
                         "name" -> clanDetails.name,
+                        "code" -> clanCode,
                         "players" -> clanDetails.players
                           .map(p => Map(
-                            "id" -> p.avatar.userId,
+                            "id" -> p.avatar.currentHomeId,
                             "ign" -> p.avatar.userName,
-                            "analysisUrl" -> s"/#${UrlUtils.encodeFragment(p.avatar.userName)}/war"
+                            "analysisUrl" -> generatePlayerAnalysisUrl(clanCode, p)
                           ))
                       )
                     )
                   )
-                }
-              )
-              .getOrElse(
-                complete(StatusCodes.NotFound, s"Clan with code $clanCode not found")
-              )
+                )
+                .getOrElse(
+                  complete(StatusCodes.NotFound, s"Clan with code $clanCode not found")
+                )
+            }
+          } ~
+          path("clans" / Segment / "players" / LongNumber / Segment) { (clanCode, playerId, layoutCode) =>
+            getVillageAnalysis(
+              clanCode,
+              playerId,
+              layoutCode,
+              (clan, possibleAnalysis, village, player, start) =>
+                possibleAnalysis.map(analysis =>
+                  complete(
+                    mustacheRenderer.render(
+                      "web/base-analysis.mustache",
+                      Map(
+                        "clanName" -> clan.name,
+                        "playerIgn" -> player.avatar.userName,
+                        "report" -> viewModelMapper.analysisReport(
+                          analysis,
+                          Duration.ofMillis(System.currentTimeMillis - start)
+                        ).toJson.compactPrint
+                      )
+                    )
+                  )
+                )
+                .getOrElse(
+                  complete(
+                    mustacheRenderer.render(
+                      "web/base-analysis.mustache",
+                      Map(
+                        "clanName" -> clan.name,
+                        "playerIgn" -> player.avatar.userName,
+                        "warning" -> s"${player.avatar.userName} village can't be analysed - currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}",
+                        "report" -> viewModelMapper.analysisReport(
+                          AnalysisReport(village, Set.empty),
+                          Duration.ofMillis(System.currentTimeMillis - start)
+                        ).toJson.compactPrint
+                      )
+                    )
+                  )
+                )
+            )
           }
         } ~
         pathPrefix("assets") {
@@ -138,57 +216,29 @@ class WebAppServiceActor extends Actor with HttpService with Services {
           // we simply let the request drop to provoke a timeout
         } ~
         respondWithMediaType(`application/json`) {
-          // Note: bypasses approved clan checks
-          path("village-analysis" / LongNumber / "war" / "summary") { (playerId) =>
-            clanSeekerServiceAgent.getPlayerVillage(playerId)
-              .map(player => {
-                villageJsonParser.parse(player.village.raw)
-                  .war
-                  .map(village => {
-                    // Can't find easy/flexible way to find memory usage
-                    val start = System.currentTimeMillis
-                    villageAnalyser.analyse(village)
-                      .map(analysis => {
-                        complete(viewModelMapper.analysisSummary(
-                          player.avatar.userName,
-                          analysis,
-                          Duration.ofMillis(System.currentTimeMillis - start)
-                        ))
-                      })
-                      .getOrElse(complete(
-                        StatusCodes.BadRequest,
-                        s"Currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}"
-                      ))
-                  })
-                  .getOrElse(complete(StatusCodes.NotFound, s""""Player has no war base""""))
-              })
-              .getOrElse(complete(StatusCodes.NotFound, s""""Player not found""""))
-          } ~
-          path("village-analysis" / Segment / Segment) { (userName, layoutCode) =>
-            val layout = Layout.getByCode(layoutCode)
-            if (layout.isEmpty) {
-              complete(StatusCodes.NotFound, s""""Layout type $layoutCode unknown"""")
-            } else {
-              val village = villageGatherer.gatherByUserName(userName, layout.get)
-              if (village.isEmpty) {
-                complete(StatusCodes.NotFound, s""""IGN $userName not found in approved clans"""")
-              } else {
-                // Can't find easy/flexible way to find memory usage
-                val start = System.currentTimeMillis
-                val analysis = villageAnalyser.analyse(village.get)
-                val end = System.currentTimeMillis
-                if (analysis.isEmpty) {
-                  complete(StatusCodes.BadRequest, viewModelMapper.viewModel(village.get, s"$userName village can't be analysed - currently only supporting TH8-11"))
-                } else {
+          path("clans" / Segment / "players" / LongNumber / Segment / "summary") { (clanCode, playerId, layoutCode) =>
+            getVillageAnalysis(
+              clanCode,
+              playerId,
+              layoutCode,
+              (clan, possibleAnalysis, village, player, start) =>
+                possibleAnalysis.map(analysis =>
+                  complete(viewModelMapper.analysisSummary(
+                    player.avatar.userName,
+                    analysis,
+                    Duration.ofMillis(System.currentTimeMillis - start)
+                  ))
+                )
+                .getOrElse(
                   complete(
-                    viewModelMapper.viewModel(
-                      analysis.get,
-                      Duration.ofMillis(end - start)
+                    StatusCodes.BadRequest,
+                    viewModelMapper.cantAnalyseVillage(
+                      village,
+                      s"${player.avatar.userName} village can't be analysed - currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}"
                     )
                   )
-                }
-              }
-            }
+                )
+            )
           }
         }
       }

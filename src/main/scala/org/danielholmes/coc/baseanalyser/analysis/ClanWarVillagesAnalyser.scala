@@ -19,7 +19,7 @@ class ClanWarVillagesAnalyser(
   }
 
   private def analysePlayers(players: Set[PlayerSummary]): Set[PlayerAnalysisReport] = {
-    val userIds = players.map(_.avatar.userId).par
+    val userIds = players.map(_.avatar.currentHomeId).par
     userIds.tasksupport = new ForkJoinTaskSupport(new scala.concurrent.forkjoin.ForkJoinPool(4))
     userIds.map(analysePlayer).seq
   }

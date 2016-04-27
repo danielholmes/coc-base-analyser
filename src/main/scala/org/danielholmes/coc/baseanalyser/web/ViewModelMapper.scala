@@ -9,198 +9,6 @@ import org.danielholmes.coc.baseanalyser.model.troops._
 import spray.http.Uri
 import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
 
-class ViewModelMapper {
-  def exception(uri: Uri, e: Exception): ExceptionViewModel = {
-    ExceptionViewModel(
-      uri.toString,
-      e.getClass.getName,
-      e.getMessage,
-      e.getStackTrace
-        .map((el: StackTraceElement) => s"${el.getClassName}.${el.getMethodName} - ${el.getFileName}:${el.getLineNumber}")
-        .toList
-    )
-  }
-
-  def analysisSummary(userName: String, report: AnalysisReport, time: Duration): AnalysisReportSummaryViewModel = {
-    AnalysisReportSummaryViewModel(
-      report.village.townHallLevel.get,
-      report.results.map(viewModel).map(v => ResultSummaryViewModel(v.name, v.success))
-    )
-  }
-
-  def viewModel(report: AnalysisReport, time: Duration): AnalysisReportViewModel = {
-    AnalysisReportViewModel(
-      viewModel(report.village),
-      report.results.map(viewModel),
-      time.toMillis
-    )
-  }
-
-  def viewModel(village: Village, message: String): CantAnalyseVillageViewModel = {
-    CantAnalyseVillageViewModel(viewModel(village), message)
-  }
-
-  private def minionAttackPosition(position: MinionAttackPosition): MinionAttackPositionViewModel = {
-    MinionAttackPositionViewModel(
-      mapCoordinate(position.startPosition),
-      objectId(position.targeting),
-      tileCoordinate(position.hitPoint)
-    )
-  }
-
-  private def viewModel(result: RuleResult): RuleResultViewModel = {
-    result match {
-      case h: HogCCLureRuleResult => HogCCLureResultViewModel(
-        h.success,
-        h.targeting
-          .groupBy(_.targeting)
-          .values
-          .map(_.minBy(_.distance))
-          .map(viewModel)
-          .toSet
-      )
-      case h: ArcherAnchorRuleResult => ArcherAnchorResultViewModel(
-        h.success,
-        h.targeting
-          .groupBy(_.targeting)
-          .values
-          .map(_.head)
-          .map(viewModel)
-          .toSet,
-        h.aimingDefenses.map(objectId)
-      )
-      case a: HighHPUnderAirDefRuleResult => HighHPUnderAirDefResultViewModel(
-        a.success,
-        a.outOfAirDefRange.map(objectId),
-        a.inAirDefRange.map(objectId)
-      )
-      case a: AirSnipedDefenseRuleResult => AirSnipedDefenseResultViewModel(
-        a.success,
-        a.snipedDefenses.map(minionAttackPosition),
-        a.airDefenses.map(objectId)
-      )
-      case m: MinimumCompartmentsRuleResult => MinimumCompartmentsResultViewModel(
-        m.success,
-        m.minimumCompartments,
-        m.compartments.map(objectId),
-        s"At least ${m.minimumCompartments.toInt} compartments (${m.compartments.size})"
-      )
-      case b: BKSwappableRuleResult => BKSwappableResultViewModel(
-        b.success,
-        b.exposedTiles.map(tile)
-      )
-      case w: WizardTowersOutOfHoundPositionsRuleResult => WizardTowersOutOfHoundPositionsResultViewModel(
-        w.success,
-        w.outOfRange.map(objectId),
-        w.inRange.map(viewModel),
-        w.houndPositions.map(_.block).map(viewModel)
-      )
-      case q: QueenWalkedAirDefenseRuleResult => QueenWalkedAirDefenseResultViewModel(
-        q.success,
-        q.attackings.map(viewModel),
-        q.nonReachableAirDefs.map(objectId)
-      )
-      case _ => throw new RuntimeException(s"Don't know how to create view model for ${result.getClass.getSimpleName}")
-    }
-  }
-
-  private def viewModel(attacking: ArcherQueenAttacking): ArcherQueenAttackingViewModel = {
-    ArcherQueenAttackingViewModel(
-      tileCoordinate(attacking.startPosition),
-      objectId(attacking.targeting),
-      tileCoordinate(attacking.hitPoint)
-    )
-  }
-
-  private def viewModel(targeting: HogTargeting): HogTargetingViewModel = {
-    HogTargetingViewModel(
-      tileCoordinate(targeting.startPosition),
-      objectId(targeting.targeting),
-      tileCoordinate(targeting.hitPoint)
-    )
-  }
-
-  private def viewModel(targeting: ArcherTargeting): ArcherTargetingViewModel = {
-    ArcherTargetingViewModel(
-      tileCoordinate(targeting.standingPosition),
-      objectId(targeting.targeting),
-      tileCoordinate(targeting.hitPoint)
-    )
-  }
-
-  private def viewModel(compartment: WallCompartment): WallCompartmentViewModel = {
-    WallCompartmentViewModel(
-      objectId(compartment),
-      compartment.walls.map(objectId),
-      compartment.innerTiles.map(tile)
-    )
-  }
-
-  private def tile(tile: Tile): TileViewModel = TileViewModel(tile.x, tile.y)
-
-  private def viewModel(village: Village): VillageViewModel = {
-    VillageViewModel(village.elements.map(viewModel), village.wallCompartments.map(viewModel))
-  }
-
-  private def viewModel(element: Element): ElementViewModel = {
-    element match {
-      case d: Defense => DefenseElementViewModel(
-        objectId(d),
-        element.getClass.getSimpleName,
-        element.level,
-        viewModel(element.block),
-        viewModel(element.preventTroopDropBlock),
-        viewModel(d.range)
-      )
-      case c: ClanCastle => ClanCastleElementViewModel(
-        objectId(c),
-        element.getClass.getSimpleName,
-        element.level,
-        viewModel(element.block),
-        viewModel(element.preventTroopDropBlock),
-        viewModel(c.range)
-      )
-      case _ => BaseElementViewModel(
-        objectId(element),
-        element.getClass.getSimpleName,
-        element.level,
-        viewModel(element.block),
-        viewModel(element.preventTroopDropBlock)
-      )
-    }
-  }
-
-  private def viewModel(targeting: WizardTowerHoundTargeting): WizardTowerHoundTargetingViewModel = {
-    WizardTowerHoundTargetingViewModel(objectId(targeting.tower), objectId(targeting.airDefense))
-  }
-
-  // TODO: Look up compile time checking for matches
-  private def viewModel(range: ElementRange): RangeViewModel = {
-    range match {
-      case c: CircularElementRange => RangeViewModel(0, c.size)
-      case b: BlindSpotCircularElementRange => RangeViewModel(b.innerSize, b.outerSize)
-      case _ => throw new RuntimeException("Can't render element range")
-    }
-
-  }
-
-  private def viewModel(block: Block): BlockViewModel = {
-    BlockViewModel(block.x, block.y, block.size)
-  }
-
-  private def tileCoordinate(coord: TileCoordinate): TileCoordinateViewModel = {
-    TileCoordinateViewModel(coord.x, coord.y)
-  }
-
-  private def mapCoordinate(coord: MapCoordinate): MapCoordinateViewModel = {
-    MapCoordinateViewModel(coord.x, coord.y)
-  }
-
-  private def objectId(obj: Object): String = {
-    new String(Base64.getEncoder.encode(UUID.nameUUIDFromBytes(obj.toString.getBytes).toString.getBytes)).substring(0, 9)
-  }
-}
-
 case class TileCoordinateViewModel(x: Int, y: Int)
 case class MapCoordinateViewModel(x: Double, y: Double)
 case class RangeViewModel(inner: Double, outer: Double)
@@ -389,4 +197,196 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val analysisReportSummaryFormat = jsonFormat2(AnalysisReportSummaryViewModel)
 
   implicit val exceptionFormat = jsonFormat4(ExceptionViewModel)
+}
+
+class ViewModelMapper {
+  def exception(uri: Uri, e: Exception): ExceptionViewModel = {
+    ExceptionViewModel(
+      uri.toString,
+      e.getClass.getName,
+      e.getMessage,
+      e.getStackTrace
+        .map((el: StackTraceElement) => s"${el.getClassName}.${el.getMethodName} - ${el.getFileName}:${el.getLineNumber}")
+        .toList
+    )
+  }
+
+  def analysisSummary(userName: String, report: AnalysisReport, time: Duration): AnalysisReportSummaryViewModel = {
+    AnalysisReportSummaryViewModel(
+      report.village.townHallLevel.get,
+      report.results.map(ruleResult).map(v => ResultSummaryViewModel(v.name, v.success))
+    )
+  }
+
+  def analysisReport(report: AnalysisReport, time: Duration): AnalysisReportViewModel = {
+    AnalysisReportViewModel(
+      village(report.village),
+      report.results.map(ruleResult),
+      time.toMillis
+    )
+  }
+
+  def cantAnalyseVillage(invalidVillage: Village, message: String): CantAnalyseVillageViewModel = {
+    CantAnalyseVillageViewModel(village(invalidVillage), message)
+  }
+
+  private def minionAttackPosition(position: MinionAttackPosition): MinionAttackPositionViewModel = {
+    MinionAttackPositionViewModel(
+      mapCoordinate(position.startPosition),
+      objectId(position.targeting),
+      tileCoordinate(position.hitPoint)
+    )
+  }
+
+  private def ruleResult(result: RuleResult): RuleResultViewModel = {
+    result match {
+      case h: HogCCLureRuleResult => HogCCLureResultViewModel(
+        h.success,
+        h.targeting
+          .groupBy(_.targeting)
+          .values
+          .map(_.minBy(_.distance))
+          .map(hogTargeting)
+          .toSet
+      )
+      case h: ArcherAnchorRuleResult => ArcherAnchorResultViewModel(
+        h.success,
+        h.targeting
+          .groupBy(_.targeting)
+          .values
+          .map(_.head)
+          .map(archerTargeting)
+          .toSet,
+        h.aimingDefenses.map(objectId)
+      )
+      case a: HighHPUnderAirDefRuleResult => HighHPUnderAirDefResultViewModel(
+        a.success,
+        a.outOfAirDefRange.map(objectId),
+        a.inAirDefRange.map(objectId)
+      )
+      case a: AirSnipedDefenseRuleResult => AirSnipedDefenseResultViewModel(
+        a.success,
+        a.snipedDefenses.map(minionAttackPosition),
+        a.airDefenses.map(objectId)
+      )
+      case m: MinimumCompartmentsRuleResult => MinimumCompartmentsResultViewModel(
+        m.success,
+        m.minimumCompartments,
+        m.compartments.map(objectId),
+        s"At least ${m.minimumCompartments.toInt} compartments (${m.compartments.size})"
+      )
+      case b: BKSwappableRuleResult => BKSwappableResultViewModel(
+        b.success,
+        b.exposedTiles.map(tile)
+      )
+      case w: WizardTowersOutOfHoundPositionsRuleResult => WizardTowersOutOfHoundPositionsResultViewModel(
+        w.success,
+        w.outOfRange.map(objectId),
+        w.inRange.map(wizardTowerHoundTargeting),
+        w.houndPositions.map(_.block).map(block)
+      )
+      case q: QueenWalkedAirDefenseRuleResult => QueenWalkedAirDefenseResultViewModel(
+        q.success,
+        q.attackings.map(archerQueenAttacking),
+        q.nonReachableAirDefs.map(objectId)
+      )
+      case _ => throw new RuntimeException(s"Don't know how to create view model for ${result.getClass.getSimpleName}")
+    }
+  }
+
+  private def archerQueenAttacking(attacking: ArcherQueenAttacking): ArcherQueenAttackingViewModel = {
+    ArcherQueenAttackingViewModel(
+      tileCoordinate(attacking.startPosition),
+      objectId(attacking.targeting),
+      tileCoordinate(attacking.hitPoint)
+    )
+  }
+
+  private def hogTargeting(targeting: HogTargeting): HogTargetingViewModel = {
+    HogTargetingViewModel(
+      tileCoordinate(targeting.startPosition),
+      objectId(targeting.targeting),
+      tileCoordinate(targeting.hitPoint)
+    )
+  }
+
+  private def archerTargeting(targeting: ArcherTargeting): ArcherTargetingViewModel = {
+    ArcherTargetingViewModel(
+      tileCoordinate(targeting.standingPosition),
+      objectId(targeting.targeting),
+      tileCoordinate(targeting.hitPoint)
+    )
+  }
+
+  private def wallCompartment(compartment: WallCompartment): WallCompartmentViewModel = {
+    WallCompartmentViewModel(
+      objectId(compartment),
+      compartment.walls.map(objectId),
+      compartment.innerTiles.map(tile)
+    )
+  }
+
+  private def tile(tile: Tile): TileViewModel = TileViewModel(tile.x, tile.y)
+
+  private def village(village: Village): VillageViewModel = {
+    VillageViewModel(village.elements.map(element), village.wallCompartments.map(wallCompartment))
+  }
+
+  private def element(element: Element): ElementViewModel = {
+    element match {
+      case d: Defense => DefenseElementViewModel(
+        objectId(d),
+        element.getClass.getSimpleName,
+        element.level,
+        block(element.block),
+        block(element.preventTroopDropBlock),
+        elementRange(d.range)
+      )
+      case c: ClanCastle => ClanCastleElementViewModel(
+        objectId(c),
+        element.getClass.getSimpleName,
+        element.level,
+        block(element.block),
+        block(element.preventTroopDropBlock),
+        elementRange(c.range)
+      )
+      case _ => BaseElementViewModel(
+        objectId(element),
+        element.getClass.getSimpleName,
+        element.level,
+        block(element.block),
+        block(element.preventTroopDropBlock)
+      )
+    }
+  }
+
+  private def wizardTowerHoundTargeting(targeting: WizardTowerHoundTargeting): WizardTowerHoundTargetingViewModel = {
+    WizardTowerHoundTargetingViewModel(objectId(targeting.tower), objectId(targeting.airDefense))
+  }
+
+  // TODO: Look up compile time checking for matches
+  private def elementRange(range: ElementRange): RangeViewModel = {
+    range match {
+      case c: CircularElementRange => RangeViewModel(0, c.size)
+      case b: BlindSpotCircularElementRange => RangeViewModel(b.innerSize, b.outerSize)
+      case _ => throw new RuntimeException("Can't render element range")
+    }
+
+  }
+
+  private def block(block: Block): BlockViewModel = {
+    BlockViewModel(block.x, block.y, block.size)
+  }
+
+  private def tileCoordinate(coord: TileCoordinate): TileCoordinateViewModel = {
+    TileCoordinateViewModel(coord.x, coord.y)
+  }
+
+  private def mapCoordinate(coord: MapCoordinate): MapCoordinateViewModel = {
+    MapCoordinateViewModel(coord.x, coord.y)
+  }
+
+  private def objectId(obj: Object): String = {
+    new String(Base64.getEncoder.encode(UUID.nameUUIDFromBytes(obj.toString.getBytes).toString.getBytes)).substring(0, 9)
+  }
 }

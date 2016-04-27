@@ -10,6 +10,6 @@ $(document).ready(function() {
         });
         ui.render();
     });
-    
-    ui.render();
+
+    model.setReport(report);
 });

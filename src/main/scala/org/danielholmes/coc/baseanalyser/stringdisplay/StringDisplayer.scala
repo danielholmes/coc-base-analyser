@@ -36,20 +36,15 @@ class StringDisplayer {
   }
 
   private def drawCCRadius(village: Village, current: List[List[Char]]): List[List[Char]] = {
-    val clanCastle = village.clanCastle
-    if (clanCastle.isEmpty) return current
-    drawCCRadius(
-      clanCastle.get.range,
-      current,
-      Tile.All.toSeq
-    )
+    village.clanCastle
+      .map(_.range)
+      .map(drawCCRadius(_, current, Tile.All.toSeq))
+      .getOrElse(current)
   }
 
   private def drawCCRadius(range: ElementRange, current: List[List[Char]], tiles: Seq[Tile]): List[List[Char]] = {
     if (tiles.isEmpty) return current
-    if (range.touchesEdge(tiles.head)) {
-      return drawCCRadius(range, current, tiles.tail)
-    }
+    if (!range.touchesEdge(tiles.head)) return drawCCRadius(range, current, tiles.tail)
     drawCCRadius(
       range,
       draw(current, tiles.head, '^'),

@@ -2,6 +2,7 @@ package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.util.ElementsBuilder
+import org.scalactic.anyvals.PosInt
 import org.scalatest._
 
 class MinimumCompartmentsRuleSpec extends FlatSpec with Matchers {
@@ -16,16 +17,21 @@ class MinimumCompartmentsRuleSpec extends FlatSpec with Matchers {
     rule.analyse(Village(walls.map(_.asInstanceOf[Element]))) should be (MinimumCompartmentsRuleResult(8, Set(WallCompartment(walls, Set(Tile(2, 2))))))
   }
 
-  it should "return no violation for 9 compartments" in {
-    val walls = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(1, 1), Wall(1, _)) ++
-      ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(4, 1), Wall(1, _)) ++
-      ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(7, 1), Wall(1, _)) ++
-      ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(10, 1), Wall(1, _)) ++
-      ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(13, 1), Wall(1, _)) ++
-      ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(16, 1), Wall(1, _)) ++
-      ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(19, 1), Wall(1, _)) ++
-      ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(22, 1), Wall(1, _)) ++
-      ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(25, 1), Wall(1, _))
-    rule.analyse(Village(walls.map(_.asInstanceOf[Element]))).success should be (true)
+  it should "return no violation for 8 compartments" in {
+    val elements = Range.inclusive(1, 22, 3)
+      .map(PosInt.from(_).get)
+      .flatMap(x => ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(x, 1), Wall(1, _)))
+      .map(_.asInstanceOf[Element])
+      .toSet
+    rule.analyse(Village(elements)).success should be (true)
+  }
+
+  it should "return violation for 8 empty compartments" in {
+    val elements = Range.inclusive(1, 22, 3)
+      .map(PosInt.from(_).get)
+      .flatMap(x => ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(x, 1), Wall(1, _)))
+      .map(_.asInstanceOf[Element])
+      .toSet
+    rule.analyse(Village(elements)).success should be (false)
   }
 }

@@ -145,9 +145,7 @@ var mapDisplay2d = (function(document) {
             return;
         }
 
-        var result = _.find(model.getReport().results, function (test) {
-            return test.name == model.getActiveRuleName();
-        });
+        var result = _.findWhere(model.getReport().results, { 'name': model.getActiveRuleName() });
         switch (result.name) {
             case 'ArcherAnchor':
                 renderArcherAnchor(result, mapConfig);
@@ -306,12 +304,7 @@ var mapDisplay2d = (function(document) {
                     line.x = targeting.standingPosition.x * mapConfig.tileSize;
                     line.y = targeting.standingPosition.y * mapConfig.tileSize;
                     extrasContainer.addChild(line);
-                    return _.find(
-                        buildingsContainer.children,
-                        function (buildingContainer) {
-                            return buildingContainer.id == targeting.targetingId;
-                        }
-                    );
+                    return _.findWhere(buildingsContainer.children, { 'id': targeting.targetingId });
                 }
             ),
             function (buildingContainer) {
@@ -337,12 +330,7 @@ var mapDisplay2d = (function(document) {
                     line.x = targeting.startPosition.x * mapConfig.tileSize;
                     line.y = targeting.startPosition.y * mapConfig.tileSize;
                     extrasContainer.addChild(line);
-                    return _.find(
-                        buildingsContainer.children,
-                        function (buildingContainer) {
-                            return buildingContainer.id == targeting.targetingId;
-                        }
-                    );
+                    return _.findWhere(buildingsContainer.children, { 'id': targeting.targetingId });
                 }
             ),
             function (buildingContainer) {
@@ -373,12 +361,7 @@ var mapDisplay2d = (function(document) {
             _.map(
                 ids,
                 function (id) {
-                    var building = _.find(
-                        buildingsContainer.children,
-                        function (buildingContainer) {
-                            return buildingContainer.id == id;
-                        }
-                    );
+                    var building = _.findWhere(buildingsContainer.children, { 'id': id });
                     if (building == null) {
                         console.error("No building with id " + id);
                     }

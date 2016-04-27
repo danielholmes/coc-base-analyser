@@ -8,7 +8,7 @@ var ui = (function($, model, mapDisplay, window) {
 
     var renderTemplate = function (selector, vars) {
         var template = $(selector).html();
-        Mustache.parse(template);
+        Mustache.parse(template, ['[[', ']]']);
         return Mustache.render(template, vars);
     };
 
@@ -111,12 +111,6 @@ var ui = (function($, model, mapDisplay, window) {
     var searchButton;
 
     $(document).ready(function () {
-        var searchForm = $("#searchForm");
-        searchButton = searchForm.find("button[type='submit']");
-
-        var userNameField = $("#userNameField");
-        var USER_NAME_KEY = "userName";
-
         $("#results-panel-group").on("show.bs.collapse", function(event) {
             model.setActiveRuleName($(event.target).data("rule-name"));
         });
@@ -125,58 +119,6 @@ var ui = (function($, model, mapDisplay, window) {
                 model.clearActiveRuleName();
             }
         });
-        searchForm.on("submit", function() {
-            if (runningAnalysis) {
-                return false;
-            }
-
-            startLoading();
-            model.clearReport();
-
-            var userName = userNameField.val();
-            var layout = searchForm.find('input[name=layout]:checked').val();
-            $.getJSON("/village-analysis/" + encodeURI(userName) + "/" + layout)
-                .done(function (response) {
-                    // TODO: Maybe make jstorage part of model, or its own preferences module
-                    $.jStorage.set(USER_NAME_KEY, userName);
-                    history.pushState(null, null, "#" + encodeURI(userName) + "/" + layout);
-                    model.setReport(response);
-                })
-                .fail(function (response) {
-                    if (response.status == 404) {
-                        alert(response.responseJSON);
-                        return false;
-                    }
-
-                    if (response.status == 400) {
-                        alert(response.responseJSON.message);
-                        // Bit of a hack, but oh well
-                        model.setReport({
-                           village: response.responseJSON.village,
-                           results: []
-                        });
-                        return false;
-                    }
-
-                    alert("There was an unknown problem, please try again later");
-                })
-                .always(function () {
-                    stopLoading();
-                });
-
-            return false;
-        });
-
-
-
-        if (location.hash.indexOf("#") == 0 && location.hash.split("/").length == 2) {
-            var hashValues = location.hash.substring(1).split("/");
-            userNameField.val(decodeURI(hashValues[0]));
-            searchForm.find("input[name=layout][value=" + hashValues[1] + "]").prop("checked", true);
-            searchForm.submit();
-        } else {
-            userNameField.val($.jStorage.get(USER_NAME_KEY, ""));
-        }
     });
 
     // Analysis Progress

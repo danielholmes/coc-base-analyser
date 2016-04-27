@@ -36,6 +36,6 @@ class VillageGatherer(
     clan.players
       .map(_.avatar)
       .find(_.userName.equalsIgnoreCase(userName))
-      .map(_.userId)
+      .map(_.currentHomeId)
   }
 }

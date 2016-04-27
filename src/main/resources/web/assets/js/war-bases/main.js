@@ -15,7 +15,7 @@ $(document).ready(function() {
     };
 
     var loadPlayer = function(player) {
-        jQuery.getJSON("/village-analysis/" + encodeURI(player.id) + "/war/summary")
+        jQuery.getJSON("/clans/" + clan.code + "/players/" + encodeURI(player.id) + "/war/summary")
             .always(function() {
                 loading = _.reject(loading, function(check) { return check == player; });
                 load();

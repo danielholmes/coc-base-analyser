@@ -21,8 +21,8 @@ To find available SBT dependency updates run `sbt dependencyUpdates`
 
 ## Command Line Utils
 
-`sbt 'run-main org.danielholmes.coc.baseanalyser.PrintVillage "I AM SPARTA!!1!"'`
-`sbt 'run-main org.danielholmes.coc.baseanalyser.PrintAttackPlacements "I AM SPARTA!!1!"'`
+`sbt 'run-main org.danielholmes.coc.baseanalyser.PrintVillage alpha "I AM SPARTA!!1!"'`
+`sbt 'run-main org.danielholmes.coc.baseanalyser.PrintAttackPlacements alpha "I AM SPARTA!!1!"'`
 
 
 ## Running dev version of site (automatically reloads on changes)
@@ -44,16 +44,18 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - tweaks to rules. Several issues on dakotas current war base
-   - extra rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
-       - maybe as a % of compartmented area
-   - min compartments should only count compartments with buildings inside them
+ - min compartments should only count compartments with buildings inside them
+ - extra rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
+   - maybe as a % of compartmented area
+   - see spike dragons base
  
  - BK Trigger rule further tweaks. should show red for all non-compartment tiles floodfilled from triggered
  
+ - Generalise getAnalysisByClanCodePlayerIdAndLayout and getVillageByClanCodePlayerIdAndLayout . scalatic "Or" class 
+   might work well for error conditions
+ 
  - Rule naming handling overhaul - to benefit war bases summary
  - Explicit connection to supercell down error - unreliable, please try again later, etc
- - Change general ui - no search box (comes in via url). Url to include clan code so can do less lookup queries
  
  - static analysis
  
@@ -69,6 +71,7 @@ then deploy it manually through the AWS console:
  - TH11 rendering - new levels and warden + eagle
  
  - own connection - see UCS server for help creating
+ - change to exact same coordinate system as clash with 3 tiles off edge of map
  - sbt deploy task
  - 3d render
  - separate rule groups for farm vs arranged

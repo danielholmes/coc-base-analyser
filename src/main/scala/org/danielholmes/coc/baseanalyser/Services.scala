@@ -55,7 +55,6 @@ trait Services {
   )
   lazy val villageAnalyser = wire[VillageAnalyser]
   lazy val clanWarVillagesAnalyser = wire[ClanWarVillagesAnalyser]
-  lazy val villageGatherer = wire[VillageGatherer]
   lazy val stringDisplayer = wire[StringDisplayer]
   lazy val stringTroopDropDisplayer = wire[StringTroopDropDisplayer]
   lazy val viewModelMapper = wire[ViewModelMapper]
