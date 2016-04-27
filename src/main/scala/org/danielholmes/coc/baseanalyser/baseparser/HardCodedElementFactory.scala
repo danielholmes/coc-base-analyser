@@ -31,7 +31,7 @@ class HardCodedElementFactory extends ElementFactory {
     1000012 -> levelAndCoordinateConstructor(AirDefense),
     1000013 -> levelAndCoordinateConstructor(Mortar),
     1000014 -> levelAndCoordinateConstructor(ClanCastle),
-    1000015 -> levelAndCoordinateConstructor(BuilderHut),
+    1000015 -> ((raw: RawElement) => BuilderHut(elementTile(raw))),
     //1000016 CommunicationsMast,
     //1000017 -> GoblinTownHull,
     //1000018 -> GoblinHut,

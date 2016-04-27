@@ -12,13 +12,13 @@ class ArcherAnchorRuleSpec extends FlatSpec with Matchers {
   }
 
   it should "return violation for base with element and no defenses" in {
-    rule.analyse(Village(Set(BuilderHut(1, Tile.MapOrigin)))).success should be (false)
+    rule.analyse(Village(Set(BuilderHut(Tile.MapOrigin)))).success should be (false)
   }
 
   it should "return success for base with element covered by ground shooting" in {
     val village = Village(
       Set(
-        BuilderHut(1, Tile(5, 5)),
+        BuilderHut(Tile(5, 5)),
         ArcherTower(1, Tile(7, 7))
       )
     )
@@ -28,7 +28,7 @@ class ArcherAnchorRuleSpec extends FlatSpec with Matchers {
   it should "return fail for base with element covered by air shooting" in {
     val village = Village(
       Set(
-        BuilderHut(1, Tile(5, 5)),
+        BuilderHut(Tile(5, 5)),
         AirDefense(1, Tile(7, 7))
       )
     )

@@ -12,7 +12,7 @@ class VillageSpec extends FlatSpec with Matchers {
     val builderPlacement = TileCoordinate(2, 2).matrixOfCoordinatesTo(TileCoordinate(4, 4))
     val expected = TileCoordinate.All.toSet -- builderPlacement
 
-    val village = Village(Set(BuilderHut(1, Tile(2, 2))))
+    val village = Village(Set(BuilderHut(Tile(2, 2))))
     val result = village.coordinatesAllowedToDropTroop
     result should have size expected.size
     result should contain theSameElementsAs expected
@@ -22,7 +22,7 @@ class VillageSpec extends FlatSpec with Matchers {
     val builderPlacement = TileCoordinate.MapOrigin.matrixOfCoordinatesTo(TileCoordinate.MapOrigin.offset(2, 2))
     val expected = TileCoordinate.All.toSet -- builderPlacement
 
-    val village = Village(Set(BuilderHut(1, Tile.MapOrigin)))
+    val village = Village(Set(BuilderHut(Tile.MapOrigin)))
     val result = village.coordinatesAllowedToDropTroop
     result should have size expected.size
     result should contain theSameElementsAs expected
@@ -40,7 +40,7 @@ class VillageSpec extends FlatSpec with Matchers {
   }
 
   it should "not include intersections of attack placements in coordinates allowed to drop troop" in {
-    val village = Village(Set(BuilderHut(1, Tile(1, 1)), BuilderHut(1, Tile(5, 1))))
+    val village = Village(Set(BuilderHut(Tile(1, 1)), BuilderHut(Tile(5, 1))))
 
     village.coordinatesAllowedToDropTroop should not contain TileCoordinate(4, 1)
     village.coordinatesAllowedToDropTroop should not contain TileCoordinate(4, 2)

@@ -81,7 +81,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
     get {
       permittedClans.find(_.code == code)
         .map(clan =>
-          clanSeekerServiceAgent.getClanDetails(clan.id)
+          clanSeeker.getClanDetails(clan.id)
             .getOrElse(throw new GameConnectionNotAvailableException)
         )
         .map(handler)

@@ -4,16 +4,16 @@ import org.danielholmes.coc.baseanalyser.model.troops.{Minion, MinionAttackPosit
 import org.danielholmes.coc.baseanalyser.model.{Defense, Target, Village, WallCompartment}
 import org.scalactic.anyvals.PosInt
 
-// TODO: Should only count compartments with buildings inside (since they're the only ones that need to be broken)
-// Also update rule text to reflect this
 class MinimumCompartmentsRule extends Rule {
   def analyse(village: Village): RuleResult = {
-    MinimumCompartmentsRuleResult(MinimumCompartmentsRule.Min, village.wallCompartments)
+    MinimumCompartmentsRuleResult(MinimumCompartmentsRule.Min, village.wallCompartments.filter(_.elements.nonEmpty))
   }
 }
 
-case class MinimumCompartmentsRuleResult(minimumCompartments: PosInt, compartments: Set[WallCompartment]) extends RuleResult {
-  val success = compartments.size >= minimumCompartments
+case class MinimumCompartmentsRuleResult(minimumCompartments: PosInt, buildingCompartments: Set[WallCompartment]) extends RuleResult {
+  require(buildingCompartments.forall(_.elements.nonEmpty))
+
+  val success = buildingCompartments.size >= minimumCompartments
   val ruleDetails = MinimumCompartmentsRule.Details
 }
 
@@ -24,6 +24,6 @@ object MinimumCompartmentsRule {
     "MinimumCompartments",
     s">= ${Min.toInt} compartments",
     s"At least ${Min.toInt} compartments",
-    "GoWiPe can be slowed down by having enough compartments to hold it up"
+    "GoWiPe can be slowed down by having enough compartments (with buildings inside them) to hold it up"
   )
 }

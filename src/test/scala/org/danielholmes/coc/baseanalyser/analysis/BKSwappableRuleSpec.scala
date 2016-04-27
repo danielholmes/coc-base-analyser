@@ -18,7 +18,7 @@ class BKSwappableRuleSpec extends FlatSpec with Matchers {
 
   it should "return success for deep walled BK" in {
     val elements =
-      ElementsBuilder.rectangle(Tile(9, 9), 27, 27, 1, Wall(1, _)) ++
+      ElementsBuilder.fence(Tile(9, 9), 27, 27) ++
       ElementsBuilder.repeatX(Tile(10, 10), 5, 5, ArmyCamp(1, _)) ++
       ElementsBuilder.repeatX(Tile(10, 15), 5, 5, ArmyCamp(1, _)) ++
       Set[Element](
@@ -31,7 +31,7 @@ class BKSwappableRuleSpec extends FlatSpec with Matchers {
 
   it should "return fail for exposed BK" in {
     val elements =
-      ElementsBuilder.rectangle(Tile(9, 9), 27, 27, 1, Wall(1, _)) ++
+      ElementsBuilder.fence(Tile(9, 9), 27, 27) ++
       ElementsBuilder.repeatX(Tile(10, 10), 5, 5, ArmyCamp(1, _)) ++
       ElementsBuilder.repeatX(Tile(10, 15), 5, 5, ArmyCamp(1, _)) ++
       Set[Element](
@@ -63,7 +63,7 @@ class BKSwappableRuleSpec extends FlatSpec with Matchers {
 
   it should "return success for only slightly exposed BK" in {
     val elements =
-      ElementsBuilder.rectangle(Tile(4, 4), 15, 15, 1, Wall(1, _)) ++
+      ElementsBuilder.fence(Tile(4, 4), 15, 15) ++
         ElementsBuilder.repeatX(Tile(6, 6), 3, 4, Barrack(1, _)) ++
         Set[Element](
           Barrack(1, Tile(6, 10)),
@@ -77,7 +77,7 @@ class BKSwappableRuleSpec extends FlatSpec with Matchers {
 
   it should "return correct exposed tiles for offset BK" in {
     val elements =
-      ElementsBuilder.rectangle(Tile(4, 4), 14, 15, 1, Wall(1, _)) ++
+      ElementsBuilder.fence(Tile(4, 4), 14, 15) ++
         ElementsBuilder.repeatX(Tile(6, 6), 3, 4, Barrack(1, _)) ++
         Set[Element](
           Barrack(1, Tile(6, 10)),

@@ -2,7 +2,7 @@ package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.util.ElementsBuilder
-import org.scalactic.anyvals.PosInt
+import org.scalactic.anyvals.{PosInt, PosZInt}
 import org.scalatest._
 
 class MinimumCompartmentsRuleSpec extends FlatSpec with Matchers {
@@ -13,15 +13,15 @@ class MinimumCompartmentsRuleSpec extends FlatSpec with Matchers {
   }
 
   it should "return violation for 1 compartment" in {
-    val walls = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(1, 1), Wall(1, _))
-    rule.analyse(Village(walls.map(_.asInstanceOf[Element]))) should be (MinimumCompartmentsRuleResult(8, Set(WallCompartment(walls, Set(Tile(2, 2)), Set.empty))))
+    rule.analyse(Village(ElementsBuilder.fence(Tile(1, 1), 3, 3))) should be
+      (MinimumCompartmentsRuleResult(8, Set.empty))
   }
 
   it should "return no violation for 8 compartments" in {
-    val elements = Range.inclusive(1, 22, 3)
-      .map(PosInt.from(_).get)
-      .flatMap(x => ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(x, 1), Wall(1, _)))
-      .map(_.asInstanceOf[Element])
+    val elements = Range(0, 8)
+      .map(x => PosZInt.from(x * 4).get)
+      .map(Tile.MapOrigin.offset(_, 1))
+      .flatMap(t => ElementsBuilder.fence(t, 4, 4) + BuilderHut(t.offset(1, 1)))
       .toSet
     rule.analyse(Village(elements)).success should be (true)
   }
@@ -29,8 +29,7 @@ class MinimumCompartmentsRuleSpec extends FlatSpec with Matchers {
   it should "return violation for 8 empty compartments" in {
     val elements = Range.inclusive(1, 22, 3)
       .map(PosInt.from(_).get)
-      .flatMap(x => ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(x, 1), Wall(1, _)))
-      .map(_.asInstanceOf[Element])
+      .flatMap(x => ElementsBuilder.fence(Tile(x, 1), 3, 3))
       .toSet
     rule.analyse(Village(elements)).success should be (false)
   }

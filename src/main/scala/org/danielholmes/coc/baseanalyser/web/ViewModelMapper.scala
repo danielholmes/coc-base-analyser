@@ -234,7 +234,7 @@ class ViewModelMapper {
       case m: MinimumCompartmentsRuleResult => MinimumCompartmentsResultViewModel(
         m.success,
         m.minimumCompartments,
-        m.compartments.map(objectId),
+        m.buildingCompartments.map(objectId),
         m.ruleDetails.code,
         m.ruleDetails.name,
         m.ruleDetails.description
