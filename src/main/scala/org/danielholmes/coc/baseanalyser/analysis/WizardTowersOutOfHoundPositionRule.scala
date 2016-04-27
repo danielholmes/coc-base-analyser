@@ -30,4 +30,14 @@ class WizardTowersOutOfHoundPositionsRule extends Rule {
 
 case class WizardTowersOutOfHoundPositionsRuleResult(outOfRange: Set[WizardTower], inRange: Set[WizardTowerHoundTargeting], houndPositions: Set[AirDefense]) extends RuleResult {
   val success = inRange.size <= outOfRange.size
+  val ruleDetails = WizardTowersOutOfHoundPositionsRule.Details
+}
+
+object WizardTowersOutOfHoundPositionsRule {
+  val Details = RuleDetails(
+    "WizardTowersOutOfHoundPositions",
+    "WTs avoid hounds",
+    "Enough Wizard Towers out of hound range",
+    "Wizard Towers are strong against loons, they shouldn't be too close to air defenses where hounds can tank for them. You should have at least 2 that wont target resting hounds"
+  )
 }

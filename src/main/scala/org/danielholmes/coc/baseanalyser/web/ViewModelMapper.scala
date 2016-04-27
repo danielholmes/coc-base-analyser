@@ -56,75 +56,22 @@ case class WizardTowerHoundTargetingViewModel(tower: String, airDefense: String)
 case class MinionAttackPositionViewModel(startPosition: MapCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 
 sealed trait RuleResultViewModel {
-  val name: String
+  val code: String
+  val title: String
+  val description: String
   val success: Boolean
 }
 
-case class HogCCLureResultViewModel(
-  success: Boolean,
-  targetings: Set[HogTargetingViewModel],
-  name: String = "HogCCLure",
-  title: String = "No Easy CC Lure",
-  description: String = "There should be no spaces that allow a hog or giant to lure without first having to destroy a defense"
-) extends RuleResultViewModel
-case class ArcherAnchorResultViewModel(
-  success: Boolean,
-  targetings: Set[ArcherTargetingViewModel],
-  aimingDefenses: Set[String],
-  name: String = "ArcherAnchor",
-  title: String = "No Archer Anchors",
-  description: String = "There should be no unprotected archer anchors"
-) extends RuleResultViewModel
-case class HighHPUnderAirDefResultViewModel(
-  success: Boolean,
-  outOfAirDefRange: Set[String],
-  inAirDefRange: Set[String],
-  name: String = "HighHPUnderAirDef",
-  title: String = "High HP covered by Air Defenses",
-  description: String = "All high HP buildings should be within range of your air defenses"
-) extends RuleResultViewModel
-case class AirSnipedDefenseResultViewModel(
-  success: Boolean,
-  attackPositions: Set[MinionAttackPositionViewModel],
-  airDefenses: Set[String],
-  name: String = "AirSnipedDefense",
-  title: String = "Ground Defenses covered for Air",
-  description: String = "No ground only defenses should be reachable by minions or loons"
-) extends RuleResultViewModel
-case class MinimumCompartmentsResultViewModel(
-  success: Boolean,
-  minimumCompartments: Int,
-  compartments: Set[String],
-  title: String,
-  description: String = "GoWiPe can be slowed down by having enough compartments to hold it up",
-  name: String = "MinimumCompartments"
-) extends RuleResultViewModel
-case class BKSwappableResultViewModel(
-  success: Boolean,
-  exposedTiles: Set[TileViewModel],
-  name: String = "BKSwappable",
-  title: String = "BK should be protected",
-  description: String = "The BK's range should be inside walls so he can't be lureed out and killed early as part of a tanking BK or KS"
-) extends RuleResultViewModel
-case class WizardTowersOutOfHoundPositionsResultViewModel(
-  success: Boolean,
-  outOfRange: Set[String],
-  inRange: Set[WizardTowerHoundTargetingViewModel],
-  houndPositions: Set[BlockViewModel],
-  name: String = "WizardTowersOutOfHoundPositions",
-  title: String = "Enough Wizard Towers out of hound range",
-  description: String = "Wizard Towers are strong against loons, they shouldn't be too close to air defenses where hounds can tank for them. You should have at least 2 that wont target resting hounds"
-) extends RuleResultViewModel
-case class QueenWalkedAirDefenseResultViewModel(
-  success: Boolean,
-  attackings: Set[ArcherQueenAttackingViewModel],
-  nonReachableAirDefs: Set[String],
-  name: String = "QueenWalkedAirDefense",
-  title: String = "Air Defenses not Queen Walkable",
-  description: String = "Air Defenses shouldn't be reachable over a wall by a queen walking outside"
-) extends RuleResultViewModel
+case class HogCCLureResultViewModel(success: Boolean, targetings: Set[HogTargetingViewModel], code: String, title: String, description: String) extends RuleResultViewModel
+case class ArcherAnchorResultViewModel(success: Boolean, targetings: Set[ArcherTargetingViewModel], aimingDefenses: Set[String], code: String, title: String, description: String) extends RuleResultViewModel
+case class HighHPUnderAirDefResultViewModel(success: Boolean, outOfAirDefRange: Set[String], inAirDefRange: Set[String], code: String, title: String, description: String) extends RuleResultViewModel
+case class AirSnipedDefenseResultViewModel(success: Boolean, attackPositions: Set[MinionAttackPositionViewModel], airDefenses: Set[String], code: String, title: String, description: String) extends RuleResultViewModel
+case class MinimumCompartmentsResultViewModel(success: Boolean, minimumCompartments: Int, compartments: Set[String], code: String, title: String, description: String) extends RuleResultViewModel
+case class BKSwappableResultViewModel(success: Boolean, exposedTiles: Set[TileViewModel], code: String, title: String, description: String) extends RuleResultViewModel
+case class WizardTowersOutOfHoundPositionsResultViewModel(success: Boolean, outOfRange: Set[String], inRange: Set[WizardTowerHoundTargetingViewModel], houndPositions: Set[BlockViewModel], code: String, title: String, description: String) extends RuleResultViewModel
+case class QueenWalkedAirDefenseResultViewModel(success: Boolean, attackings: Set[ArcherQueenAttackingViewModel], nonReachableAirDefs: Set[String], code: String, title: String, description: String) extends RuleResultViewModel
 
-case class ResultSummaryViewModel(name: String, success: Boolean)
+case class ResultSummaryViewModel(shortName: String, success: Boolean)
 case class AnalysisReportSummaryViewModel(townHallLevel: Int, resultSummaries: Set[ResultSummaryViewModel])
 
 case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel], timeMillis: Long)
@@ -214,7 +161,7 @@ class ViewModelMapper {
   def analysisSummary(userName: String, report: AnalysisReport, time: Duration): AnalysisReportSummaryViewModel = {
     AnalysisReportSummaryViewModel(
       report.village.townHallLevel.get,
-      report.results.map(ruleResult).map(v => ResultSummaryViewModel(v.name, v.success))
+      report.results.map(r => ResultSummaryViewModel(r.ruleDetails.shortName, r.success))
     )
   }
 
@@ -247,7 +194,10 @@ class ViewModelMapper {
           .values
           .map(_.minBy(_.distance))
           .map(hogTargeting)
-          .toSet
+          .toSet,
+        h.ruleDetails.code,
+        h.ruleDetails.name,
+        h.ruleDetails.description
       )
       case h: ArcherAnchorRuleResult => ArcherAnchorResultViewModel(
         h.success,
@@ -257,38 +207,58 @@ class ViewModelMapper {
           .map(_.head)
           .map(archerTargeting)
           .toSet,
-        h.aimingDefenses.map(objectId)
+        h.aimingDefenses.map(objectId),
+        h.ruleDetails.code,
+        h.ruleDetails.name,
+        h.ruleDetails.description
       )
       case a: HighHPUnderAirDefRuleResult => HighHPUnderAirDefResultViewModel(
         a.success,
         a.outOfAirDefRange.map(objectId),
-        a.inAirDefRange.map(objectId)
+        a.inAirDefRange.map(objectId),
+        a.ruleDetails.code,
+        a.ruleDetails.name,
+        a.ruleDetails.description
       )
       case a: AirSnipedDefenseRuleResult => AirSnipedDefenseResultViewModel(
         a.success,
         a.snipedDefenses.map(minionAttackPosition),
-        a.airDefenses.map(objectId)
+        a.airDefenses.map(objectId),
+        a.ruleDetails.code,
+        a.ruleDetails.name,
+        a.ruleDetails.description
       )
       case m: MinimumCompartmentsRuleResult => MinimumCompartmentsResultViewModel(
         m.success,
         m.minimumCompartments,
         m.compartments.map(objectId),
-        s"At least ${m.minimumCompartments.toInt} compartments (${m.compartments.size})"
+        m.ruleDetails.code,
+        m.ruleDetails.name,
+        m.ruleDetails.description
       )
       case b: BKSwappableRuleResult => BKSwappableResultViewModel(
         b.success,
-        b.exposedTiles.map(tile)
+        b.exposedTiles.map(tile),
+        b.ruleDetails.code,
+        b.ruleDetails.name,
+        b.ruleDetails.description
       )
       case w: WizardTowersOutOfHoundPositionsRuleResult => WizardTowersOutOfHoundPositionsResultViewModel(
         w.success,
         w.outOfRange.map(objectId),
         w.inRange.map(wizardTowerHoundTargeting),
-        w.houndPositions.map(_.block).map(block)
+        w.houndPositions.map(_.block).map(block),
+        w.ruleDetails.code,
+        w.ruleDetails.name,
+        w.ruleDetails.description
       )
       case q: QueenWalkedAirDefenseRuleResult => QueenWalkedAirDefenseResultViewModel(
         q.success,
         q.attackings.map(archerQueenAttacking),
-        q.nonReachableAirDefs.map(objectId)
+        q.nonReachableAirDefs.map(objectId),
+        q.ruleDetails.code,
+        q.ruleDetails.name,
+        q.ruleDetails.description
       )
       case _ => throw new RuntimeException(s"Don't know how to create view model for ${result.getClass.getSimpleName}")
     }

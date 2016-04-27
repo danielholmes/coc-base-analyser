@@ -1,7 +1,6 @@
 'use strict';
 
 var ui = (function($, model, mapDisplay, window) {
-    var runningAnalysis = false;
     var reportValid = false;
     var sizeValid = false;
     var activeRuleValid = false;
@@ -72,10 +71,10 @@ var ui = (function($, model, mapDisplay, window) {
                 return $(renderTemplate(
                     "#result-panel",
                     {
-                        id: result.name,
+                        id: result.code,
                         title: result.title,
                         description: result.description,
-                        ruleName: result.name,
+                        ruleCode: result.code,
                         success: result.success
                     }
                 ));
@@ -94,7 +93,7 @@ var ui = (function($, model, mapDisplay, window) {
         var panels = $("#results-panel-group").find(".panel");
         panels.removeClass("active");
         if (model.hasActiveRule()) {
-            panels.filter("#panel-" + model.getActiveRuleName()).addClass("active");
+            panels.filter("#panel-" + model.getActiveRuleCode()).addClass("active");
         }
     };
 
@@ -108,37 +107,16 @@ var ui = (function($, model, mapDisplay, window) {
     model.reportChanged.add(_.bind(invalidateReport, this));
     model.ruleChanged.add(_.bind(invalidateRule, this));
 
-    var searchButton;
-
     $(document).ready(function () {
         $("#results-panel-group").on("show.bs.collapse", function(event) {
-            model.setActiveRuleName($(event.target).data("rule-name"));
+            model.setActiveRuleByCode($(event.target).data("rule-code"));
         });
         $("#results-panel-group").on("hide.bs.collapse", function(event) {
-            if (model.getActiveRuleName() == $(event.target).data("rule-name")) {
-                model.clearActiveRuleName();
+            if (model.getActiveRuleCode() == $(event.target).data("rule-code")) {
+                model.clearActiveRule();
             }
         });
     });
-
-    // Analysis Progress
-    function startLoading() {
-        if (runningAnalysis) {
-            return;
-        }
-        searchButton.attr("disabled", "disabled")
-            .html("Analysing...");
-        runningAnalysis = true;
-    }
-
-    function stopLoading() {
-        if (!runningAnalysis) {
-            return;
-        }
-        searchButton.removeAttr("disabled")
-            .html("Run Analysis");
-        runningAnalysis = false;
-    }
 
     $(window).on("resize", _.bind(invalidateSize, this));
 

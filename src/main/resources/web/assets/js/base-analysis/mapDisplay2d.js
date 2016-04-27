@@ -145,8 +145,8 @@ var mapDisplay2d = (function(document) {
             return;
         }
 
-        var result = _.findWhere(model.getReport().results, { 'name': model.getActiveRuleName() });
-        switch (result.name) {
+        var result = _.findWhere(model.getReport().results, { 'code': model.getActiveRuleCode() });
+        switch (result.code) {
             case 'ArcherAnchor':
                 renderArcherAnchor(result, mapConfig);
                 break;
@@ -172,7 +172,7 @@ var mapDisplay2d = (function(document) {
                 renderQueenWalkedAirDefense(result, mapConfig);
                 break;
             default:
-                console.error('Don\'t know how to render active rule: ' + result.name);
+                console.error('Don\'t know how to render active rule: ' + result.code);
         }
     };
 

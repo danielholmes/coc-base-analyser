@@ -22,4 +22,14 @@ class ArcherAnchorRule extends Rule {
 
 case class ArcherAnchorRuleResult(targeting: Set[ArcherTargeting], aimingDefenses: Set[Defense]) extends RuleResult {
   val success = targeting.isEmpty
+  val ruleDetails = ArcherAnchorRule.Details
+}
+
+object ArcherAnchorRule {
+  val Details = RuleDetails(
+    "ArcherAnchor",
+    "No Arch Anchors",
+    "No Archer Anchors",
+    "There should be no unprotected archer anchors"
+  )
 }

@@ -30,4 +30,14 @@ class AirSnipedDefenseRule extends Rule {
 
 case class AirSnipedDefenseRuleResult(snipedDefenses: Set[MinionAttackPosition], airDefenses: Set[Defense]) extends RuleResult {
   val success = snipedDefenses.isEmpty
+  val ruleDetails = AirSnipedDefenseRule.Details
+}
+
+object AirSnipedDefenseRule {
+  val Details = RuleDetails(
+    "AirSnipedDefense",
+    "Air covers Ground Defs",
+    "Ground Defenses covered by Air",
+    "No ground only defenses should be reachable by minions or loons"
+  )
 }

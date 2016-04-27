@@ -21,4 +21,14 @@ class QueenWalkedAirDefenseRule extends Rule {
 
 case class QueenWalkedAirDefenseRuleResult(attackings: Set[ArcherQueenAttacking], nonReachableAirDefs: Set[AirDefense]) extends RuleResult {
   val success = attackings.isEmpty
+  val ruleDetails = QueenWalkedAirDefenseRule.Details
+}
+
+object QueenWalkedAirDefenseRule {
+  val Details = RuleDetails(
+    "QueenWalkedAirDefense",
+    "AirDef not AQ Walkable",
+    "Air Defenses not Queen Walkable",
+    "Air Defenses shouldn't be reachable over a wall by a queen walking outside"
+  )
 }

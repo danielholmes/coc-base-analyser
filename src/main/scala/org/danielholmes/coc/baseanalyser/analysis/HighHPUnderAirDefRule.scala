@@ -43,4 +43,14 @@ case class HighHPUnderAirDefRuleResult(outOfAirDefRange: Set[Element], inAirDefR
   require(outOfAirDefRange.intersect(inAirDefRange).isEmpty)
 
   val success = outOfAirDefRange.isEmpty
+  val ruleDetails = HighHPUnderAirDefRule.Details
+}
+
+object HighHPUnderAirDefRule {
+  val Details = RuleDetails(
+    "HighHPUnderAirDef",
+    "Air Covers High HP",
+    "High HP covered by Air Defenses",
+    "All high HP buildings should be within range of your air defenses"
+  )
 }

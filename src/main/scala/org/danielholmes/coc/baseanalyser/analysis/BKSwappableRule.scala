@@ -67,4 +67,14 @@ class BKSwappableRule extends Rule {
 
 case class BKSwappableRuleResult(exposedTiles: Set[Tile]) extends RuleResult {
   val success = exposedTiles.isEmpty
+  val ruleDetails = BKSwappableRule.Details
+}
+
+object BKSwappableRule {
+  val Details = RuleDetails(
+    "BKSwappable",
+    "BK protected",
+    "BK should be protected",
+    "The BK's range should be inside walls so he can't be lureed out and killed early as part of a tanking BK or KS"
+  )
 }

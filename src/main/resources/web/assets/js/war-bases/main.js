@@ -98,7 +98,7 @@ $(document).ready(function() {
                     townHallContainer = $(Mustache.render(townHallContainerTemplate, {
                         "containerId": townHallContainerId,
                         "level": result.report.townHallLevel,
-                        "rules": _.pluck(result.report.resultSummaries, 'name')
+                        "rules": _.pluck(result.report.resultSummaries, 'shortName')
                     }));
                     resultsContainer.append(townHallContainer);
 
@@ -117,7 +117,7 @@ $(document).ready(function() {
                     .append($("<td />").append($("<a />").attr("href", result.player.analysisUrl).attr("target", "_blank").html(result.player.analysisUrl)))
                     .append(
                         _.map(
-                            _.sortBy(result.report.resultSummaries, function(summary) { return ruleOrder.indexOf(summary.name); }),
+                            _.sortBy(result.report.resultSummaries, function(summary) { return ruleOrder.indexOf(summary.shortName); }),
                             function(summary) {
                                 return $("<td />").append(summary.success ? '' : $('<span />').addClass('glyphicon glyphicon-remove-sign'));
                             }
@@ -129,7 +129,7 @@ $(document).ready(function() {
                 if (anyError) {
                     townHallContainer.find(".plain-text-summary")
                         .find("textarea")
-                        .append(result.player.ign + ": " + _.pluck(result.report.resultSummaries, 'name').join(', ') + "\n");
+                        .append(result.player.ign + ": " + _.pluck(result.report.resultSummaries, 'shortName').join(', ') + "\n");
                 }
             }
         );

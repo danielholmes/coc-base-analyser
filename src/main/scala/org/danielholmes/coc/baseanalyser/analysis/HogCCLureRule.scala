@@ -19,4 +19,14 @@ class HogCCLureRule extends Rule {
 
 case class HogCCLureRuleResult(targeting: Set[HogTargeting]) extends RuleResult {
   val success = targeting.isEmpty
+  val ruleDetails = HogCCLureRule.Details
+}
+
+object HogCCLureRule {
+  val Details = RuleDetails(
+    "HogCCLure",
+    "No Easy Lure",
+    "No Easy CC Troops Lure",
+    "There should be no spaces that allow a hog or giant to lure without first having to destroy a defense"
+  )
 }

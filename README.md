@@ -44,11 +44,9 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - Rule naming handling overhaul - to benefit war bases summary
- 
  - Some TH9 rules - to get Xtian onboard
  
- - extra rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
+ - TH8 rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
    - maybe as a % of compartmented area
    - see spike dragons base
  

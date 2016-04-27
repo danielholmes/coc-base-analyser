@@ -2,7 +2,7 @@
 
 var model = (function() {
     var currentReport = null;
-    var activeRuleName = null;
+    var activeRuleCode = null;
     var reportChanged = new signals.Signal();
     var ruleChanged = new signals.Signal();
 
@@ -12,7 +12,7 @@ var model = (function() {
         }
 
         currentReport = newReport;
-        clearActiveRuleName();
+        clearActiveRule();
         reportChanged.dispatch();
     };
 
@@ -53,28 +53,28 @@ var model = (function() {
     };
 
     var hasActiveRule = function() {
-        return activeRuleName != null;
+        return activeRuleCode != null;
     };
 
-    var getActiveRuleName = function() {
-        return activeRuleName;
+    var getActiveRuleCode = function() {
+        return activeRuleCode;
     };
 
-    var clearActiveRuleName = function() {
-        setActiveRuleName(null);
+    var clearActiveRule = function() {
+        setActiveRuleByCode(null);
     };
 
-    var setActiveRuleName = function(newActiveRuleName) {
-        if (newActiveRuleName == activeRuleName) {
+    var setActiveRuleByCode = function(newActiveRuleCode) {
+        if (newActiveRuleCode == activeRuleCode) {
             return;
         }
 
-        if (newActiveRuleName != null && _.findWhere(report.results, { 'name': newActiveRuleName }) == null) {
-            console.error("No rule name in current report:", newActiveRuleName, report);
+        if (newActiveRuleCode != null && _.findWhere(report.results, { 'code': newActiveRuleCode }) == null) {
+            console.error("No rule code in current report:", newActiveRuleCode, report);
             return;
         }
 
-        activeRuleName = newActiveRuleName;
+        activeRuleCode = newActiveRuleCode;
         ruleChanged.dispatch();
     };
 
@@ -90,9 +90,9 @@ var model = (function() {
         getVillageCompartmentsByIds: getVillageCompartmentsByIds,
 
         hasActiveRule: hasActiveRule,
-        getActiveRuleName: getActiveRuleName,
-        setActiveRuleName: setActiveRuleName,
-        clearActiveRuleName: clearActiveRuleName,
+        getActiveRuleCode: getActiveRuleCode,
+        setActiveRuleByCode: setActiveRuleByCode,
+        clearActiveRule: clearActiveRule,
 
         reportChanged: reportChanged,
         ruleChanged: ruleChanged
