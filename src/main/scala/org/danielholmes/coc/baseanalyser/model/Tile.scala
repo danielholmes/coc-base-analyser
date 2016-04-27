@@ -20,7 +20,6 @@ trait Tile {
   def matrixOfTilesTo(other: Tile, step: PosInt): Set[Tile]
   // Should prob allow 0 too, but not negative obviously
   def matrixOfTilesInDirection(width: PosInt, height: PosInt): Set[Tile]
-  val toBlock: Block
   val allCoordinates: Set[TileCoordinate]
   def offset(xDiff: Int, yDiff: Int): Tile
 }
@@ -94,8 +93,6 @@ object Tile {
     def matrixOfTilesInDirection(width: PosInt, height: PosInt): Set[Tile] = {
       matrixOfTilesTo(Tile(PosZInt.from(x + width - 1).get, PosZInt.from(y + height - 1).get))
     }
-
-    lazy val toBlock = Block(this, 1)
 
     lazy val allCoordinates = toTileCoordinate.matrixOfCoordinatesTo(toTileCoordinate.offset(1, 1))
 

@@ -18,6 +18,6 @@ case class BlindSpotCircularElementRange(centre: MapCoordinate, innerSize: PosDo
 
   // TODO: This doesnt take into account segments that are entirely within inner size. TODO: unit test this
   def cutBy(segment: Segment): Boolean = {
-    segment.distance(centre.toVector2D) < outerSize
+    segment.distance(centre) < outerSize
   }
 }

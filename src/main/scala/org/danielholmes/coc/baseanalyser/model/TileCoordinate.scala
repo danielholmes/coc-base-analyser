@@ -1,8 +1,8 @@
 package org.danielholmes.coc.baseanalyser.model
 
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D
 import org.danielholmes.coc.baseanalyser.util.Memo2
-
-import org.scalactic.anyvals.{PosInt, PosZInt, PosZDouble}
+import org.scalactic.anyvals.{PosInt, PosZDouble, PosZInt}
 
 // The various ceremony is for instance pooling. See
 // http://stackoverflow.com/questions/20030826/scala-case-class-private-constructor-but-public-apply-method
@@ -23,6 +23,8 @@ object TileCoordinate {
   def apply(x: PosZInt, y: PosZInt): TileCoordinate = applyMemo.apply(x, y)
 
   implicit def widenToMapCoordinate(coord: TileCoordinate): MapCoordinate = MapCoordinate(coord.x, coord.y)
+
+  implicit def widenToVector2D(coord: TileCoordinate): Vector2D = new Vector2D(coord.x, coord.y)
 
   val MaxCoordinate = PosInt.from(Tile.MaxCoordinate + 1).get
   val Origin = TileCoordinate(0, 0)

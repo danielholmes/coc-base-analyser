@@ -44,8 +44,6 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - better loading assets text, maybe animation
- 
  - Some TH9 rules - to get Xtian onboard
   - Queen Charge into wall breakable compartment shouldnt get to 2 air defs
   - It should require either a jump spell or 2 wall breaker groups in order to access the queen.

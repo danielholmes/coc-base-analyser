@@ -12,7 +12,7 @@ case class HogTargeting(startPosition: TileCoordinate, targeting: Element) {
     range.cutBy(asSegment)
   }
 
-  private val asLine = new Line(startPosition.toVector2D, hitPoint.toVector2D, 0.01)
+  private val asLine = new Line(startPosition, hitPoint, 0.01)
 
-  private val asSegment = new Segment(startPosition.toVector2D, hitPoint.toVector2D, asLine)
+  private val asSegment = new Segment(startPosition, hitPoint, asLine)
 }

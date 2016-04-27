@@ -18,6 +18,6 @@ case class CircularElementRange(centre: MapCoordinate, size: PosDouble) extends 
   }
 
   def cutBy(segment: Segment): Boolean = {
-    segment.distance(centre.toVector2D) < size
+    segment.distance(centre) < size
   }
 }

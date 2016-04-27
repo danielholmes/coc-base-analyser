@@ -10,6 +10,8 @@ case class MapCoordinate(x: PosZDouble, y: PosZDouble) {
   def distanceTo(other: MapCoordinate): PosZDouble = {
     PosZDouble.from(Math.sqrt(Math.pow(x - other.x, 2) + Math.pow(y - other.y, 2))).get
   }
+}
 
-  lazy val toVector2D = new Vector2D(x, y)
+object MapCoordinate {
+  implicit def widenToVector2D(coord: MapCoordinate): Vector2D = new Vector2D(coord.x, coord.y)
 }

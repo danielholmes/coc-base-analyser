@@ -498,10 +498,14 @@ var mapDisplay2d = (function(document) {
         buildingsContainer.removeAllChildren();
 
         if (buildingSheet == null || wallSheet == null) {
-            var text = new createjs.Text("Loading Assets", "20px Arial", "#000000");
-            text.y = 30;
+            var text = new createjs.Text("Loading Images" + new Array(1 + parseInt(_.now() / 1000) % 4).join('.'), "14px monospace", "#000000");
+            text.x = 5;
+            text.y = 5;
             extrasContainer.addChild(text);
             stage.update();
+
+            setTimeout(render, 1000);
+
             return;
         }
 
