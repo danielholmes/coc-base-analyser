@@ -3,7 +3,7 @@ package org.danielholmes.coc.baseanalyser
 import com.github.mustachejava.DefaultMustacheFactory
 import com.twitter.mustache.ScalaObjectHandler
 import org.danielholmes.coc.baseanalyser.analysis._
-import org.danielholmes.coc.baseanalyser.apigatherer.{ClanSeekerAkkaServiceAgent, HardcodedClanSeekerServiceAgent, VillageGatherer}
+import org.danielholmes.coc.baseanalyser.apigatherer.{ClanSeekerAkkaServiceAgent, HardcodedClanSeekerServiceAgent}
 import org.danielholmes.coc.baseanalyser.baseparser.{HardCodedElementFactory, VillageJsonParser}
 import org.danielholmes.coc.baseanalyser.stringdisplay.{StringDisplayer, StringTroopDropDisplayer}
 import org.danielholmes.coc.baseanalyser.web.{MustacheRenderer, PermittedClan, ViewModelMapper}
@@ -55,8 +55,8 @@ trait Services {
     PermittedClan("aerial", "Aerial Assault", 227634713283L)
   )
   lazy val villageAnalyser = wire[VillageAnalyser]
-  lazy val clanWarVillagesAnalyser = wire[ClanWarVillagesAnalyser]
   lazy val stringDisplayer = wire[StringDisplayer]
   lazy val stringTroopDropDisplayer = wire[StringTroopDropDisplayer]
   lazy val viewModelMapper = wire[ViewModelMapper]
+  lazy val facades = wire[Facades]
 }

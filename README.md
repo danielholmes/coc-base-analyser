@@ -44,6 +44,7 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
+ - min compartments should only count compartments with buildings inside them
  - Some TH9 rules - to get Xtian onboard
   - Queen Charge into wall breakable compartment shouldnt get to 2 air defs
   - It should require either a jump spell or 2 wall breaker groups in order to access the queen.
@@ -53,13 +54,7 @@ then deploy it manually through the AWS console:
    - see spike dragons base
  
  - BK Trigger rule further tweaks. should show red for all non-compartment tiles floodfilled from triggered
- - min compartments should only count compartments with buildings inside them
- 
- - Generalise getAnalysisByClanCodePlayerIdAndLayout and getVillageByClanCodePlayerIdAndLayout . scalatic "Or" class 
-   might work well for error conditions
-   - error texts in summary should be converted to json
-   - error texts in html should be in small error html wrapper page
- 
+  
  - static analysis
  
  - analysis performance, currently too slow

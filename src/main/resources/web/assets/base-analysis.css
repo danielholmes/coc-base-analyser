@@ -1,5 +1,7 @@
+#report {
+    margin-top: 20px;
+}
 #villageImage {
-    margin-top: 10px;
     border: 1px solid #000000;
 }
 .panel .glyphicon-ok-sign {
