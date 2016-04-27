@@ -2,6 +2,8 @@ package org.danielholmes.coc.baseanalyser.model
 
 import org.scalactic.anyvals.PosInt
 
+import scala.annotation.tailrec
+
 case class Village(elements: Set[Element]) {
   private val firstIntersect = Block.firstIntersecting(elements.map(_.block))
   require(
@@ -45,15 +47,19 @@ case class Village(elements: Set[Element]) {
   lazy val outerTileCoordinates: Set[TileCoordinate] = outerTiles.flatMap(_.allCoordinates)
 
   private def detectAllCompartments(innerTiles: Set[Tile], current: Set[WallCompartment]): Set[WallCompartment] = {
-    if (innerTiles.isEmpty) return current
-    val compartment = detectCompartment(Set(innerTiles.head))
-    detectAllCompartments(innerTiles -- compartment.innerTiles, current + compartment)
+    innerTiles.headOption
+      .map(head => {
+        val compartment = detectCompartment(Set(head))
+        detectAllCompartments(innerTiles -- compartment.innerTiles, current + compartment)
+      })
+      .getOrElse(current)
   }
 
   private def detectCompartment(toProcess: Set[Tile]): WallCompartment = {
     detectCompartment(toProcess, Set.empty, Set.empty)
   }
 
+  @tailrec
   private def detectCompartment(toProcess: Set[Tile], currentInnerTiles: Set[Tile], currentWalls: Set[Wall]): WallCompartment = {
     if (toProcess.isEmpty) return WallCompartment(currentWalls, currentInnerTiles, elements.filter(e => currentInnerTiles.contains(e.block.tile)))
     val notSeenTouching = toProcess.head

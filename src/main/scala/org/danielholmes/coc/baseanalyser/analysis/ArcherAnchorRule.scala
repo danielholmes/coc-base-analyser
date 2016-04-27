@@ -13,7 +13,7 @@ class ArcherAnchorRule extends Rule {
       .filter(_.targets.contains(Target.Ground))
     ArcherAnchorRuleResult(
       village.coordinatesAllowedToDropTroop
-        .flatMap(Archer.findTarget(_, village))
+        .flatMap(Archer.findTargets(_, village))
         .filter(targeting => !groundDefenses.exists(_.range.contains(targeting.standingPosition))),
       groundDefenses
     )

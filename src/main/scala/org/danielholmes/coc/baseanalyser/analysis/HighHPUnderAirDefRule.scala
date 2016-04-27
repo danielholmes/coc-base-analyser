@@ -3,6 +3,8 @@ package org.danielholmes.coc.baseanalyser.analysis
 import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.model.troops.Dragon
 
+import scala.annotation.tailrec
+
 class HighHPUnderAirDefRule extends Rule {
   def analyse(village: Village): RuleResult = {
     val airDefs = village.elements
@@ -14,17 +16,15 @@ class HighHPUnderAirDefRule extends Rule {
   }
 
   private def willSomeAirDefCoverDragonShooting(highHP: Element, airDefs: Set[AirDefense]): Boolean = {
-    if (airDefs.isEmpty) return false
-    willSomeAirDefCoverDragonShooting(
-      Dragon.getCoordinatesCanAttackElementFrom(highHP),
-      airDefs
-    )
+    willSomeAirDefCoverDragonShooting(Dragon.getCoordinatesCanAttackElementFrom(highHP).toList, airDefs)
   }
 
-  private def willSomeAirDefCoverDragonShooting(highHPCoords: Set[TileCoordinate], airDefs: Set[AirDefense]): Boolean = {
-    if (highHPCoords.isEmpty) return true
-    if (!airDefs.exists(_.range.contains(highHPCoords.head))) return false
-    willSomeAirDefCoverDragonShooting(highHPCoords.tail, airDefs)
+  @tailrec
+  private def willSomeAirDefCoverDragonShooting(highHPCoords: List[TileCoordinate], airDefs: Set[AirDefense]): Boolean = {
+    highHPCoords match {
+      case Nil => true
+      case head :: tail => airDefs.exists(_.range.contains(head)) && willSomeAirDefCoverDragonShooting(tail, airDefs)
+    }
   }
 
   private def isHighHPBuilding(element: Element): Boolean = {

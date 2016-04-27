@@ -6,5 +6,5 @@ case class WallCompartment(walls: Set[Wall], innerTiles: Set[Tile], elements: Se
 
   private lazy val allTiles = innerTiles ++ walls.map(_.block.tile)
 
-  def contains(tile: Tile) = allTiles.contains(tile)
+  def contains(tile: Tile): Boolean = allTiles.contains(tile)
 }

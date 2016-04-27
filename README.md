@@ -53,12 +53,9 @@ then deploy it manually through the AWS console:
    - see spike dragons base
  
  - BK Trigger rule further tweaks. should show red for all non-compartment tiles floodfilled from triggered
-  
- - static analysis
  
  - analysis performance, currently too slow
   - hog cc lure analysis - dont need all external tiles - just need outer coords touching drop boundary
-  - look at built in @tailrec
  - change js to use classes and instances rather than global modules
  
  - clarify AQ range - see iphoto screenshot of greg raid. possibly shown on ppetes war base

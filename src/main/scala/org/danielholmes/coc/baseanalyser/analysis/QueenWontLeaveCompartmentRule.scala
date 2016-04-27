@@ -5,14 +5,16 @@ import org.scalactic.anyvals.PosInt
 
 class QueenWontLeaveCompartmentRule extends Rule {
   def analyse(village: Village): RuleResult = {
-    val queen = village.elements.find(_.isInstanceOf[ArcherQueen])
-    if (queen.isEmpty) return QueenWontLeaveCompartmentRuleResult(true)
-
-    village.wallCompartments
-      .find(_.elements.contains(queen.get))
-      .filter(c => queen.get.block.expandBy(QueenWontLeaveCompartmentRule.MinClearance).tiles.subsetOf(c.innerTiles))
-      .map(q => QueenWontLeaveCompartmentRuleResult(true))
-      .getOrElse(QueenWontLeaveCompartmentRuleResult(false))
+    village.elements
+      .find(_.isInstanceOf[ArcherQueen])
+      .map(queen =>
+        village.wallCompartments
+          .find(_.elements.contains(queen))
+          .filter(c => queen.block.expandBy(QueenWontLeaveCompartmentRule.MinClearance).tiles.subsetOf(c.innerTiles))
+          .map(q => QueenWontLeaveCompartmentRuleResult(true))
+          .getOrElse(QueenWontLeaveCompartmentRuleResult(false))
+      )
+      .getOrElse(QueenWontLeaveCompartmentRuleResult(true))
   }
 }
 

@@ -2,6 +2,8 @@ package org.danielholmes.coc.baseanalyser.stringdisplay
 
 import org.danielholmes.coc.baseanalyser.model._
 
+import scala.annotation.tailrec
+
 class StringTroopDropDisplayer {
   def build(village: Village): String = {
     build(
@@ -12,12 +14,12 @@ class StringTroopDropDisplayer {
       .mkString("")
   }
 
+  @tailrec
   private def build(coords: Seq[TileCoordinate], current: List[List[Char]]): List[List[Char]] = {
-    if (coords.isEmpty) return current
-    build(
-      coords.tail,
-      drawCoord(coords.head, current)
-    )
+    coords match {
+      case Nil => current
+      case head :: tail => build(tail, drawCoord(head, current))
+    }
   }
 
   private def drawCoord(coord: TileCoordinate, current: List[List[Char]]): List[List[Char]] = {

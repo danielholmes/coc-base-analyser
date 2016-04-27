@@ -35,7 +35,8 @@ class BKSwappableRuleSpec extends FlatSpec with Matchers {
       ElementsBuilder.repeatX(Tile(10, 10), 5, 5, ArmyCamp(1, _)) ++
       ElementsBuilder.repeatX(Tile(10, 15), 5, 5, ArmyCamp(1, _)) ++
       Set[Element](
-        ArmyCamp(1, Tile(10, 20)), ArmyCamp(1, Tile(15, 20)), ArmyCamp(1, Tile(20, 20)), Barrack(1, Tile(26, 21)), BarbarianKing(1, Tile(29, 21)), Barrack(1, Tile(32, 21))
+        ArmyCamp(1, Tile(10, 20)), ArmyCamp(1, Tile(15, 20)), ArmyCamp(1, Tile(20, 20)), Barrack(1, Tile(26, 21)),
+        BarbarianKing(1, Tile(29, 21)), Barrack(1, Tile(32, 21))
       ) ++
       ElementsBuilder.repeatX(Tile(10, 25), 5, 5, ArmyCamp(1, _)) ++
       ElementsBuilder.repeatX(Tile(10, 30), 5, 5, ArmyCamp(1, _))

@@ -2,8 +2,9 @@ package org.danielholmes.coc.baseanalyser.model
 
 import org.scalactic.anyvals.{PosInt, PosZDouble, PosZInt}
 
+import scala.annotation.tailrec
+
 case class Block(tile: Tile, size: PosInt) {
-  require(tile != null, "coordinate musn't be null")
   require(tile.x + size <= TileCoordinate.MaxCoordinate, s"x coord ${tile.x} + $size must be within coordinate system")
   require(tile.y + size <= TileCoordinate.MaxCoordinate, s"y coord ${tile.y} + $size must be within coordinate system")
 
@@ -44,24 +45,20 @@ case class Block(tile: Tile, size: PosInt) {
   lazy val bottomSide = bottomLeft.matrixOfCoordinatesTo(bottomRight)
 
 
-  lazy val allCoordinates: Set[TileCoordinate] = {
-    tile.matrixOfCoordinatesTo(oppositeTile)
-  }
+  lazy val allCoordinates: Set[TileCoordinate] = tile.matrixOfCoordinatesTo(oppositeTile)
 
-  lazy val tiles: Set[Tile] = {
-    tile.matrixOfTilesInDirection(size, size)
-  }
+  lazy val tiles = tile.matrixOfTilesInDirection(size, size)
 
   def findClosestCoordinate(from: MapCoordinate): TileCoordinate = {
     possibleIntersectionPoints.min(Ordering.by((_: TileCoordinate)
       .distanceTo(from)))
   }
 
-  def distanceTo(from: TileCoordinate) = {
+  def distanceTo(from: TileCoordinate): PosZDouble = {
     findClosestCoordinate(from).distanceTo(from)
   }
 
-  def intersects(other: Block) = {
+  def intersects(other: Block): Boolean = {
     x < other.oppositeX && oppositeX > other.x &&
       y < other.oppositeY && oppositeY > other.y
   }
@@ -88,15 +85,22 @@ object Block {
   val Map = Block(Tile.Origin, TileCoordinate.MaxCoordinate)
 
   def firstIntersecting(blocks: Set[Block]): Option[(Block, Block)] = {
-    blocks.map(b => firstIntersecting(b, blocks.toSeq).map((_, b)))
+    blocks.map(b => firstIntersecting(b, blocks.toList).map((_, b)))
       .headOption
       .getOrElse(None)
   }
 
-  private def firstIntersecting(block: Block, blocks: Seq[Block]): Option[Block] = {
-    if (blocks.isEmpty) return None
-    if (block == blocks.head) return firstIntersecting(block, blocks.tail)
-    if (block.intersects(blocks.head)) return Some(blocks.head)
-    firstIntersecting(block, blocks.tail)
+  @tailrec
+  private def firstIntersecting(block: Block, blocks: List[Block]): Option[Block] = {
+    blocks match {
+      case Nil => None
+      case head :: tail => {
+        if (block != head && block.intersects(head)) {
+          Some(head)
+        } else {
+          firstIntersecting(block, blocks.tail)
+        }
+      }
+    }
   }
 }

@@ -2,7 +2,7 @@ package org.danielholmes.coc.baseanalyser.web
 
 import java.time.Duration
 
-import akka.actor.Actor
+import akka.actor.{Actor, ActorContext}
 import org.danielholmes.coc.baseanalyser.Services
 import spray.routing._
 import spray.http._
@@ -15,23 +15,22 @@ import spray.json._
 import ViewModelProtocol._
 import com.google.common.net.UrlEscapers
 import org.danielholmes.coc.baseanalyser.analysis.AnalysisReport
-import org.danielholmes.coc.baseanalyser.apigatherer.ClanSeekerProtocol.{ClanDetails, PlayerSummary, PlayerVillage}
+import org.danielholmes.coc.baseanalyser.apigatherer.ClanSeekerProtocol.{ClanDetails, PlayerSummary}
 import org.danielholmes.coc.baseanalyser.model.Layout.Layout
-import org.danielholmes.coc.baseanalyser.model.{Layout, Village}
+import org.danielholmes.coc.baseanalyser.model.Layout
 import org.danielholmes.coc.baseanalyser.util.GameConnectionNotAvailableException
-import org.scalactic.{Bad, Good, Or}
 import spray.util.LoggingContext
 
 class WebAppServiceActor extends Actor with HttpService with Services {
-  def actorRefFactory = context
+  def actorRefFactory: ActorContext = context
 
-  def receive = runRoute(route)
+  def receive: Actor.Receive = runRoute(route)
 
   implicit val timeout = Timeout(30.seconds)
 
   override def timeoutRoute: Route = complete(StatusCodes.InternalServerError, "Took too long")
 
-  implicit def exceptionHandler(implicit log: LoggingContext) =
+  implicit def exceptionHandler(implicit log: LoggingContext): ExceptionHandler =
     ExceptionHandler {
       case g: GameConnectionNotAvailableException =>
         respondWithMediaType(`application/json`) {
@@ -53,7 +52,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
         }
     }
 
-  implicit def rejectionHandler(implicit log: LoggingContext) =
+  implicit def rejectionHandler(implicit log: LoggingContext): RejectionHandler =
     RejectionHandler {
       case Nil => notFoundPage("Page doesn't exist")
     }

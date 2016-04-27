@@ -62,15 +62,75 @@ sealed trait RuleResultViewModel {
   val success: Boolean
 }
 
-case class HogCCLureResultViewModel(success: Boolean, targetings: Set[HogTargetingViewModel], code: String, title: String, description: String) extends RuleResultViewModel
-case class ArcherAnchorResultViewModel(success: Boolean, targetings: Set[ArcherTargetingViewModel], aimingDefenses: Set[String], code: String, title: String, description: String) extends RuleResultViewModel
-case class HighHPUnderAirDefResultViewModel(success: Boolean, outOfAirDefRange: Set[String], inAirDefRange: Set[String], code: String, title: String, description: String) extends RuleResultViewModel
-case class AirSnipedDefenseResultViewModel(success: Boolean, attackPositions: Set[MinionAttackPositionViewModel], airDefenses: Set[String], code: String, title: String, description: String) extends RuleResultViewModel
-case class MinimumCompartmentsResultViewModel(success: Boolean, minimumCompartments: Int, compartments: Set[String], code: String, title: String, description: String) extends RuleResultViewModel
-case class BKSwappableResultViewModel(success: Boolean, exposedTiles: Set[TileViewModel], code: String, title: String, description: String) extends RuleResultViewModel
-case class WizardTowersOutOfHoundPositionsResultViewModel(success: Boolean, outOfRange: Set[String], inRange: Set[WizardTowerHoundTargetingViewModel], houndPositions: Set[BlockViewModel], code: String, title: String, description: String) extends RuleResultViewModel
-case class QueenWalkedAirDefenseResultViewModel(success: Boolean, attackings: Set[ArcherQueenAttackingViewModel], nonReachableAirDefs: Set[String], code: String, title: String, description: String) extends RuleResultViewModel
-case class QueenWontLeaveCompartmentRuleResultViewModel(success: Boolean, code: String, title: String, description: String) extends RuleResultViewModel
+case class HogCCLureResultViewModel(
+  success: Boolean,
+  targetings: Set[HogTargetingViewModel],
+  code: String,
+  title: String,
+  description: String
+) extends RuleResultViewModel
+case class ArcherAnchorResultViewModel(
+  success: Boolean,
+  targetings: Set[ArcherTargetingViewModel],
+  aimingDefenses: Set[String],
+  code: String,
+  title: String,
+  description: String
+) extends RuleResultViewModel
+case class HighHPUnderAirDefResultViewModel(
+  success: Boolean,
+  outOfAirDefRange: Set[String],
+  inAirDefRange: Set[String],
+  code: String,
+  title: String,
+  description: String
+) extends RuleResultViewModel
+case class AirSnipedDefenseResultViewModel(
+  success: Boolean,
+  attackPositions: Set[MinionAttackPositionViewModel],
+  airDefenses: Set[String],
+  code: String,
+  title: String,
+  description: String
+) extends RuleResultViewModel
+case class MinimumCompartmentsResultViewModel(
+  success: Boolean,
+  minimumCompartments: Int,
+  compartments: Set[String],
+  code: String,
+  title: String,
+  description: String
+) extends RuleResultViewModel
+case class BKSwappableResultViewModel(
+  success: Boolean,
+  exposedTiles: Set[TileViewModel],
+  code: String,
+  title: String,
+  description: String
+) extends RuleResultViewModel
+case class WizardTowersOutOfHoundPositionsResultViewModel(
+  success: Boolean,
+  outOfRange: Set[String],
+  inRange: Set[WizardTowerHoundTargetingViewModel],
+  houndPositions: Set[BlockViewModel],
+  code: String,
+  title: String,
+  description: String
+) extends RuleResultViewModel
+case class QueenWalkedAirDefenseResultViewModel(
+  success: Boolean,
+  attackings: Set[ArcherQueenAttackingViewModel],
+  nonReachableAirDefs: Set[String],
+  code: String,
+  title: String,
+  description: String
+) extends RuleResultViewModel
+case class QueenWontLeaveCompartmentRuleResultViewModel(
+  success: Boolean,
+  code: String,
+  title: String,
+  description: String
+) extends RuleResultViewModel
 
 case class ResultSummaryViewModel(shortName: String, success: Boolean)
 case class AnalysisReportSummaryViewModel(townHallLevel: Int, resultSummaries: Set[ResultSummaryViewModel])
@@ -82,20 +142,20 @@ case class CantAnalyseVillageViewModel(village: VillageViewModel, message: Strin
 case class ExceptionViewModel(uri: String, exceptionType: String, message: String, trace: List[String])
 
 object ViewModelProtocol extends DefaultJsonProtocol {
-  implicit  object ElementJsonFormat extends RootJsonFormat[ElementViewModel] {
-    def write(e: ElementViewModel) = e match {
+  implicit object ElementJsonFormat extends RootJsonFormat[ElementViewModel] {
+    def write(e: ElementViewModel): JsValue = e match {
       case d: DefenseElementViewModel => defenseElementFormat.write(d)
       case c: ClanCastleElementViewModel => clanCastleElementFormat.write(c)
       case b: BaseElementViewModel => baseElementFormat.write(b)
     }
 
-    def read(value: JsValue) = {
+    def read(value: JsValue): ElementViewModel = {
       throw new NotImplementedError()
     }
   }
 
   implicit object RuleResultJsonFormat extends RootJsonFormat[RuleResultViewModel] {
-    def write(r: RuleResultViewModel) = r match {
+    def write(r: RuleResultViewModel): JsValue = r match {
       case h: HogCCLureResultViewModel => hogCCLureResultFormat.write(h)
       case a: ArcherAnchorResultViewModel => archerAnchorResultFormat.write(a)
       case a: HighHPUnderAirDefResultViewModel => highHPUnderAirDefResultFormat.write(a)
@@ -108,7 +168,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
       case _ => throw new RuntimeException(s"Don't know how to serialise ${r.getClass.getSimpleName}")
     }
 
-    def read(value: JsValue) = {
+    def read(value: JsValue): RuleResultViewModel = {
       throw new NotImplementedError()
     }
   }

@@ -10,7 +10,7 @@ class ClanSeekerAkkaServiceAgentSpec extends FlatSpec with Matchers {
   }
 
   it should "get player village for Dakota" in {
-    client.getPlayerVillage(223343461050L).get.village.raw should not be null
+    client.getPlayerVillage(223343461050L).get.village.raw.isEmpty should be (false)
   }
 
   it should "get empty for non-existent" in {

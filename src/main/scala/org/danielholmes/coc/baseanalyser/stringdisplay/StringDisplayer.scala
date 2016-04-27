@@ -2,12 +2,12 @@ package org.danielholmes.coc.baseanalyser.stringdisplay
 
 import org.danielholmes.coc.baseanalyser.model._
 
+import scala.annotation.tailrec
+
 class StringDisplayer {
   import StringDisplayer._
 
-  def build(base: Village): String = {
-    buildString(buildCollection(base))
-  }
+  def build(base: Village): String = buildString(buildCollection(base))
 
   def buildColoured(base: Village): String = {
     build(base).toIterable
@@ -16,8 +16,11 @@ class StringDisplayer {
   }
 
   private def colorChar(char: Char): String = {
-    if (WallChars.contains(char)) return Console.WHITE
-    Colors.toVector(Math.abs(char.hashCode) % Colors.size)
+    if (WallChars.contains(char)) {
+      Console.WHITE
+    } else {
+      Colors.toVector(Math.abs(char.hashCode) % Colors.size)
+    }
   }
 
   private def buildString(collection: Seq[Seq[Char]]): String = {
@@ -38,40 +41,39 @@ class StringDisplayer {
   private def drawCCRadius(village: Village, current: List[List[Char]]): List[List[Char]] = {
     village.clanCastle
       .map(_.range)
-      .map(drawCCRadius(_, current, Tile.All.toSeq))
+      .map(drawCCRadius(_, current, Tile.All.toList))
       .getOrElse(current)
   }
 
-  private def drawCCRadius(range: ElementRange, current: List[List[Char]], tiles: Seq[Tile]): List[List[Char]] = {
-    if (tiles.isEmpty) return current
-    if (!range.touchesEdge(tiles.head)) return drawCCRadius(range, current, tiles.tail)
-    drawCCRadius(
-      range,
-      draw(current, tiles.head, '^'),
-      tiles.tail
-    )
+  @tailrec
+  private def drawCCRadius(range: ElementRange, current: List[List[Char]], tiles: List[Tile]): List[List[Char]] = {
+    tiles match {
+      case Nil => current
+      case head :: tail => {
+        val newCurrent = if (range.touchesEdge(tiles.head)) { draw(current, head, '^') } else { current }
+        drawCCRadius(range, newCurrent, tail)
+      }
+    }
   }
 
+  @tailrec
   private def drawElements(elements: List[Element], current: List[List[Char]]): List[List[Char]] = {
-    if (elements.isEmpty) return current
-    drawElements(elements.tail, drawElement(elements.head, current))
+    elements match {
+      case Nil => current
+      case head :: tail => drawElements(tail, drawElement(head, current))
+    }
   }
 
   private def drawElement(element: Element, current: List[List[Char]]): List[List[Char]] = {
-    drawElement(
-      element,
-      element.block.tiles.toSeq,
-      current
-    )
+    drawElement(characterForElement(element), element.block.tiles.toList, current)
   }
 
-  private def drawElement(element: Element, tiles: Seq[Tile], current: List[List[Char]]): List[List[Char]] = {
-    if (tiles.isEmpty) return current
-    drawElement(
-      element,
-      tiles.tail,
-      draw(current, tiles.head, characterForElement(element))
-    )
+  @tailrec
+  private def drawElement(char: Char, tiles: List[Tile], current: List[List[Char]]): List[List[Char]] = {
+    tiles match {
+      case Nil => current
+      case head :: tail => drawElement(char, tail, draw(current, head, char))
+    }
   }
 
   private def draw(map: List[List[Char]], tile: Tile, char: Char): List[List[Char]] = {
@@ -102,12 +104,15 @@ class StringDisplayer {
   }
 
   private def drawBoundary(current: List[List[Char]]): List[List[Char]] = {
-    (HorizontalWall :: verticalWall(current)) :+ HorizontalWall
+    (HorizontalWall :: verticalWall(current, List.empty)) :+ HorizontalWall
   }
 
-  private def verticalWall(current: List[List[Char]]): List[List[Char]] = {
-    if (current.isEmpty) return current
-    ((WallVert :: current.head) :+ WallVert) +: verticalWall(current.tail)
+  @tailrec
+  private def verticalWall(inner: List[List[Char]], current: List[List[Char]]): List[List[Char]] = {
+    inner match {
+      case Nil => current
+      case head :: tail => verticalWall(tail, current :+ ((WallVert :: head) :+ WallVert))
+    }
   }
 }
 

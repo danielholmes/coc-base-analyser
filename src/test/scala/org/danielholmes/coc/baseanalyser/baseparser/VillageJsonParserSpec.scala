@@ -10,7 +10,7 @@ class VillageJsonParserSpec extends FlatSpec with Matchers {
   val parser = new VillageJsonParser(buildingFactory)
 
   "A Village JSON Parser" should "throw an exception if invalid json provided" in {
-    a [InvalidJsonException] should be thrownBy {
+    a[InvalidJsonException] should be thrownBy {
       parser.parse("something random[ {")
     }
   }
@@ -34,7 +34,9 @@ class VillageJsonParserSpec extends FlatSpec with Matchers {
   }
 
   it should "return war village" in {
-    val result = parser.parse("""{"exp_ver":1, "war_layout": 4,"war_base": true, "buildings":[{ "data": 1000001, "lvl": 1, "x": 20, "y": 20, "l4x": 30, "l4y": 30 }]}""")
+    val result = parser.parse(
+      """{"exp_ver":1, "war_layout": 4,"war_base": true,
+        |"buildings":[{ "data": 1000001, "lvl": 1, "x": 20, "y": 20, "l4x": 30, "l4y": 30 }]}""".stripMargin)
 
     result should be (Villages(
       Village(Set(new StubBaseElement(1, Tile(20, 20)))),
@@ -43,7 +45,11 @@ class VillageJsonParserSpec extends FlatSpec with Matchers {
   }
 
   it should "return war village without not yet placed buildings" in {
-    val result = parser.parse("""{"exp_ver":1, "war_layout": 4,"war_base": true, "buildings":[{ "data": 1000001, "lvl": 1, "x": 20, "y": 20, "l4x": 30, "l4y": 30 }, { "data": 1000001, "lvl": 2, "x": 40, "y": 40 }]}""")
+    val result = parser.parse(
+      """{"exp_ver":1, "war_layout": 4,"war_base": true,
+        |"buildings":[
+        |{ "data": 1000001, "lvl": 1, "x": 20, "y": 20, "l4x": 30, "l4y": 30 },
+        |{ "data": 1000001, "lvl": 2, "x": 40, "y": 40 }]}""".stripMargin)
 
     result should be (Villages(
       Village(Set(new StubBaseElement(1, Tile(20, 20)), new StubBaseElement(2, Tile(40, 40)))),
@@ -61,5 +67,5 @@ object StubElementFactory extends ElementFactory {
 }
 
 case class StubBaseElement(level: PosInt, tile: Tile) extends Element {
-  val size: PosInt = 3
+  val size = PosInt(3)
 }

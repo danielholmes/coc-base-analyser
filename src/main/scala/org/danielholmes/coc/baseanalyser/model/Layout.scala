@@ -6,7 +6,7 @@ object Layout extends Enumeration {
   val Home = Value(1, "home")
   val War = Value(2, "war")
 
-  def getDescription(layout: Layout) = {
+  def getDescription(layout: Layout): String = {
     layout match {
       case War => "Active War Base"
       case Home => "Home Base"

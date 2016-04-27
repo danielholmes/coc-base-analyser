@@ -17,8 +17,3 @@ trait WebApp {
 class WebAppServlet extends WebBoot with WebApp {
   override val serviceActor = apiActor
 }
-
-object SprayApiCan extends App with WebApp {
-  implicit val timeout = Timeout(5.seconds)
-  IO(Http) ? Http.Bind(apiActor, interface = "localhost", port = 8080)
-}

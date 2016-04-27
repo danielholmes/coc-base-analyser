@@ -9,9 +9,9 @@ trait ElementRange {
 
   def touchesEdge(tile: Tile): Boolean
 
-  def touches(tile: Tile) = tile.allCoordinates.exists(contains(_))
+  def touches(tile: Tile): Boolean = tile.allCoordinates.exists(contains(_))
 
-  def touches(block: Block) = block.allCoordinates.exists(contains(_))
+  def touches(block: Block): Boolean = block.allCoordinates.exists(contains(_))
 
   lazy val allTouchingTiles = Tile.All.filter(touches)
 }

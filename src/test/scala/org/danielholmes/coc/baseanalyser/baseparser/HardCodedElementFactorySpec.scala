@@ -7,7 +7,7 @@ class HardCodedElementFactorySpec extends FlatSpec with Matchers {
   val factory = new HardCodedElementFactory
 
   "Hardcoded Building Factory" should "reject unknown code" in {
-    a [RuntimeException] should be thrownBy {
+    a[RuntimeException] should be thrownBy {
       factory.build(new RawElement(-1, 9, 1, 2))
     }
   }

@@ -6,11 +6,14 @@ import org.scalactic.anyvals.PosDouble
 object Archer {
   val Range = PosDouble(3.5)
 
-  // TODO: should be multiple targets in case equidistant
-  def findTarget(coordinate: TileCoordinate, village: Village): Option[ArcherTargeting] = {
-    if (village.buildings.isEmpty) return None
-    Some(village.buildings.minBy(_.hitBlock.distanceTo(coordinate)))
-      .filter(_.hitBlock.distanceTo(coordinate) < Range)
+  def findTargets(coordinate: TileCoordinate, village: Village): Set[ArcherTargeting] = {
+    val buildingsByDistanceAway = village.buildings
+      .groupBy(_.hitBlock.distanceTo(coordinate))
+    buildingsByDistanceAway.keys
+      .filter(_ < Range)
+      .reduceOption(_ min _)
+      .flatMap(d => buildingsByDistanceAway.get(d))
+      .getOrElse(Set.empty)
       .map(ArcherTargeting(coordinate, _))
   }
 }

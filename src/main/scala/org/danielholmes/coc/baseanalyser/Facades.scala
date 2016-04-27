@@ -9,13 +9,19 @@ import org.danielholmes.coc.baseanalyser.model.{Layout, Village}
 import org.danielholmes.coc.baseanalyser.web.PermittedClan
 import org.scalactic.{Bad, Good, Or}
 
-class Facades(permittedClans: Set[PermittedClan], clanSeekerServiceAgent: ClanSeekerServiceAgent, villageJsonParser: VillageJsonParser, villageAnalyser: VillageAnalyser) {
-  def getVillageAnalysis(clanCode: String, playerId: Long, layoutName: String): ((PermittedClan, Option[AnalysisReport], Village, PlayerVillage, Layout, Long) Or String) = {
+class Facades(
+  permittedClans: Set[PermittedClan],
+  clanSeeker: ClanSeekerServiceAgent,
+  villageJsonParser: VillageJsonParser,
+  villageAnalyser: VillageAnalyser
+) {
+  def getVillageAnalysis(clanCode: String, playerId: Long, layoutName: String):
+    ((PermittedClan, Option[AnalysisReport], Village, PlayerVillage, Layout, Long) Or String) = {
     permittedClans.find(_.code == clanCode)
       .map(clan =>
         Layout.values.find(_.toString == layoutName)
           .map(layout =>
-            clanSeekerServiceAgent.getPlayerVillage(playerId)
+            clanSeeker.getPlayerVillage(playerId)
               .filter(_.avatar.clanId == clan.id)
               .map(player =>
                 villageJsonParser.parse(player.village.raw)
@@ -36,12 +42,12 @@ class Facades(permittedClans: Set[PermittedClan], clanSeekerServiceAgent: ClanSe
   def getWarVillageByUserName(clanCode: String, userName: String): Village Or String = {
     permittedClans.find(_.code == clanCode)
       .map(clan =>
-        clanSeekerServiceAgent.getClanDetails(clan.id)
+        clanSeeker.getClanDetails(clan.id)
           .map(clanDetails =>
             clanDetails.players.find(_.avatar.userName.equalsIgnoreCase(userName))
               .map(_.avatar.currentHomeId)
               .map(userId =>
-                clanSeekerServiceAgent.getPlayerVillage(userId)
+                clanSeeker.getPlayerVillage(userId)
                   .map(_.village.raw)
                   .map(villageJsonParser.parse)
                   .map(

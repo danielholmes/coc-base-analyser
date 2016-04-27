@@ -29,7 +29,7 @@ class VillageSpec extends FlatSpec with Matchers {
   }
 
   it should "disallow overlapping elements" in {
-    a [IllegalArgumentException] should be thrownBy {
+    a[IllegalArgumentException] should be thrownBy {
       Village(
         Set(
           Barrack(1, Tile.MapOrigin),
