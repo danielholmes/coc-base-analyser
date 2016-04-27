@@ -16,6 +16,7 @@ import ViewModelProtocol._
 import com.google.common.net.UrlEscapers
 import org.danielholmes.coc.baseanalyser.analysis.AnalysisReport
 import org.danielholmes.coc.baseanalyser.apigatherer.ClanSeekerProtocol.{PlayerSummary, PlayerVillage}
+import org.danielholmes.coc.baseanalyser.model.Layout.Layout
 import org.danielholmes.coc.baseanalyser.model.{Layout, Village}
 import org.danielholmes.coc.baseanalyser.util.GameConnectionNotAvailableException
 import spray.util.LoggingContext
@@ -34,40 +35,46 @@ class WebAppServiceActor extends Actor with HttpService with Services {
 
   implicit def exceptionHandler(implicit log: LoggingContext) =
     ExceptionHandler {
-        case g: GameConnectionNotAvailableException =>
-          respondWithMediaType(`application/json`) {
-            log.error(g, g.getMessage)
-            complete(
-              StatusCodes.ServiceUnavailable,
-              Map(
-                "message" -> "Connection to Game Servers not available",
-                "details" -> "We're currently using a third party service for this which can be unreliable. It's usually only temporary though and worth trying again shortly"
-              )
+      case g: GameConnectionNotAvailableException =>
+        respondWithMediaType(`application/json`) {
+          log.error(g, g.getMessage)
+          complete(
+            StatusCodes.ServiceUnavailable,
+            Map(
+              "message" -> "Connection to Game Servers not available",
+              "details" -> "We're currently using a third party service for this which can be unreliable. It's usually only temporary though and worth trying again shortly"
             )
+          )
+        }
+      case e: Exception =>
+        respondWithMediaType(`application/json`) {
+          requestUri { uri =>
+            log.error(e, uri.toString + " - " + e.getMessage)
+            complete(StatusCodes.InternalServerError, viewModelMapper.exception(uri, e))
           }
-        case e: Exception =>
-          respondWithMediaType(`application/json`) {
-            requestUri { uri =>
-              log.error(e, uri.toString + " - " + e.getMessage)
-              complete(StatusCodes.InternalServerError, viewModelMapper.exception(uri, e))
-            }
-          }
+        }
     }
 
-  private def generatePlayerAnalysisUrl(clanCode: String, player: PlayerSummary) = {
-    s"/clans/${UrlEscapers.urlPathSegmentEscaper().escape(clanCode)}/players/${UrlEscapers.urlPathSegmentEscaper().escape(player.avatar.currentHomeId.toString)}/war"
+  private def generatePlayerAnalysisUrl(clanCode: String, player: PlayerSummary, layout: Layout) = {
+    val escape = (part: String) => UrlEscapers.urlPathSegmentEscaper().escape(part)
+    s"/clans/${escape(clanCode)}/players/${escape(player.avatar.currentHomeId.toString)}/${layout.toString}"
+  }
+
+  private def generatePlayerAnalysisSummaryUrl(clanCode: String, player: PlayerSummary, layout: Layout) = {
+    val escape = (part: String) => UrlEscapers.urlPathSegmentEscaper().escape(part)
+    s"/clans/${escape(clanCode)}/players/${escape(player.avatar.currentHomeId.toString)}/${layout.toString}/summary"
   }
 
   private def getVillageAnalysis(
       clanCode: String,
       playerId: Long,
-      layoutCode: String,
-      handler: (PermittedClan, Option[AnalysisReport], Village, PlayerVillage, Long) => StandardRoute
+      layoutName: String,
+      handler: (PermittedClan, Option[AnalysisReport], Village, PlayerVillage, Layout, Long) => StandardRoute
   ) = {
     get {
       permittedClans.find(_.code == clanCode)
         .map(clan =>
-          Layout.getByCode(layoutCode)
+          Layout.values.find(_.toString == layoutName)
             .map(layout =>
               clanSeekerServiceAgent.getPlayerVillage(playerId)
                 .filter(_.avatar.clanId == clan.id)
@@ -81,6 +88,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                         villageAnalyser.analyse(village),
                         village,
                         player,
+                        layout,
                         start
                       )
                     })
@@ -88,7 +96,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                 )
                 .getOrElse(complete(StatusCodes.NotFound, s"id $playerId not found in clan ${clan.name}"))
             )
-            .getOrElse(complete(StatusCodes.NotFound, s"Layout type $layoutCode unknown"))
+            .getOrElse(complete(StatusCodes.NotFound, s"Layout type $layoutName unknown"))
         )
         .getOrElse(complete(StatusCodes.NotFound, s"Clan with code $clanCode not found"))
     }
@@ -120,7 +128,8 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                           .sortBy(_.avatar.userName.toLowerCase)
                           .map(p => Map(
                             "ign" -> p.avatar.userName,
-                            "analysisUrl" -> generatePlayerAnalysisUrl(clanCode, p)
+                            "warAnalysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.War),
+                            "homeAnalysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.Home)
                           ))
                       )
                     )
@@ -144,12 +153,12 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                       "web/war-bases.mustache",
                       Map(
                         "name" -> clanDetails.name,
-                        "code" -> clanCode,
                         "players" -> clanDetails.players
                           .map(p => Map(
                             "id" -> p.avatar.currentHomeId,
                             "ign" -> p.avatar.userName,
-                            "analysisUrl" -> generatePlayerAnalysisUrl(clanCode, p)
+                            "analysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.War),
+                            "analysisSummaryUrl" -> generatePlayerAnalysisSummaryUrl(clanCode, p, Layout.War)
                           ))
                       )
                     )
@@ -160,12 +169,12 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                 )
             }
           } ~
-          path("clans" / Segment / "players" / LongNumber / Segment) { (clanCode, playerId, layoutCode) =>
+          path("clans" / Segment / "players" / LongNumber / Segment) { (clanCode, playerId, layoutName) =>
             getVillageAnalysis(
               clanCode,
               playerId,
-              layoutCode,
-              (clan, possibleAnalysis, village, player, start) =>
+              layoutName,
+              (clan, possibleAnalysis, village, player, layout, start) =>
                 possibleAnalysis.map(analysis =>
                   complete(
                     mustacheRenderer.render(
@@ -173,6 +182,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                       Map(
                         "clanName" -> clan.name,
                         "playerIgn" -> player.avatar.userName,
+                        "layoutDescription" -> Layout.getDescription(layout),
                         "report" -> viewModelMapper.analysisReport(
                           analysis,
                           Duration.ofMillis(System.currentTimeMillis - start)
@@ -216,12 +226,12 @@ class WebAppServiceActor extends Actor with HttpService with Services {
           // we simply let the request drop to provoke a timeout
         } ~
         respondWithMediaType(`application/json`) {
-          path("clans" / Segment / "players" / LongNumber / Segment / "summary") { (clanCode, playerId, layoutCode) =>
+          path("clans" / Segment / "players" / LongNumber / Segment / "summary") { (clanCode, playerId, layoutName) =>
             getVillageAnalysis(
               clanCode,
               playerId,
-              layoutCode,
-              (clan, possibleAnalysis, village, player, start) =>
+              layoutName,
+              (clan, possibleAnalysis, village, player, layout, start) =>
                 possibleAnalysis.map(analysis =>
                   complete(viewModelMapper.analysisSummary(
                     player.avatar.userName,

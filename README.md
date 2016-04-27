@@ -44,20 +44,21 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - min compartments should only count compartments with buildings inside them
+ - Rule naming handling overhaul - to benefit war bases summary
+ 
+ - Some TH9 rules - to get Xtian onboard
+ 
  - extra rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
    - maybe as a % of compartmented area
    - see spike dragons base
  
  - BK Trigger rule further tweaks. should show red for all non-compartment tiles floodfilled from triggered
+ - min compartments should only count compartments with buildings inside them
  
  - Generalise getAnalysisByClanCodePlayerIdAndLayout and getVillageByClanCodePlayerIdAndLayout . scalatic "Or" class 
    might work well for error conditions
    - error texts in summary should be converted to json
    - error texts in html should be in small error html wrapper page
- 
- - Rule naming handling overhaul - to benefit war bases summary
- - Explicit connection to supercell down error - unreliable, please try again later, etc
  
  - static analysis
  
@@ -70,6 +71,8 @@ then deploy it manually through the AWS console:
  
  - trap access (if leadership go for it) - new, dedicated credentials of own
  
+ - include obstacles? affect some rules such as empty space analysis within base
+ 
  - TH11 rendering - new levels and warden + eagle
  
  - own connection - see UCS server for help creating
@@ -80,10 +83,12 @@ then deploy it manually through the AWS console:
  - pass, warning, fail levels (e.g. for minion anchors)
  - dynamic sizing of canvas still a bit funky - find proper js solution
  - integration tests
+ - password protection (in the wrong hands opposition would see our trap locations)
 
 
 ## TH8 TODO Rules
  - air defs should be a minimum distance apart
+ - SAMs not next to each other - one kills a dragon
  - loon pathing
    - must be >= 3 defenses to go through to path to air defs
    - OR must be > certain distance

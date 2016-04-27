@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>{{ name }} Bulk War Bases Analysis</title>
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+{{<base}}
+    {{$title}}{{ name }} Bulk War Bases Analysis{{/title}}
+
+    {{$styles}}
         <style type="text/css">
             .glyphicon-remove-sign {
                 color: #ff5555;
@@ -12,32 +10,29 @@
                 display:none;
             }
         </style>
-    </head>
-    <body>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <h3>{{name}} Bulk War Bases Analysis</h3>
-                </div>
-            </div>
+    {{/styles}}
 
-            <div class="row">
-                <div id="loading" class="col-md-12">
-                </div>
-            </div>
+    {{$heading}}{{name}} Bulk War Bases Analysis{{/heading}}
 
-            <div class="row">
-                <div class="col-md-12 hidden" id="problems">
-                    <h4>Problems</h4>
-                </div>
-            </div>
-
-            <div class="row">
-                <div id="results" class="col-md-12">
-                </div>
+    {{$content}}
+        <div class="row">
+            <div id="loading" class="col-md-12">
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-md-12 hidden" id="problems">
+                <h4>Problems</h4>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="results" class="col-md-12">
+            </div>
+        </div>
+    {{/content}}
+
+    {{$scripts}}
         <script id="town-hall-container-template" type="x-tmpl-mustache">
             <div id="[[containerId]]" class="row">
                 <div class="col-md-12">
@@ -74,21 +69,16 @@
         </script>
 
         <script type="text/javascript">
-            var clan = {
-                "code": "{{code}}"
-            };
             var players = [
                 {{#players}}
-                    { "id": "{{id}}", "ign": "{{ign}}", "analysisUrl": "{{analysisUrl}}" },
+                    { "id": "{{id}}", "ign": "{{ign}}", "analysisUrl": "{{analysisUrl}}", "analysisSummaryUrl": "{{analysisSummaryUrl}}" },
                 {{/players}}
             ];
         </script>
-        <script type="text/javascript" src="//code.jquery.com/jquery-2.2.1.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.10/clipboard.min.js"></script>
-        <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
         <script type="text/javascript" src="/assets/js/console-polyfill.js"></script>
         <script type="text/javascript" src="/assets/js/war-bases/main.js"></script>
-    </body>
-</html>
+    {{/scripts}}
+{{/base}}
