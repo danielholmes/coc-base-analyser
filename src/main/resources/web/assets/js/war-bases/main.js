@@ -30,7 +30,7 @@ $(document).ready(function() {
                 if (response.status == 404 || response.status == 400) {
                     addResult({
                         player: player,
-                        error: response.responseJSON
+                        error: response.responseText
                     });
                     return;
                 }

@@ -84,7 +84,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                         start
                       )
                     })
-                    .getOrElse(complete(StatusCodes.NotFound, s"id ${player.avatar.userName} doesn't have $layout village"))
+                    .getOrElse(complete(StatusCodes.NotFound, s"Player ${player.avatar.userName} doesn't have $layout village"))
                 )
                 .getOrElse(complete(StatusCodes.NotFound, s"id $playerId not found in clan ${clan.name}"))
             )
@@ -232,10 +232,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                 .getOrElse(
                   complete(
                     StatusCodes.BadRequest,
-                    viewModelMapper.cantAnalyseVillage(
-                      village,
-                      s"${player.avatar.userName} village can't be analysed - currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}"
-                    )
+                    s"${player.avatar.userName} village can't be analysed - currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}"
                   )
                 )
             )

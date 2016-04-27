@@ -53,6 +53,8 @@ then deploy it manually through the AWS console:
  
  - Generalise getAnalysisByClanCodePlayerIdAndLayout and getVillageByClanCodePlayerIdAndLayout . scalatic "Or" class 
    might work well for error conditions
+   - error texts in summary should be converted to json
+   - error texts in html should be in small error html wrapper page
  
  - Rule naming handling overhaul - to benefit war bases summary
  - Explicit connection to supercell down error - unreliable, please try again later, etc
