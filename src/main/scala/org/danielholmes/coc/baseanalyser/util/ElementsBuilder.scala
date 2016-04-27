@@ -1,9 +1,13 @@
 package org.danielholmes.coc.baseanalyser.util
 
-import org.danielholmes.coc.baseanalyser.model.{Element, Tile, Village}
+import org.danielholmes.coc.baseanalyser.model.{Element, Tile, Village, Wall}
 import org.scalactic.anyvals.{PosInt, PosZInt}
 
 object ElementsBuilder {
+  def fence(origin: Tile, width: PosInt, height: PosInt): Set[Element] = {
+    rectangle(origin, width, height, 1, Wall(1, _)).map(_.asInstanceOf[Element])
+  }
+
   def rectangle[T <: Element](origin: Tile, xTimes: PosInt, yTimes: PosInt, step: PosInt, builder: (Tile) => T): Set[T] = {
     ElementsBuilder.repeatX(origin, xTimes, step, builder) ++
       ElementsBuilder.repeatX(origin.offset(0, (yTimes - 1) * step), xTimes, step, builder) ++

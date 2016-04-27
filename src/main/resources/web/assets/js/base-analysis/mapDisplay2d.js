@@ -11,6 +11,9 @@ var mapDisplay2d = (function(document) {
     var extrasContainer = new createjs.Container();
     stage.addChild(extrasContainer);
 
+    var successColour = "#77ff77";
+    var failColour = "#ff4444";
+
     var buildingSheet = null;
     var wallSheet = null;
 
@@ -127,7 +130,7 @@ var mapDisplay2d = (function(document) {
             function(attacking) {
                 var line = new createjs.Shape();
                 line.graphics
-                    .beginStroke("#ff0000")
+                    .beginStroke(failColour)
                     .moveTo(0, 0)
                     .lineTo(
                         (attacking.hitPoint.x - attacking.standingPosition.x) * mapConfig.tileSize,
@@ -171,6 +174,9 @@ var mapDisplay2d = (function(document) {
             case 'QueenWalkedAirDefense':
                 renderQueenWalkedAirDefense(result, mapConfig);
                 break;
+            case 'QueenWontLeaveCompartment':
+                renderQueenWontLeaveCompartment(result, mapConfig);
+                break;
             default:
                 console.error('Don\'t know how to render active rule: ' + result.code);
         }
@@ -194,7 +200,7 @@ var mapDisplay2d = (function(document) {
 
         if (!result.success) {
             var exposedMask = new createjs.Shape();
-            exposedMask.graphics.beginFill("#00ff00");
+            exposedMask.graphics.beginFill(successColour);
             _.each(result.exposedTiles, function (tile) {
                 exposedMask.graphics.drawRect(
                     tile.x * mapConfig.tileSize,
@@ -206,7 +212,7 @@ var mapDisplay2d = (function(document) {
 
             var bkRadiusFill = new createjs.Shape();
             bkRadiusFill.graphics
-                .beginFill("#ff0000")
+                .beginFill(failColour)
                 .drawCircle(
                     0,
                     0,
@@ -223,40 +229,55 @@ var mapDisplay2d = (function(document) {
         renderElementRangesByTypeName(mapConfig, "BarbarianKing");
     };
 
+    var renderQueenWontLeaveCompartment = function(result, mapConfig) {
+        var compartment = model.getVillageArcherQueenCompartment();
+        if (compartment == null) {
+            return;
+        }
+
+        highlightCompartment(
+            compartment,
+            result.success ? successColour : failColour,
+            mapConfig
+        )
+    };
+
     var renderMinimumCompartments = function(result, mapConfig) {
         _.each(
             model.getVillageCompartmentsByIds(result.compartments),
             function(compartment) {
-                var colour = randomColour(compartment.walls.join("|"));
-
-                var innerDisplay = new createjs.Shape();
-                innerDisplay.graphics.beginFill(colour);
-                _.each(compartment.innerTiles, function(innerTile) {
-                    innerDisplay.graphics.drawRect(
-                        innerTile.x * mapConfig.tileSize,
-                        innerTile.y * mapConfig.tileSize,
-                        mapConfig.tileSize,
-                        mapConfig.tileSize
-                    );
-                });
-                innerDisplay.alpha = 0.85;
-                extrasContainer.addChild(innerDisplay);
-
-                var wallDisplay = new createjs.Shape();
-                wallDisplay.graphics.beginFill(colour);
-                _.each(compartment.walls, function(wallId) {
-                    var element = model.getVillageElementById(wallId);
-                    wallDisplay.graphics.drawRect(
-                        element.block.x * mapConfig.tileSize,
-                        element.block.y * mapConfig.tileSize,
-                        mapConfig.tileSize,
-                        mapConfig.tileSize
-                    );
-                });
-                wallDisplay.alpha = 0.5;
-                extrasContainer.addChild(wallDisplay);
+                highlightCompartment(compartment, randomColour(compartment.walls.join("|")), mapConfig);
             }
         );
+    };
+
+    var highlightCompartment = function(compartment, colour, mapConfig) {
+        var innerDisplay = new createjs.Shape();
+        innerDisplay.graphics.beginFill(colour);
+        _.each(compartment.innerTiles, function(innerTile) {
+            innerDisplay.graphics.drawRect(
+                innerTile.x * mapConfig.tileSize,
+                innerTile.y * mapConfig.tileSize,
+                mapConfig.tileSize,
+                mapConfig.tileSize
+            );
+        });
+        innerDisplay.alpha = 0.85;
+        extrasContainer.addChild(innerDisplay);
+
+        var wallDisplay = new createjs.Shape();
+        wallDisplay.graphics.beginFill(colour);
+        _.each(compartment.walls, function(wallId) {
+            var element = model.getVillageElementById(wallId);
+            wallDisplay.graphics.drawRect(
+                element.block.x * mapConfig.tileSize,
+                element.block.y * mapConfig.tileSize,
+                mapConfig.tileSize,
+                mapConfig.tileSize
+            );
+        });
+        wallDisplay.alpha = 0.5;
+        extrasContainer.addChild(wallDisplay);
     };
 
     var renderAirSnipedDefense = function(result, mapConfig) {
@@ -272,7 +293,7 @@ var mapDisplay2d = (function(document) {
                 function(targeting) {
                     var line = new createjs.Shape();
                     line.graphics
-                        .beginStroke("#ff0000")
+                        .beginStroke(failColour)
                         .moveTo(0, 0)
                         .lineTo(
                             (targeting.hitPoint.x - targeting.startPosition.x) * mapConfig.tileSize,
@@ -295,7 +316,7 @@ var mapDisplay2d = (function(document) {
                 function (targeting) {
                     var line = new createjs.Shape();
                     line.graphics
-                        .beginStroke("#ff0000")
+                        .beginStroke(failColour)
                         .moveTo(0, 0)
                         .lineTo(
                             (targeting.hitPoint.x - targeting.standingPosition.x) * mapConfig.tileSize,
@@ -321,7 +342,7 @@ var mapDisplay2d = (function(document) {
                 function (targeting) {
                     var line = new createjs.Shape();
                     line.graphics
-                        .beginStroke("#ff0000")
+                        .beginStroke(failColour)
                         .moveTo(0, 0)
                         .lineTo(
                             (targeting.hitPoint.x - targeting.startPosition.x) * mapConfig.tileSize,

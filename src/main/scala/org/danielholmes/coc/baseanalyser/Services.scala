@@ -28,7 +28,8 @@ trait Services {
     wire[HogCCLureRule],
     wire[AirSnipedDefenseRule],
     wire[WizardTowersOutOfHoundPositionsRule],
-    wire[QueenWalkedAirDefenseRule]
+    wire[QueenWalkedAirDefenseRule],
+    wire[QueenWontLeaveCompartmentRule]
   )
   private lazy val th10Rules: Set[Rule] = th9Rules
   private lazy val th11Rules: Set[Rule] = th10Rules

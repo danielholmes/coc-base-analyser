@@ -39,6 +39,20 @@ var model = (function() {
             return _.contains(ids, compartment.id);
         });
     };
+    
+    var getVillageArcherQueenCompartment = function() {
+        return _.find(
+            currentReport.village.wallCompartments,
+            function(compartment) {
+                return _.some(
+                    compartment.elementIds,
+                    function(elementId) {
+                        return getVillageElementById(elementId).typeName == "ArcherQueen";
+                    }
+                );
+            }
+        );
+    };
 
     var getVillageElementsByTypeName = function(typeName) {
         return _.where(currentReport.village.elements, { 'typeName': typeName });
@@ -88,6 +102,7 @@ var model = (function() {
         getVillageElementsByTypeName: getVillageElementsByTypeName,
         getVillageElementByTypeName: getVillageElementByTypeName,
         getVillageCompartmentsByIds: getVillageCompartmentsByIds,
+        getVillageArcherQueenCompartment: getVillageArcherQueenCompartment,
 
         hasActiveRule: hasActiveRule,
         getActiveRuleCode: getActiveRuleCode,

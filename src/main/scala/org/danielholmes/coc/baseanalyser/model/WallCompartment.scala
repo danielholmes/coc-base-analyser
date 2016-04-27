@@ -1,7 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model
 
-case class WallCompartment(walls: Set[Wall], innerTiles: Set[Tile]) {
-  //require(walls.nonEmpty) For a non walled village, you could consider it a large wall compartment?
+case class WallCompartment(walls: Set[Wall], innerTiles: Set[Tile], elements: Set[Element]) {
+  //require(walls.nonEmpty) Currently use wall compartment to represent outer area in algorithms. Should change this
   require(innerTiles.nonEmpty)
 
   private lazy val allTiles = innerTiles ++ walls.map(_.block.tile)

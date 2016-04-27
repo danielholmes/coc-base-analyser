@@ -14,7 +14,7 @@ class MinimumCompartmentsRuleSpec extends FlatSpec with Matchers {
 
   it should "return violation for 1 compartment" in {
     val walls = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(1, 1), Wall(1, _))
-    rule.analyse(Village(walls.map(_.asInstanceOf[Element]))) should be (MinimumCompartmentsRuleResult(8, Set(WallCompartment(walls, Set(Tile(2, 2))))))
+    rule.analyse(Village(walls.map(_.asInstanceOf[Element]))) should be (MinimumCompartmentsRuleResult(8, Set(WallCompartment(walls, Set(Tile(2, 2)), Set.empty))))
   }
 
   it should "return no violation for 8 compartments" in {

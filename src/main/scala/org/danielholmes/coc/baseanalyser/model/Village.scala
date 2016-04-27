@@ -55,7 +55,7 @@ case class Village(elements: Set[Element]) {
   }
 
   private def detectCompartment(toProcess: Set[Tile], currentInnerTiles: Set[Tile], currentWalls: Set[Wall]): WallCompartment = {
-    if (toProcess.isEmpty) return WallCompartment(currentWalls, currentInnerTiles)
+    if (toProcess.isEmpty) return WallCompartment(currentWalls, currentInnerTiles, elements.filter(e => currentInnerTiles.contains(e.block.tile)))
     val notSeenTouching = toProcess.head
       .touchingTiles
       .diff(currentInnerTiles)
