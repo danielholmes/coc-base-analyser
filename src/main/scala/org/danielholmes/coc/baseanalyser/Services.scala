@@ -31,7 +31,12 @@ trait Services {
     wire[QueenWalkedAirDefenseRule],
     wire[QueenWontLeaveCompartmentRule]
   )
-  private lazy val th10Rules: Set[Rule] = th9Rules
+  private lazy val th10Rules: Set[Rule] = Set(
+    wire[HogCCLureRule],
+    wire[AirSnipedDefenseRule],
+    wire[WizardTowersOutOfHoundPositionsRule],
+    wire[QueenWalkedAirDefenseRule]
+  )
   private lazy val th11Rules: Set[Rule] = th10Rules
   private lazy val rulesByThLevel = Map(
     PosInt(8) -> th8Rules,

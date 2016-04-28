@@ -55,6 +55,7 @@ then deploy it manually through the AWS console:
  - BK Trigger rule further tweaks. should show red for all non-compartment tiles floodfilled from triggered
  
  - analysis performance, currently too slow
+  - return time taken for analysis and each rule so can inspect
   - hog cc lure analysis - dont need all external tiles - just need outer coords touching drop boundary
  - change js to use classes and instances rather than global modules
  
