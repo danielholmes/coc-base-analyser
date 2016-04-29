@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.defense.{AirDefense, WizardTower}
 import org.danielholmes.coc.baseanalyser.model.troops.WizardTowerHoundTargeting
 import org.danielholmes.coc.baseanalyser.util.ElementsBuilder
 import org.scalatest._

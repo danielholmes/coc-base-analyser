@@ -21,14 +21,14 @@ var RedMoonBuildingSpriteSheet = function(image) {
             height: 38,
             gap: 0
         },
-        "BarbarianKing": {
+        "BarbarianKingAltar": {
             x: 749,
             y: 339,
             width: 60,
             height: 43,
             gap: 0
         },
-        "ArcherQueen": {
+        "ArcherQueenAltar": {
             x: 824,
             y: 338,
             width: 59,

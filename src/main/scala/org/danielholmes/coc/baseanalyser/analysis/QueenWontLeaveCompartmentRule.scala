@@ -1,12 +1,13 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
-import org.danielholmes.coc.baseanalyser.model.{ArcherQueen, Village}
+import org.danielholmes.coc.baseanalyser.model.Village
+import org.danielholmes.coc.baseanalyser.model.heroes.ArcherQueenAltar
 import org.scalactic.anyvals.PosInt
 
 class QueenWontLeaveCompartmentRule extends Rule {
   def analyse(village: Village): RuleResult = {
     village.elements
-      .find(_.isInstanceOf[ArcherQueen])
+      .find(_.isInstanceOf[ArcherQueenAltar])
       .map(queen =>
         village.wallCompartments
           .find(_.elements.contains(queen))

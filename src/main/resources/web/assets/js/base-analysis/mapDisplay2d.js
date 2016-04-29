@@ -212,7 +212,7 @@ var mapDisplay2d = (function(document) {
     };
 
     var renderBKSwappable = function(result, mapConfig) {
-        var bk = model.getVillageElementByTypeName("BarbarianKing");
+        var bk = model.getVillageElementByTypeName("BarbarianKingAltar");
         if (bk == null) {
             return;
         }
@@ -245,7 +245,7 @@ var mapDisplay2d = (function(document) {
             extrasContainer.addChild(bkRadiusFill);
         }
 
-        renderElementRangesByTypeName(mapConfig, "BarbarianKing");
+        renderElementRangesByTypeName(mapConfig, "BarbarianKingAltar");
     };
 
     var renderQueenWontLeaveCompartment = function(result, mapConfig) {
@@ -431,6 +431,7 @@ var mapDisplay2d = (function(document) {
         var allPrevents = new createjs.Container();
         for (var i in model.getReport().village.elements) {
             var element = model.getReport().village.elements[i];
+            console.log(element);
             if (element.noTroopDropBlock.size == 0) {
                 continue;
             }

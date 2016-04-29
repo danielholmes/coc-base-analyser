@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.baseparser
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.defense.Cannon
 import org.scalatest._
 
 class HardCodedElementFactorySpec extends FlatSpec with Matchers {

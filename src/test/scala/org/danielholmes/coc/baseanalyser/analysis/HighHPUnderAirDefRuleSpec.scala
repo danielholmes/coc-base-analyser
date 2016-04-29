@@ -1,6 +1,8 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.defense.AirDefense
+import org.danielholmes.coc.baseanalyser.model.trash.GoldStorage
 import org.scalatest._
 
 class HighHPUnderAirDefRuleSpec extends FlatSpec with Matchers {

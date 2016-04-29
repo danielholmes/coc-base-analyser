@@ -6,15 +6,16 @@ import org.danielholmes.coc.baseanalyser.model.troops.{ArcherTargeting, Archer}
 // TODO: Shouldn't take into account EagleArtillery since wont be activated. Test this
 class ArcherAnchorRule extends Rule {
   def analyse(village: Village): RuleResult = {
-    val groundDefenses = village.elements
-      .filter(_.isInstanceOf[Defense])
-      .map(_.asInstanceOf[Defense])
-      .filter(_.targets.contains(Target.Ground))
+    val targetImmediateArcherGroundDefenses = village.groundTargetingDefenses
+      .filter({
+        case d: DelayedActivation => false
+        case g: Defense => true
+      })
     ArcherAnchorRuleResult(
       village.coordinatesAllowedToDropTroop
-        .flatMap(Archer.findTargets(_, village))
-        .filter(targeting => !groundDefenses.exists(_.range.contains(targeting.standingPosition))),
-      groundDefenses
+        .filter(coord => !targetImmediateArcherGroundDefenses.exists(_.range.contains(coord)))
+        .flatMap(coord => Archer.findReachableTargets(coord, village).map(ArcherTargeting(coord, _))),
+      targetImmediateArcherGroundDefenses
     )
   }
 }

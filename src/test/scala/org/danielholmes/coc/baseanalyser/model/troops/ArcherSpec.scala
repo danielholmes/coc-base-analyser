@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model.troops
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.trash.ArmyCamp
 import org.scalatest._
 
 class ArcherSpec extends FlatSpec with Matchers {

@@ -1,7 +1,11 @@
 package org.danielholmes.coc.baseanalyser.baseparser
 
 import org.danielholmes.coc.baseanalyser.model._
-import org.scalactic.anyvals.{PosZInt, PosInt}
+import org.danielholmes.coc.baseanalyser.model.defense._
+import org.danielholmes.coc.baseanalyser.model.heroes.{ArcherQueenAltar, BarbarianKingAltar, GrandWarden}
+import org.danielholmes.coc.baseanalyser.model.traps._
+import org.danielholmes.coc.baseanalyser.model.trash._
+import org.scalactic.anyvals.{PosInt, PosZInt}
 
 class HardCodedElementFactory extends ElementFactory {
   private def levelAndCoordinateConstructor(constructor: (PosInt, Tile) => Element): (RawElement => Element) = {
@@ -38,10 +42,10 @@ class HardCodedElementFactory extends ElementFactory {
     1000019 -> levelAndCoordinateConstructor(HiddenTesla),
     1000020 -> levelAndCoordinateConstructor(SpellFactory),
     1000021 -> ((raw: RawElement) => XBow.both(elementLevel(raw.lvl), elementTile(raw))),
-    1000022 -> levelAndCoordinateConstructor(BarbarianKing),
+    1000022 -> levelAndCoordinateConstructor(BarbarianKingAltar),
     1000023 -> levelAndCoordinateConstructor(DarkElixirCollector),
     1000024 -> levelAndCoordinateConstructor(DarkElixirStorage),
-    1000025 -> levelAndCoordinateConstructor(ArcherQueen),
+    1000025 -> levelAndCoordinateConstructor(ArcherQueenAltar),
     1000026 -> levelAndCoordinateConstructor(DarkBarrack),
     1000027 -> levelAndCoordinateConstructor(InfernoTower),
     1000028 -> levelAndCoordinateConstructor(AirSweeper),

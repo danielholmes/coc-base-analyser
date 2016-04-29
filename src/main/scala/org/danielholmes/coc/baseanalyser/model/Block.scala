@@ -68,12 +68,15 @@ case class Block(tile: Tile, size: PosInt) {
   def expandToSize(newSize: PosInt): Block = {
     if (newSize < size) throw new IllegalArgumentException("newSize must be greater than size")
     if ((size - newSize) % 2 != 0) throw new IllegalArgumentException("Must increase by factors of 2")
-    if (newSize == size) return this
-    val sizeDiff = newSize - size
-    Block(
-      Tile(PosZInt.from(tile.x - sizeDiff / 2).get, PosZInt.from(tile.y - sizeDiff / 2).get),
-      newSize
-    )
+    if (newSize == size) {
+      this
+    } else {
+      val sizeDiff = newSize - size
+      Block(
+        Tile(PosZInt.from(tile.x - sizeDiff / 2).get, PosZInt.from(tile.y - sizeDiff / 2).get),
+        newSize
+      )
+    }
   }
 
   private lazy val possibleIntersectionPoints: Set[TileCoordinate] = {
@@ -85,22 +88,21 @@ object Block {
   val Map = Block(Tile.Origin, TileCoordinate.MaxCoordinate)
 
   def firstIntersecting(blocks: Set[Block]): Option[(Block, Block)] = {
-    blocks.map(b => firstIntersecting(b, blocks.toList).map((_, b)))
+    blocks.map(b => firstIntersecting(b, blocks).map((_, b)))
       .headOption
       .getOrElse(None)
   }
 
   @tailrec
-  private def firstIntersecting(block: Block, blocks: List[Block]): Option[Block] = {
-    blocks match {
+  private def firstIntersecting(block: Block, blocks: Set[Block]): Option[Block] = {
+    blocks.toList match {
       case Nil => None
-      case head :: tail => {
+      case head :: tail =>
         if (block != head && block.intersects(head)) {
           Some(head)
         } else {
           firstIntersecting(block, blocks.tail)
         }
-      }
     }
   }
 }

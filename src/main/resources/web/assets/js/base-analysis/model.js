@@ -47,7 +47,7 @@ var model = (function() {
                 return _.some(
                     compartment.elementIds,
                     function(elementId) {
-                        return getVillageElementById(elementId).typeName == "ArcherQueen";
+                        return getVillageElementById(elementId).typeName == "ArcherQueenAltar";
                     }
                 );
             }

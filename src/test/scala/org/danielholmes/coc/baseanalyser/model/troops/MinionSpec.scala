@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model.troops
 
-import org.danielholmes.coc.baseanalyser.model.{BuilderHut, MapCoordinate, Tile, TileCoordinate}
+import org.danielholmes.coc.baseanalyser.model.trash.BuilderHut
+import org.danielholmes.coc.baseanalyser.model.{MapCoordinate, Tile, TileCoordinate}
 import org.scalactic.anyvals.PosDouble
 import org.scalatest._
 

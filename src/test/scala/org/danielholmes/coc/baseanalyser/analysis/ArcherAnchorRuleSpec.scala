@@ -1,7 +1,8 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
-import org.danielholmes.coc.baseanalyser.model
-import org.danielholmes.coc.baseanalyser.model.{AirDefense, _}
+import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.defense.{AirDefense, ArcherTower, Cannon}
+import org.danielholmes.coc.baseanalyser.model.trash.BuilderHut
 import org.scalatest._
 
 class ArcherAnchorRuleSpec extends FlatSpec with Matchers {

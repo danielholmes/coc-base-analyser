@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.heroes.BarbarianKingAltar
 import org.scalactic.anyvals.{PosDouble, PosZDouble}
 
 import scala.annotation.tailrec
@@ -13,7 +14,7 @@ class BKSwappableRule extends Rule {
     val exposedTiles = findExposedTiles(village)
     BKSwappableRuleResult(
       findTouchingTiles(
-        findTriggerTiles(village, exposedTiles).toList,
+        findTriggerTiles(village, exposedTiles),
         exposedTiles,
         Set.empty
       )
@@ -21,13 +22,13 @@ class BKSwappableRule extends Rule {
   }
 
   @tailrec
-  private def findTouchingTiles(touchingTrigger: List[Tile], exposedToCheck: Set[Tile], current: Set[Tile]): Set[Tile] = {
-    touchingTrigger match {
+  private def findTouchingTiles(touchingTrigger: Set[Tile], exposedToCheck: Set[Tile], current: Set[Tile]): Set[Tile] = {
+    touchingTrigger.toList match {
       case Nil => current
       case head :: tail =>
         val exposedTouchingTrigger = touchingTrigger.head.touchingTiles.intersect(exposedToCheck)
         findTouchingTiles(
-          (touchingTrigger.toSet ++ exposedTouchingTrigger -- current).toList,
+          touchingTrigger ++ exposedTouchingTrigger -- current,
           exposedToCheck -- exposedTouchingTrigger,
           current + head
         )
@@ -36,8 +37,8 @@ class BKSwappableRule extends Rule {
 
   private def findTriggerTiles(village: Village, exposedTiles: Set[Tile]) = {
     village.elements
-      .find(_.isInstanceOf[BarbarianKing])
-      .map(_.asInstanceOf[BarbarianKing])
+      .find(_.isInstanceOf[BarbarianKingAltar])
+      .map(_.asInstanceOf[BarbarianKingAltar])
       .map(_.range)
       .map(_.inset(MinExposedDistance))
       .map(_.allTouchingTiles)
@@ -47,8 +48,8 @@ class BKSwappableRule extends Rule {
 
   private def findExposedTiles(village: Village) = {
     village.elements
-      .find(_.isInstanceOf[BarbarianKing])
-      .map(_.asInstanceOf[BarbarianKing])
+      .find(_.isInstanceOf[BarbarianKingAltar])
+      .map(_.asInstanceOf[BarbarianKingAltar])
       .map(_.range)
       .map(_.allTouchingTiles)
       .getOrElse(Set.empty)

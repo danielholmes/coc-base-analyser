@@ -1,5 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model
 
+import org.danielholmes.coc.baseanalyser.model.range.CircularElementRange
+import org.danielholmes.coc.baseanalyser.model.trash.BuilderHut
 import org.danielholmes.coc.baseanalyser.model.troops.HogTargeting
 import org.scalatest._
 

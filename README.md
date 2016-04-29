@@ -51,6 +51,11 @@ then deploy it manually through the AWS console:
  - high HP rule needs to be more lenient
  - tweak WT hound rule. Pretty sure hounds target 1 tile in of air def
  
+ - expand possible trap locations for channel bases. e.g. see spandan and vicious 2.0
+ 
+ - Begin on DGB:
+  - class PossibleDoubleGiantBomb(anchors: (Either[Defense, PossibleTrapLocation], Either[Defense, PossibleTrapLocation]), gbs: (PossibleTrapLocation, PossibleTrapLocation))
+ 
  - BK Trigger rule further tweaks. should show red for all non-compartment tiles floodfilled from triggered
  
  - analysis performance, currently too slow

@@ -5,9 +5,7 @@ import org.danielholmes.coc.baseanalyser.model.{Defense, Target, Village}
 
 class AirSnipedDefenseRule extends Rule {
   def analyse(village: Village): RuleResult = {
-    val defensesByAir = village.elements
-        .filter(_.isInstanceOf[Defense])
-        .map(_.asInstanceOf[Defense])
+    val defensesByAir = village.defenses
         .partition(_.targets.contains(Target.Air))
 
     AirSnipedDefenseRuleResult(

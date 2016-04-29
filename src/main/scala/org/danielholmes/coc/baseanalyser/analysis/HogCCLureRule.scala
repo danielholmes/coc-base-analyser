@@ -9,7 +9,7 @@ class HogCCLureRule extends Rule {
       .map(_.range)
       .map(range =>
         village.coordinatesAllowedToDropTroop
-          .flatMap(HogRider.findTargets(_, village))
+          .flatMap(coord => HogRider.findTargets(coord, village).map(HogTargeting(coord, _)))
           .filter(_.cutsRadius(range))
       )
       .map(HogCCLureRuleResult)

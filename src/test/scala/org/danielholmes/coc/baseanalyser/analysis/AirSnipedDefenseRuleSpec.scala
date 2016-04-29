@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.defense.{AirDefense, Cannon}
 import org.danielholmes.coc.baseanalyser.model.troops.{Minion, MinionAttackPosition}
 import org.scalatest._
 

@@ -1,6 +1,8 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.defense.AirDefense
+import org.danielholmes.coc.baseanalyser.model.trash.Barrack
 import org.danielholmes.coc.baseanalyser.util.ElementsBuilder
 import org.scalatest._
 

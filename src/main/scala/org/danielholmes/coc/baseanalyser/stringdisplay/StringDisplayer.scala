@@ -1,6 +1,9 @@
 package org.danielholmes.coc.baseanalyser.stringdisplay
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.defense._
+import org.danielholmes.coc.baseanalyser.model.heroes.{ArcherQueenAltar, BarbarianKingAltar}
+import org.danielholmes.coc.baseanalyser.model.range.ElementRange
 
 import scala.annotation.tailrec
 
@@ -83,12 +86,12 @@ class StringDisplayer {
   private def characterForElement(element: Element): Char = {
     element match {
       case _: ArcherTower => 'A'
-      case _: BarbarianKing => 'B'
+      case _: BarbarianKingAltar => 'B'
       case _: AirDefense => 'D'
       case _: Cannon => 'C'
       case _: InfernoTower => 'I'
       case _: Mortar => 'M'
-      case _: ArcherQueen => 'Q'
+      case _: ArcherQueenAltar => 'Q'
       case _: AirSweeper => 'S'
       case _: HiddenTesla => 'T'
       case _: WizardTower => 'W'

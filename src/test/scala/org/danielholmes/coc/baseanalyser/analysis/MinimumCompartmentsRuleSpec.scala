@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.trash.BuilderHut
 import org.danielholmes.coc.baseanalyser.util.ElementsBuilder
 import org.scalactic.anyvals.{PosInt, PosZInt}
 import org.scalatest._

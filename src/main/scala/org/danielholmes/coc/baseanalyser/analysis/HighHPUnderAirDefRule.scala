@@ -1,34 +1,33 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.defense.AirDefense
+import org.danielholmes.coc.baseanalyser.model.trash.{DarkElixirStorage, ElixirStorage, GoldStorage}
 import org.danielholmes.coc.baseanalyser.model.troops.Dragon
 
 import scala.annotation.tailrec
 
 class HighHPUnderAirDefRule extends Rule {
   def analyse(village: Village): RuleResult = {
-    val airDefs = village.elements
-      .filter(_.isInstanceOf[AirDefense])
-      .map(_.asInstanceOf[AirDefense])
-    val highHPBuildings = village.elements.filter(isHighHPBuilding)
-    val covered = highHPBuildings.partition(willSomeAirDefCoverDragonShooting(_, airDefs))
+    val highHPBuildings = village.structures.filter(isHighHPBuilding)
+    val covered = highHPBuildings.partition(willSomeAirDefCoverDragonShooting(_, village.airDefenses))
     HighHPUnderAirDefRuleResult(covered._2, covered._1)
   }
 
-  private def willSomeAirDefCoverDragonShooting(highHP: Element, airDefs: Set[AirDefense]): Boolean = {
-    willSomeAirDefCoverDragonShooting(Dragon.getCoordinatesCanAttackElementFrom(highHP).toList, airDefs)
+  private def willSomeAirDefCoverDragonShooting(highHP: Structure, airDefs: Set[AirDefense]): Boolean = {
+    willSomeAirDefCoverDragonShooting(Dragon.getAttackPositions(highHP), airDefs)
   }
 
   @tailrec
-  private def willSomeAirDefCoverDragonShooting(highHPCoords: List[TileCoordinate], airDefs: Set[AirDefense]): Boolean = {
-    highHPCoords match {
+  private def willSomeAirDefCoverDragonShooting(highHPCoords: Set[MapCoordinate], airDefs: Set[AirDefense]): Boolean = {
+    highHPCoords.toList match {
       case Nil => true
-      case head :: tail => airDefs.exists(_.range.contains(head)) && willSomeAirDefCoverDragonShooting(tail, airDefs)
+      case head :: tail => airDefs.exists(_.range.contains(head)) && willSomeAirDefCoverDragonShooting(tail.toSet, airDefs)
     }
   }
 
-  private def isHighHPBuilding(element: Element): Boolean = {
-    element match {
+  private def isHighHPBuilding(structure: Structure): Boolean = {
+    structure match {
       case _: GoldStorage => true
       case _: DarkElixirStorage => true
       case _: ElixirStorage => true
@@ -39,7 +38,7 @@ class HighHPUnderAirDefRule extends Rule {
   }
 }
 
-case class HighHPUnderAirDefRuleResult(outOfAirDefRange: Set[Element], inAirDefRange: Set[Element]) extends RuleResult {
+case class HighHPUnderAirDefRuleResult(outOfAirDefRange: Set[Structure], inAirDefRange: Set[Structure]) extends RuleResult {
   require(outOfAirDefRange.intersect(inAirDefRange).isEmpty)
 
   val success = outOfAirDefRange.isEmpty

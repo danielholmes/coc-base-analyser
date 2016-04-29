@@ -5,6 +5,8 @@ import java.util.{Base64, UUID}
 
 import org.danielholmes.coc.baseanalyser.analysis._
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.defense.HiddenTesla
+import org.danielholmes.coc.baseanalyser.model.range.{BlindSpotCircularElementRange, CircularElementRange, ElementRange}
 import org.danielholmes.coc.baseanalyser.model.troops._
 import spray.http.Uri
 import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
@@ -19,21 +21,34 @@ sealed trait ElementViewModel {
   def typeName: String
   def level: Int
   def block: BlockViewModel
-  def noTroopDropBlock: BlockViewModel
 }
+
 case class BaseElementViewModel(
   override val id: String,
   override val typeName: String,
   override val level: Int,
+  override val block: BlockViewModel
+) extends ElementViewModel
+case class BaseStructureElementViewModel(
+  override val id: String,
+  override val typeName: String,
+  override val level: Int,
   override val block: BlockViewModel,
-  override val noTroopDropBlock: BlockViewModel
+  noTroopDropBlock: BlockViewModel
 ) extends ElementViewModel
 case class DefenseElementViewModel(
   override val id: String,
   override val typeName: String,
   override val level: Int,
   override val block: BlockViewModel,
-  override val noTroopDropBlock: BlockViewModel,
+  noTroopDropBlock: BlockViewModel,
+  range: RangeViewModel
+) extends ElementViewModel
+case class HiddenTeslaViewModel(
+  override val id: String,
+  override val typeName: String,
+  override val level: Int,
+  override val block: BlockViewModel,
   range: RangeViewModel
 ) extends ElementViewModel
 case class ClanCastleElementViewModel(
@@ -41,7 +56,7 @@ case class ClanCastleElementViewModel(
   override val typeName: String,
   override val level: Int,
   override val block: BlockViewModel,
-  override val noTroopDropBlock: BlockViewModel,
+  noTroopDropBlock: BlockViewModel,
   range: RangeViewModel
 ) extends ElementViewModel
 case class VillageViewModel(
@@ -158,7 +173,9 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit object ElementJsonFormat extends RootJsonFormat[ElementViewModel] {
     def write(e: ElementViewModel): JsValue = e match {
       case d: DefenseElementViewModel => defenseElementFormat.write(d)
+      case d: HiddenTeslaViewModel => hiddenTeslaFormat.write(d)
       case c: ClanCastleElementViewModel => clanCastleElementFormat.write(c)
+      case s: BaseStructureElementViewModel => baseStructureElementFormat.write(s)
       case b: BaseElementViewModel => baseElementFormat.write(b)
     }
 
@@ -195,9 +212,12 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val wallCompartmentFormat = jsonFormat4(WallCompartmentViewModel)
   implicit val possibleLargeTrapFormat = jsonFormat2(PossibleLargeTrapViewModel)
 
-  implicit val baseElementFormat = jsonFormat5(BaseElementViewModel)
+  implicit val baseElementFormat = jsonFormat4(BaseElementViewModel)
+  implicit val baseStructureElementFormat = jsonFormat5(BaseStructureElementViewModel)
+  implicit val hiddenTeslaFormat = jsonFormat5(HiddenTeslaViewModel)
   implicit val defenseElementFormat = jsonFormat6(DefenseElementViewModel)
   implicit val clanCastleElementFormat = jsonFormat6(ClanCastleElementViewModel)
+
   implicit val archerTargetingFormat = jsonFormat3(ArcherTargetingViewModel)
   implicit val minionAttackPositionFormat = jsonFormat3(MinionAttackPositionViewModel)
   implicit val hogTargetingFormat = jsonFormat3(HogTargetingViewModel)
@@ -405,30 +425,43 @@ class ViewModelMapper {
   }
 
   private def element(element: Element): ElementViewModel = {
+    val typeName = element.getClass.getSimpleName
     element match {
-      case d: Defense => DefenseElementViewModel(
-        objectId(d),
-        element.getClass.getSimpleName,
-        element.level,
-        block(element.block),
-        block(element.preventTroopDropBlock),
-        elementRange(d.range)
-      )
+      case d: StationaryDefensiveBuilding =>
+        d match {
+          case p: PreventsTroopDrop => DefenseElementViewModel (
+            objectId (d),
+            typeName,
+            element.level,
+            block(d.block),
+            block(p.preventTroopDropBlock),
+            elementRange (d.range)
+          )
+          case h: HiddenTesla => HiddenTeslaViewModel(
+            objectId (d),
+            typeName,
+            element.level,
+            block(d.block),
+            elementRange (d.range)
+          )
+          case _ => throw new RuntimeException(s"Can't map ${element.getClass.getSimpleName}")
+        }
       case c: ClanCastle => ClanCastleElementViewModel(
         objectId(c),
-        element.getClass.getSimpleName,
-        element.level,
-        block(element.block),
-        block(element.preventTroopDropBlock),
+        typeName,
+        c.level,
+        block(c.block),
+        block(c.preventTroopDropBlock),
         elementRange(c.range)
       )
-      case _ => BaseElementViewModel(
-        objectId(element),
-        element.getClass.getSimpleName,
-        element.level,
-        block(element.block),
-        block(element.preventTroopDropBlock)
+      case s: PreventsTroopDrop => BaseStructureElementViewModel(
+        objectId(s),
+        typeName,
+        s.level,
+        block(s.block),
+        block(s.preventTroopDropBlock)
       )
+      case e: Element => throw new RuntimeException(s"Can't map ${element.getClass.getSimpleName}")
     }
   }
 

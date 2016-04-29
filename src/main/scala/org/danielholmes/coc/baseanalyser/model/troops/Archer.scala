@@ -1,19 +1,12 @@
 package org.danielholmes.coc.baseanalyser.model.troops
 
-import org.danielholmes.coc.baseanalyser.model._
-import org.scalactic.anyvals.PosDouble
+import org.danielholmes.coc.baseanalyser.model.{Structure, Village}
+import org.scalactic.anyvals.{PosInt, PosZDouble}
 
-object Archer {
-  val Range = PosDouble(3.5)
+object Archer extends Troop {
+  val Range = PosZDouble(3.5)
 
-  def findTargets(coordinate: TileCoordinate, village: Village): Set[ArcherTargeting] = {
-    val buildingsByDistanceAway = village.buildings
-      .groupBy(_.hitBlock.distanceTo(coordinate))
-    buildingsByDistanceAway.keys
-      .filter(_ < Range)
-      .reduceOption(_ min _)
-      .flatMap(d => buildingsByDistanceAway.get(d))
-      .getOrElse(Set.empty)
-      .map(ArcherTargeting(coordinate, _))
+  override protected def getPrioritisedTargets(village: Village): List[Set[Structure]] = {
+    getAnyBuildingsTargets(village)
   }
 }

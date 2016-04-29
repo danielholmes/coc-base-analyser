@@ -1,19 +1,16 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
-import org.danielholmes.coc.baseanalyser.model.troops.{ArcherQueenAttacking, ArcherQueen}
-import org.danielholmes.coc.baseanalyser.model.{AirDefense, Village}
+import org.danielholmes.coc.baseanalyser.model.troops.{ArcherQueen, ArcherQueenAttacking}
+import org.danielholmes.coc.baseanalyser.model.Village
+import org.danielholmes.coc.baseanalyser.model.defense.AirDefense
 
 class QueenWalkedAirDefenseRule extends Rule {
   def analyse(village: Village): RuleResult = {
-    val airDefenses = village.elements
-      .filter(_.isInstanceOf[AirDefense])
-      .map(_.asInstanceOf[AirDefense])
-
-    val attackings: Set[ArcherQueenAttacking] = airDefenses.flatMap(el =>
+    val attackings: Set[ArcherQueenAttacking] = village.airDefenses.flatMap(el =>
       ArcherQueen.firstPossibleAttackingCoordinate(el, village.outerTileCoordinates)
           .map(ArcherQueenAttacking(_, el))
     )
-    val nonReachableAirDefs = airDefenses.filterNot(a => attackings.exists(_.targeting == a))
+    val nonReachableAirDefs = village.airDefenses.filterNot(a => attackings.exists(_.targeting == a))
 
     QueenWalkedAirDefenseRuleResult(attackings, nonReachableAirDefs)
   }

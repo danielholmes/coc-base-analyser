@@ -1,11 +1,12 @@
 package org.danielholmes.coc.baseanalyser.model.troops
 
-import org.danielholmes.coc.baseanalyser.model.{Element, TileCoordinate}
+import org.danielholmes.coc.baseanalyser.model.{Structure, Village}
+import org.scalactic.anyvals.{PosZDouble, PosZInt}
 
-object Dragon {
-  def getCoordinatesCanAttackElementFrom(element: Element): Set[TileCoordinate] = {
-    element.hitBlock
-      .expandBy(1)
-      .allCoordinates
+object Dragon extends Troop {
+  val Range = PosZDouble(1)
+
+  override protected def getPrioritisedTargets(village: Village): List[Set[Structure]] = {
+    getAnyBuildingsTargets(village)
   }
 }

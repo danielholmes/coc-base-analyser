@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.trash.Barrack
 import org.scalatest._
 
 class HogCCLureRuleSpec extends FlatSpec with Matchers {

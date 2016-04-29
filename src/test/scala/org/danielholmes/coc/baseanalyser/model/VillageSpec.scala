@@ -1,5 +1,6 @@
 package org.danielholmes.coc.baseanalyser.model
 
+import org.danielholmes.coc.baseanalyser.model.trash.{Barrack, BuilderHut}
 import org.danielholmes.coc.baseanalyser.util.ElementsBuilder
 import org.scalatest._
 
