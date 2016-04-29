@@ -4,8 +4,12 @@ import org.danielholmes.coc.baseanalyser.model.{Element, Tile, Village, Wall}
 import org.scalactic.anyvals.{PosInt, PosZInt}
 
 object ElementsBuilder {
-  def fence(origin: Tile, width: PosInt, height: PosInt): Set[Element] = {
-    rectangle(origin, width, height, 1, Wall(1, _)).map(_.asInstanceOf[Element])
+  def elementFence(origin: Tile, width: PosInt, height: PosInt): Set[Element] = {
+    wallFence(origin, width, height).map(_.asInstanceOf[Element])
+  }
+
+  def wallFence(origin: Tile, width: PosInt, height: PosInt): Set[Wall] = {
+    rectangle(origin, width, height, 1, Wall(1, _))
   }
 
   def rectangle[T <: Element](origin: Tile, xTimes: PosInt, yTimes: PosInt, step: PosInt, builder: (Tile) => T): Set[T] = {

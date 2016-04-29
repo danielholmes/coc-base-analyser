@@ -48,6 +48,9 @@ then deploy it manually through the AWS console:
   - Queen Charge into wall breakable compartment shouldnt get to 2 air defs
   - It should require either a jump spell or 2 wall breaker groups in order to access the queen.
  
+ - high HP rule needs to be more lenient
+ - tweak WT hound rule. Pretty sure hounds target 1 tile in of air def
+ 
  - TH8 rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
    - maybe as a % of compartmented area
    - see spike dragons base

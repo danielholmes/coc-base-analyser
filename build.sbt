@@ -7,7 +7,7 @@ scalaVersion := "2.11.8"
 lazy val root = (project in file(".")).enablePlugins(SbtWeb).enablePlugins(TomcatPlugin)
 
 libraryDependencies ++= {
-  val akkaV = "2.4.3"
+  val akkaV = "2.4.4"
   val sprayV = "1.3.3"
   Seq(
     "org.apache.commons"  %  "commons-math3" % "3.6.1",
@@ -19,7 +19,7 @@ libraryDependencies ++= {
     "io.spray"            %%  "spray-client"  % sprayV,
     "com.typesafe.akka"   %%  "akka-actor"    % akkaV,
 
-    "org.scalactic" %% "scalactic" % "3.0.0-M15",
+    "org.scalactic" %% "scalactic" % "3.0.0-SNAP13",
 
     "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
 

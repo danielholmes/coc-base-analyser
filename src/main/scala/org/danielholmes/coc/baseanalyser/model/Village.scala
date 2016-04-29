@@ -13,11 +13,9 @@ case class Village(elements: Set[Element]) {
 
   // It's a real world base, it has a town hall level. Maybe this should be a requirement? Only reason doesnt exist is
   // for testing which is a poor excuse to harm data model
-  val townHallLevel: Option[PosInt] = elements.find(_.isInstanceOf[TownHall])
-    .map(_.level)
+  val townHallLevel: Option[PosInt] = elements.find(_.isInstanceOf[TownHall]).map(_.level)
 
-  val clanCastle = elements.find(_.isInstanceOf[ClanCastle])
-    .map(_.asInstanceOf[ClanCastle])
+  val clanCastle = elements.find(_.isInstanceOf[ClanCastle]).map(_.asInstanceOf[ClanCastle])
 
   lazy val isEmpty = elements.isEmpty
 
@@ -37,6 +35,9 @@ case class Village(elements: Set[Element]) {
       detectAllCompartments(innerTiles, Set.empty)
     }
   }
+
+  // TODO: Need to consider channel bases
+  lazy val possibleInternalLargeTraps = wallCompartments.flatMap(_.possibleLargeTraps)
 
   lazy val wallTiles = walls.map(_.block.tile)
 

@@ -13,7 +13,7 @@ class QueenWontLeaveCompartmentRuleSpec extends FlatSpec with Matchers {
   }
 
   it should "return no violation for base with walls but without queen" in {
-    val walls = ElementsBuilder.fence(Tile(10, 10), 5, 5)
+    val walls = ElementsBuilder.elementFence(Tile(10, 10), 5, 5)
     rule.analyse(Village(walls)).success should be (true)
   }
 
@@ -23,13 +23,13 @@ class QueenWontLeaveCompartmentRuleSpec extends FlatSpec with Matchers {
 
   it should "return no violation for base with queen inside 9x9" in {
     val aq = ArcherQueen(1, Tile(13, 13))
-    val walls = ElementsBuilder.fence(Tile(9, 9), 11, 11)
+    val walls = ElementsBuilder.elementFence(Tile(9, 9), 11, 11)
     rule.analyse(Village(walls + aq)).success should be (true)
   }
 
   it should "return violation for base with queen inside 7x7" in {
     val aq = ArcherQueen(1, Tile(13, 13))
-    val walls = ElementsBuilder.fence(Tile(10, 10), 9, 9)
+    val walls = ElementsBuilder.elementFence(Tile(10, 10), 9, 9)
     rule.analyse(Village(walls + aq)).success should be (false)
   }
 }
