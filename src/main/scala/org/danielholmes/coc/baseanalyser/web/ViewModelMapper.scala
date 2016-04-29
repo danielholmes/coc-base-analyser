@@ -44,7 +44,11 @@ case class ClanCastleElementViewModel(
   override val noTroopDropBlock: BlockViewModel,
   range: RangeViewModel
 ) extends ElementViewModel
-case class VillageViewModel(elements: Set[ElementViewModel], wallCompartments: Set[WallCompartmentViewModel]) {
+case class VillageViewModel(
+  elements: Set[ElementViewModel],
+  wallCompartments: Set[WallCompartmentViewModel],
+  possibleInternalLargeTraps: Set[PossibleLargeTrapViewModel]
+) {
   require(elements.toList.map(_.id).distinct.size == elements.size, "All ids must be unique")
 }
 
@@ -52,6 +56,7 @@ case class HogTargetingViewModel(startPosition: TileCoordinateViewModel, targeti
 case class ArcherTargetingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 case class ArcherQueenAttackingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 case class WallCompartmentViewModel(id: String, walls: Set[String], innerTiles: Set[TileViewModel], elementIds: Set[String])
+case class PossibleLargeTrapViewModel(x: Int, y: Int)
 case class WizardTowerHoundTargetingViewModel(tower: String, airDefense: String)
 case class MinionAttackPositionViewModel(startPosition: MapCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 
@@ -131,6 +136,14 @@ case class QueenWontLeaveCompartmentRuleResultViewModel(
   title: String,
   description: String
 ) extends RuleResultViewModel
+case class EnoughPossibleTrapLocationsRuleResultViewModel(
+  success: Boolean,
+  score: Double,
+  minScore: Double,
+  code: String,
+  title: String,
+  description: String
+) extends RuleResultViewModel
 
 case class ResultSummaryViewModel(shortName: String, success: Boolean)
 case class AnalysisReportSummaryViewModel(townHallLevel: Int, resultSummaries: Set[ResultSummaryViewModel])
@@ -165,6 +178,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
       case w: WizardTowersOutOfHoundPositionsResultViewModel => wizardTowersOutOfHoundPositionsResultFormat.write(w)
       case q: QueenWalkedAirDefenseResultViewModel => queenWalkedAirDefenseResultFormat.write(q)
       case q: QueenWontLeaveCompartmentRuleResultViewModel => queenWontLeaveCompartmentResultFormat.write(q)
+      case t: EnoughPossibleTrapLocationsRuleResultViewModel => enoughPossibleTrapLocationsResultFormat.write(t)
       case _ => throw new RuntimeException(s"Don't know how to serialise ${r.getClass.getSimpleName}")
     }
 
@@ -179,6 +193,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val blockFormat = jsonFormat3(BlockViewModel)
   implicit val tileFormat = jsonFormat2(TileViewModel)
   implicit val wallCompartmentFormat = jsonFormat4(WallCompartmentViewModel)
+  implicit val possibleLargeTrapFormat = jsonFormat2(PossibleLargeTrapViewModel)
 
   implicit val baseElementFormat = jsonFormat5(BaseElementViewModel)
   implicit val defenseElementFormat = jsonFormat6(DefenseElementViewModel)
@@ -198,8 +213,9 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val wizardTowersOutOfHoundPositionsResultFormat = jsonFormat7(WizardTowersOutOfHoundPositionsResultViewModel)
   implicit val queenWalkedAirDefenseResultFormat = jsonFormat6(QueenWalkedAirDefenseResultViewModel)
   implicit val queenWontLeaveCompartmentResultFormat = jsonFormat4(QueenWontLeaveCompartmentRuleResultViewModel)
+  implicit val enoughPossibleTrapLocationsResultFormat = jsonFormat6(EnoughPossibleTrapLocationsRuleResultViewModel)
 
-  implicit val villageFormat = jsonFormat2(VillageViewModel)
+  implicit val villageFormat = jsonFormat3(VillageViewModel)
   implicit val analysisReportFormat = jsonFormat3(AnalysisReportViewModel)
   implicit val cantAnalyseVillageFormat = jsonFormat2(CantAnalyseVillageViewModel)
 
@@ -329,6 +345,14 @@ class ViewModelMapper {
         q.ruleDetails.name,
         q.ruleDetails.description
       )
+      case t: EnoughPossibleTrapLocationsRuleResult => EnoughPossibleTrapLocationsRuleResultViewModel(
+        t.success,
+        t.score,
+        t.minScore,
+        t.ruleDetails.code,
+        t.ruleDetails.name,
+        t.ruleDetails.description
+      )
       case _ => throw new RuntimeException(s"Don't know how to create view model for ${result.getClass.getSimpleName}")
     }
   }
@@ -369,7 +393,15 @@ class ViewModelMapper {
   private def tile(tile: Tile): TileViewModel = TileViewModel(tile.x, tile.y)
 
   private def village(village: Village): VillageViewModel = {
-    VillageViewModel(village.elements.map(element), village.wallCompartments.map(wallCompartment))
+    VillageViewModel(
+      village.elements.map(element),
+      village.wallCompartments.map(wallCompartment),
+      village.possibleInternalLargeTraps.map(possibleInternalLargeTrap)
+    )
+  }
+
+  private def possibleInternalLargeTrap(trap: PossibleLargeTrap): PossibleLargeTrapViewModel = {
+    PossibleLargeTrapViewModel(trap.tile.x, trap.tile.y)
   }
 
   private def element(element: Element): ElementViewModel = {

@@ -143,6 +143,22 @@ var mapDisplay2d = (function(document) {
         );
     };
 
+    var renderEnoughPossibleTrapLocations = function(result, mapConfig) {
+        var colour = result.success ? successColour : failColour;
+        var display = new createjs.Shape();
+        display.alpha = 0.3;
+        _.each(
+            model.getReport().village.possibleInternalLargeTraps,
+            function(trap) {
+                display.graphics
+                    .beginFill(colour)
+                    .drawRect(trap.x * mapConfig.tileSize, trap.y * mapConfig.tileSize, 2 * mapConfig.tileSize, 2 * mapConfig.tileSize)
+                    .endFill();
+            }
+        );
+        extrasContainer.addChild(display);
+    };
+
     var renderActiveRule = function(mapConfig) {
         if (!model.hasActiveRule()) {
             return;
@@ -176,6 +192,9 @@ var mapDisplay2d = (function(document) {
                 break;
             case 'QueenWontLeaveCompartment':
                 renderQueenWontLeaveCompartment(result, mapConfig);
+                break;
+            case 'EnoughPossibleTrapLocations':
+                renderEnoughPossibleTrapLocations(result, mapConfig);
                 break;
             default:
                 console.error('Don\'t know how to render active rule: ' + result.code);

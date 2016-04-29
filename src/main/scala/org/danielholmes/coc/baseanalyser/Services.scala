@@ -22,14 +22,16 @@ trait Services {
     wire[ArcherAnchorRule],
     wire[AirSnipedDefenseRule],
     wire[MinimumCompartmentsRule],
-    wire[BKSwappableRule]
+    wire[BKSwappableRule],
+    wire[EnoughPossibleTrapLocationsRule]
   )
   private lazy val th9Rules: Set[Rule] = Set(
     wire[HogCCLureRule],
     wire[AirSnipedDefenseRule],
     wire[WizardTowersOutOfHoundPositionsRule],
     wire[QueenWalkedAirDefenseRule],
-    wire[QueenWontLeaveCompartmentRule]
+    wire[QueenWontLeaveCompartmentRule],
+    wire[EnoughPossibleTrapLocationsRule]
   )
   private lazy val th10Rules: Set[Rule] = Set(
     wire[HogCCLureRule],

@@ -213,7 +213,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                         .getOrElse(
                           complete(
                             StatusCodes.BadRequest,
-                            s"${player.avatar.userName} village can't be analysed - currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}"
+                            s""""${player.avatar.userName} village can't be analysed - currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}""""
                           )
                         )
                   })

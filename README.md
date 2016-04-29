@@ -51,15 +51,13 @@ then deploy it manually through the AWS console:
  - high HP rule needs to be more lenient
  - tweak WT hound rule. Pretty sure hounds target 1 tile in of air def
  
- - TH8 rule for keep guessing - number of possible tesla / gb locations within base (take care for channel bases, maybe non hit 2x2s far enough from drop point count) - see spike
-   - maybe as a % of compartmented area
-   - see spike dragons base
- 
  - BK Trigger rule further tweaks. should show red for all non-compartment tiles floodfilled from triggered
  
  - analysis performance, currently too slow
   - return time taken for analysis and each rule so can inspect
   - hog cc lure analysis - dont need all external tiles - just need outer coords touching drop boundary
+  - note that first ran rules will be longer since creating wall compartments, etc for first time
+  - try running rules in par if not already
  - change js to use classes and instances rather than global modules
  
  - clarify AQ range - see iphoto screenshot of greg raid. possibly shown on ppetes war base

@@ -8,9 +8,10 @@ import spray.http._
 import spray.client.pipelining._
 import spray.httpx.unmarshalling.FromResponseUnmarshaller
 
+import scala.annotation.tailrec
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.reflect.{classTag, ClassTag}
+import scala.reflect.{ClassTag, classTag}
 
 object ClanSeekerProtocol extends DefaultJsonProtocol {
   case class AvatarSummary(userName: String, currentHomeId: Long, clanId: Long)
@@ -42,6 +43,7 @@ class ClanSeekerAkkaServiceAgent extends ClanSeekerServiceAgent {
     implicit val system = ActorSystem()
     import system.dispatcher // execution context for futures
 
+    @tailrec
     def attempt(attemptNumber: Int): Option[ClanDetails] = {
       val pipeline = sendReceive ~> unmarshal[ClanDetailsResponse]
       val response = pipeline(Get(s"$rootUrl/clan_details?id=$id"))
@@ -62,6 +64,7 @@ class ClanSeekerAkkaServiceAgent extends ClanSeekerServiceAgent {
     implicit val system = ActorSystem()
     import system.dispatcher // execution context for futures
 
+    @tailrec
     def attempt(attemptNumber: Int): Option[PlayerVillage] = {
       val pipeline = sendReceive ~> unmarshal[PlayerVillageResponse]
       val response = pipeline(Get(s"$rootUrl/player_village?id=$id"))

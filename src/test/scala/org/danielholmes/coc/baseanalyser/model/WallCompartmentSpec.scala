@@ -26,6 +26,6 @@ class WallCompartmentSpec extends FlatSpec with Matchers {
     val walls = ElementsBuilder.wallFence(Tile.MapOrigin, 5, 4)
     val inner = Tile.MapOrigin.offset(1, 1).matrixOfTilesTo(Tile.MapOrigin.offset(3, 2))
     WallCompartment(walls, inner, Set.empty).possibleLargeTraps should contain theSameElementsAs
-      Set(Block(Tile.MapOrigin.offset(1, 1), 2), Block(Tile.MapOrigin.offset(2, 1), 2))
+      Set(PossibleLargeTrap(Tile.MapOrigin.offset(1, 1)), PossibleLargeTrap(Tile.MapOrigin.offset(2, 1)))
   }
 }

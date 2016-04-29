@@ -17,12 +17,12 @@ case class WallCompartment(walls: Set[Wall], innerTiles: Set[Tile], elements: Se
   def contains(tile: Tile): Boolean = allTiles.contains(tile)
 
   @tailrec
-  private def findPossibleLargeTraps(tiles: List[Tile], current: Set[Block]): Set[Block] = {
+  private def findPossibleLargeTraps(tiles: List[Tile], current: Set[PossibleLargeTrap]): Set[PossibleLargeTrap] = {
     tiles match {
       case Nil => current
       case head :: tail => findPossibleLargeTraps(
         tail,
-        current ++ Some(Block(head, 2)).filter(b => b.tiles.subsetOf(emptyTiles))
+        current ++ Some(PossibleLargeTrap(head)).filter(b => b.tiles.subsetOf(emptyTiles))
       )
     }
   }

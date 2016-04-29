@@ -4,6 +4,8 @@ import org.danielholmes.coc.baseanalyser.model.Village
 import org.scalactic.anyvals.PosInt
 
 class VillageAnalyser(private val rulesByThLevel: Map[PosInt, Set[Rule]]) {
+  require(rulesByThLevel.nonEmpty)
+
   lazy val minTownHallLevel = rulesByThLevel.keys.min
 
   lazy val maxTownHallLevel = rulesByThLevel.keys.max

@@ -3,27 +3,35 @@ package org.danielholmes.coc.baseanalyser.analysis
 import org.danielholmes.coc.baseanalyser.model._
 import org.scalactic.anyvals.{PosDouble, PosZDouble}
 
+import scala.annotation.tailrec
+
 class BKSwappableRule extends Rule {
   private val CloseEnoughFromDropToSwap = PosDouble(5.0)
   private val MinExposedDistance = PosDouble(1.25)
 
   def analyse(village: Village): RuleResult = {
     val exposedTiles = findExposedTiles(village)
-    if (exposedTiles.isEmpty) return BKSwappableRuleResult(Set.empty)
-    val triggerTiles = findTriggerTiles(village, exposedTiles)
-    if (triggerTiles.isEmpty) return BKSwappableRuleResult(Set.empty)
-    BKSwappableRuleResult(findTouchingTiles(triggerTiles, exposedTiles, Set.empty))
+    BKSwappableRuleResult(
+      findTouchingTiles(
+        findTriggerTiles(village, exposedTiles).toList,
+        exposedTiles,
+        Set.empty
+      )
+    )
   }
 
-  private def findTouchingTiles(touchingTrigger: Set[Tile], exposedToCheck: Set[Tile], current: Set[Tile]): Set[Tile] = {
-    if (exposedToCheck.isEmpty) return current ++ touchingTrigger
-    if (touchingTrigger.isEmpty) return current
-    val exposedTouchingTrigger = touchingTrigger.head.touchingTiles.intersect(exposedToCheck)
-    findTouchingTiles(
-      touchingTrigger.tail ++ exposedTouchingTrigger -- current,
-      exposedToCheck -- exposedTouchingTrigger,
-      current + touchingTrigger.head
-    )
+  @tailrec
+  private def findTouchingTiles(touchingTrigger: List[Tile], exposedToCheck: Set[Tile], current: Set[Tile]): Set[Tile] = {
+    touchingTrigger match {
+      case Nil => current
+      case head :: tail =>
+        val exposedTouchingTrigger = touchingTrigger.head.touchingTiles.intersect(exposedToCheck)
+        findTouchingTiles(
+          (touchingTrigger.toSet ++ exposedTouchingTrigger -- current).toList,
+          exposedToCheck -- exposedTouchingTrigger,
+          current + head
+        )
+    }
   }
 
   private def findTriggerTiles(village: Village, exposedTiles: Set[Tile]) = {
