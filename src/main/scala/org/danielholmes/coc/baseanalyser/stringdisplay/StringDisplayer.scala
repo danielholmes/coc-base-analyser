@@ -4,6 +4,7 @@ import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.model.defense._
 import org.danielholmes.coc.baseanalyser.model.heroes.{ArcherQueenAltar, BarbarianKingAltar}
 import org.danielholmes.coc.baseanalyser.model.range.ElementRange
+import org.danielholmes.coc.baseanalyser.model.special.{ClanCastle, TownHall}
 
 import scala.annotation.tailrec
 

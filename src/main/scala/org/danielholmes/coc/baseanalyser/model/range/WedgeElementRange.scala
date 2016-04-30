@@ -2,10 +2,10 @@ package org.danielholmes.coc.baseanalyser.model.range
 
 import org.apache.commons.math3.geometry.euclidean.twod.Segment
 import org.danielholmes.coc.baseanalyser.model.{MapCoordinate, Tile}
-import org.scalactic.anyvals.PosDouble
+import org.scalactic.anyvals.{PosDouble, PosInt, PosZDouble}
 
 // TODO: Make angle a reduced amount
-case class WedgeElementRange(centre: MapCoordinate, angle: Double) extends ElementRange {
+case class WedgeElementRange(centre: MapCoordinate, angle: PosZDouble, size: PosInt) extends ElementRange {
   def contains(testCoordinate: MapCoordinate): Boolean = {
     throw new NotImplementedError()
   }

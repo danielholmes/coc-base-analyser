@@ -27,54 +27,66 @@ var mapDisplay2d = (function(document) {
             _.map(
                 elements,
                 function (elementToDraw) {
-                    var allInfo = new createjs.Container();
-                    var outerCircle = new createjs.Shape();
-                    outerCircle.graphics
-                        .beginStroke("#ffffff")
-                        .beginFill("rgba(255,255,255,0.05)")
-                        .drawCircle(
-                            0,
-                            0,
-                            elementToDraw.range.outer * mapConfig.tileSize
-                        );
-                    allInfo.addChild(outerCircle);
-
-                    if (elementToDraw.range.inner) {
-                        var innerCircle = new createjs.Shape();
-                        innerCircle.graphics
-                            .beginStroke("#ffaaaa")
-                            .beginFill("rgba(255,80,80,0.05)")
-                            .drawCircle(
-                                0,
-                                0,
-                                elementToDraw.range.inner * mapConfig.tileSize
-                            );
-                        allInfo.addChild(innerCircle);
+                    switch (elementToDraw.range.typeName) {
+                        case "Wedge":
+                            return new createjs.Container();
+                        case "Circular":
+                            return createCircularElementRangeDisplay(mapConfig, elementToDraw);
+                        default:
+                            console.log("Can't render", elementToDraw.range)
                     }
-
-                    var lineSize = 1;
-                    var vert = new createjs.Shape();
-                    vert.graphics
-                        .beginStroke("#ffffff")
-                        .moveTo(0, -lineSize * mapConfig.tileSize / 2)
-                        .lineTo(0, lineSize * mapConfig.tileSize / 2);
-                    allInfo.addChild(vert);
-                    var hor = new createjs.Shape();
-                    hor.graphics
-                        .beginStroke("#ffffff")
-                        .moveTo(-lineSize * mapConfig.tileSize / 2, 0)
-                        .lineTo(lineSize * mapConfig.tileSize / 2, 0);
-                    allInfo.addChild(hor);
-
-                    allInfo.x = (elementToDraw.block.x + elementToDraw.block.size / 2) * mapConfig.tileSize;
-                    allInfo.y = (elementToDraw.block.y + elementToDraw.block.size / 2) * mapConfig.tileSize;
-                    return allInfo;
                 }
             ),
             function (circle) {
                 extrasContainer.addChild(circle);
             }
         );
+    };
+
+    var createCircularElementRangeDisplay = function(mapConfig, element) {
+        var allInfo = new createjs.Container();
+        var outerCircle = new createjs.Shape();
+        outerCircle.graphics
+            .beginStroke("#ffffff")
+            .beginFill("rgba(255,255,255,0.05)")
+            .drawCircle(
+                0,
+                0,
+                element.range.outer * mapConfig.tileSize
+            );
+        allInfo.addChild(outerCircle);
+
+        if (element.range.inner) {
+            var innerCircle = new createjs.Shape();
+            innerCircle.graphics
+                .beginStroke("#ffaaaa")
+                .beginFill("rgba(255,80,80,0.05)")
+                .drawCircle(
+                    0,
+                    0,
+                    element.range.inner * mapConfig.tileSize
+                );
+            allInfo.addChild(innerCircle);
+        }
+
+        var lineSize = 1;
+        var vert = new createjs.Shape();
+        vert.graphics
+            .beginStroke("#ffffff")
+            .moveTo(0, -lineSize * mapConfig.tileSize / 2)
+            .lineTo(0, lineSize * mapConfig.tileSize / 2);
+        allInfo.addChild(vert);
+        var hor = new createjs.Shape();
+        hor.graphics
+            .beginStroke("#ffffff")
+            .moveTo(-lineSize * mapConfig.tileSize / 2, 0)
+            .lineTo(lineSize * mapConfig.tileSize / 2, 0);
+        allInfo.addChild(hor);
+
+        allInfo.x = (element.block.x + element.block.size / 2) * mapConfig.tileSize;
+        allInfo.y = (element.block.y + element.block.size / 2) * mapConfig.tileSize;
+
+        return allInfo;
     };
 
     var renderElementRangesByIds = function(mapConfig, ids) {
@@ -431,7 +443,6 @@ var mapDisplay2d = (function(document) {
         var allPrevents = new createjs.Container();
         for (var i in model.getReport().village.elements) {
             var element = model.getReport().village.elements[i];
-            console.log(element);
             if (element.noTroopDropBlock.size == 0) {
                 continue;
             }

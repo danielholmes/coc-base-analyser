@@ -2,6 +2,7 @@ package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.model.defense.AirDefense
+import org.danielholmes.coc.baseanalyser.model.special.{ClanCastle, TownHall}
 import org.danielholmes.coc.baseanalyser.model.trash.{DarkElixirStorage, ElixirStorage, GoldStorage}
 import org.danielholmes.coc.baseanalyser.model.troops.Dragon
 

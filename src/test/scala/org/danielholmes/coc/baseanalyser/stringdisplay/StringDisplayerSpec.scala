@@ -2,6 +2,7 @@ package org.danielholmes.coc.baseanalyser.stringdisplay
 
 import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.model.defense.ArcherTower
+import org.danielholmes.coc.baseanalyser.model.special.{ClanCastle, TownHall}
 import org.scalatest._
 
 class StringDisplayerSpec extends FlatSpec with Matchers {

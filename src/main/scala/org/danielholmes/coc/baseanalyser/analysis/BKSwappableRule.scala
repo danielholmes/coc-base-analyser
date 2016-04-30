@@ -7,8 +7,8 @@ import org.scalactic.anyvals.{PosDouble, PosZDouble}
 import scala.annotation.tailrec
 
 class BKSwappableRule extends Rule {
-  private val CloseEnoughFromDropToSwap = PosDouble(5.0)
-  private val MinExposedDistance = PosDouble(1.25)
+  private val CloseEnoughFromDropToSwap = PosDouble(5.5)
+  private val MinExposedDistance = PosDouble(1.75)
 
   def analyse(village: Village): RuleResult = {
     val exposedTiles = findExposedTiles(village)

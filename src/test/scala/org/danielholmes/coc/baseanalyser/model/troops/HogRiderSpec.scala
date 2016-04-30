@@ -1,7 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model.troops
 
 import org.danielholmes.coc.baseanalyser.model._
-import org.danielholmes.coc.baseanalyser.model.defense.{ArcherTower, Cannon}
+import org.danielholmes.coc.baseanalyser.model.defense.{AirSweeper, ArcherTower, Cannon}
 import org.danielholmes.coc.baseanalyser.model.heroes.BarbarianKingAltar
 import org.danielholmes.coc.baseanalyser.model.trash.Barrack
 import org.scalatest._
@@ -33,6 +33,12 @@ class HogRiderSpec extends FlatSpec with Matchers {
     val bk = BarbarianKingAltar(1, Tile(10, 10))
     val closeBarrack = Barrack(1, Tile(2, 2))
     HogRider.findTargets(origin, Village(Set(bk, closeBarrack))) should contain (closeBarrack)
+  }
+
+  it should "include air sweeper as target" in {
+    val as = AirSweeper(1, Tile(10, 10))
+    val closeBarrack = Barrack(1, Tile(2, 2))
+    HogRider.findTargets(origin, Village(Set(as, closeBarrack))) should contain (as)
   }
 
   it should "return none for empty village" in {

@@ -48,8 +48,15 @@ then deploy it manually through the AWS console:
   - Queen Charge into wall breakable compartment shouldnt get to 2 air defs
   - It should require either a jump spell or 2 wall breaker groups in order to access the queen.
  
+ - bug in WT hound range rule - 1 WT in range of 2 air ds counts double
+   - Pretty sure hounds target 1 tile in of air def
+   
+ - on equidistant hog lure, mark it as such or ignore it all together (maybe a pink line showing equidistant, non luring alternative path
+ 
  - high HP rule needs to be more lenient
- - tweak WT hound rule. Pretty sure hounds target 1 tile in of air def
+ 
+ - work on the sweeper. Needs to impact air sniped ground defenses rule
+ - separate hole in the base rule - just to highlight really bad issues (due to ignoring some others)
  
  - expand possible trap locations for channel bases. e.g. see spandan and vicious 2.0
  
@@ -102,6 +109,7 @@ then deploy it manually through the AWS console:
  - skele traps not lurable
  - skele traps + air traps not within dgb positions (gives info for cleanup if first hit was with air)
  - 3 viable DGB spots (more difficult)
+ - farm wars - tes;as in diff compaertmant for gowipe
 
 
 ## TH9 Rules

@@ -6,23 +6,31 @@ import java.util.{Base64, UUID}
 import org.danielholmes.coc.baseanalyser.analysis._
 import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.model.defense.HiddenTesla
-import org.danielholmes.coc.baseanalyser.model.range.{BlindSpotCircularElementRange, CircularElementRange, ElementRange}
+import org.danielholmes.coc.baseanalyser.model.heroes.HeroAltar
+import org.danielholmes.coc.baseanalyser.model.range.{BlindSpotCircularElementRange, CircularElementRange, ElementRange, WedgeElementRange}
+import org.danielholmes.coc.baseanalyser.model.special.ClanCastle
 import org.danielholmes.coc.baseanalyser.model.troops._
 import spray.http.Uri
 import spray.json.{DefaultJsonProtocol, JsValue, RootJsonFormat}
 
 case class TileCoordinateViewModel(x: Int, y: Int)
 case class MapCoordinateViewModel(x: Double, y: Double)
-case class RangeViewModel(inner: Double, outer: Double)
+
+sealed trait ElementRangeViewModel {
+  val typeName: String
+}
+case class CircularElementRangeViewModel(inner: Double, outer: Double, override val typeName: String = "Circular") extends ElementRangeViewModel
+case class WedgeElementRangeViewModel(angle: Double, size: Double, override val typeName: String = "Wedge") extends ElementRangeViewModel
+
 case class BlockViewModel(x: Int, y: Int, size: Int)
 case class TileViewModel(x: Int, y: Int)
+
 sealed trait ElementViewModel {
   def id: String
   def typeName: String
   def level: Int
   def block: BlockViewModel
 }
-
 case class BaseElementViewModel(
   override val id: String,
   override val typeName: String,
@@ -42,14 +50,14 @@ case class DefenseElementViewModel(
   override val level: Int,
   override val block: BlockViewModel,
   noTroopDropBlock: BlockViewModel,
-  range: RangeViewModel
+  range: ElementRangeViewModel
 ) extends ElementViewModel
 case class HiddenTeslaViewModel(
   override val id: String,
   override val typeName: String,
   override val level: Int,
   override val block: BlockViewModel,
-  range: RangeViewModel
+  range: ElementRangeViewModel
 ) extends ElementViewModel
 case class ClanCastleElementViewModel(
   override val id: String,
@@ -57,7 +65,7 @@ case class ClanCastleElementViewModel(
   override val level: Int,
   override val block: BlockViewModel,
   noTroopDropBlock: BlockViewModel,
-  range: RangeViewModel
+  range: ElementRangeViewModel
 ) extends ElementViewModel
 case class VillageViewModel(
   elements: Set[ElementViewModel],
@@ -204,9 +212,23 @@ object ViewModelProtocol extends DefaultJsonProtocol {
     }
   }
 
+  implicit object ElementRangeJsonFormat extends RootJsonFormat[ElementRangeViewModel] {
+    def write(e: ElementRangeViewModel): JsValue = e match {
+      case c: CircularElementRangeViewModel => circularElementRangeFormat.write(c)
+      case w: WedgeElementRangeViewModel => wedgeElementRangeFormat.write(w)
+      case _ => throw new RuntimeException(s"Can't render ${e.getClass.getSimpleName}")
+    }
+
+    def read(value: JsValue): ElementRangeViewModel = {
+      throw new NotImplementedError()
+    }
+  }
+
+  implicit val circularElementRangeFormat = jsonFormat3(CircularElementRangeViewModel)
+  implicit val wedgeElementRangeFormat = jsonFormat3(WedgeElementRangeViewModel)
+
   implicit val tileCoordinateFormat = jsonFormat2(TileCoordinateViewModel)
   implicit val mapCoordinateFormat = jsonFormat2(MapCoordinateViewModel)
-  implicit val rangeFormat = jsonFormat2(RangeViewModel)
   implicit val blockFormat = jsonFormat3(BlockViewModel)
   implicit val tileFormat = jsonFormat2(TileViewModel)
   implicit val wallCompartmentFormat = jsonFormat4(WallCompartmentViewModel)
@@ -435,7 +457,7 @@ class ViewModelMapper {
             element.level,
             block(d.block),
             block(p.preventTroopDropBlock),
-            elementRange (d.range)
+            elementRange(d.range)
           )
           case h: HiddenTesla => HiddenTeslaViewModel(
             objectId (d),
@@ -446,6 +468,14 @@ class ViewModelMapper {
           )
           case _ => throw new RuntimeException(s"Can't map ${element.getClass.getSimpleName}")
         }
+      case h: HeroAltar => DefenseElementViewModel (
+        objectId(h),
+        typeName,
+        element.level,
+        block(h.block),
+        block(h.preventTroopDropBlock),
+        elementRange(h.range)
+      )
       case c: ClanCastle => ClanCastleElementViewModel(
         objectId(c),
         typeName,
@@ -470,10 +500,11 @@ class ViewModelMapper {
   }
 
   // TODO: Look up compile time checking for matches
-  private def elementRange(range: ElementRange): RangeViewModel = {
+  private def elementRange(range: ElementRange): ElementRangeViewModel = {
     range match {
-      case c: CircularElementRange => RangeViewModel(0, c.size)
-      case b: BlindSpotCircularElementRange => RangeViewModel(b.innerSize, b.outerSize)
+      case c: CircularElementRange => CircularElementRangeViewModel(0, c.size)
+      case b: BlindSpotCircularElementRange => CircularElementRangeViewModel(b.innerSize, b.outerSize)
+      case w: WedgeElementRange => WedgeElementRangeViewModel(w.angle, w.size)
       case _ => throw new RuntimeException("Can't render element range")
     }
 

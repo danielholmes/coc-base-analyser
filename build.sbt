@@ -42,6 +42,8 @@ lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
 compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value
 (compile in Compile) <<= (compile in Compile) dependsOn compileScalastyle
 
+(packageBin in Compile) <<= (packageBin in Compile) dependsOn (test in Test)
+
 // Doesnt work, seems to remove the .war packaging and just packages web.
 //Keys.`package` <<= (Keys.`package` in Compile) dependsOn (test in Test)
 

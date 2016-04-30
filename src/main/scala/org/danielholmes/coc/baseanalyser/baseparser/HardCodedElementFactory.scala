@@ -3,6 +3,7 @@ package org.danielholmes.coc.baseanalyser.baseparser
 import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.model.defense._
 import org.danielholmes.coc.baseanalyser.model.heroes.{ArcherQueenAltar, BarbarianKingAltar, GrandWarden}
+import org.danielholmes.coc.baseanalyser.model.special.{ClanCastle, TownHall}
 import org.danielholmes.coc.baseanalyser.model.traps._
 import org.danielholmes.coc.baseanalyser.model.trash._
 import org.scalactic.anyvals.{PosInt, PosZInt}

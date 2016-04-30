@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.model
 
 import org.danielholmes.coc.baseanalyser.model.defense.AirDefense
+import org.danielholmes.coc.baseanalyser.model.special.{ClanCastle, TownHall}
 import org.scalactic.anyvals.PosInt
 
 import scala.annotation.tailrec
