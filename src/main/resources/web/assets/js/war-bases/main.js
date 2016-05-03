@@ -14,11 +14,19 @@ $(document).ready(function() {
         render();
     };
 
+    $(document).on('click', '.try-player-again', function(event) {
+        var player = $(event.currentTarget).data('player');
+        $("#" + getProblemId(player)).remove();
+        toLoad.push(player);
+        loadNext();
+        return false;
+    });
+
     var loadPlayer = function(player) {
         jQuery.getJSON(player.analysisSummaryUrl)
             .always(function() {
                 loading = _.reject(loading, function(check) { return check == player; });
-                load();
+                loadNext();
             })
             .done(function(report) {
                 addResult({
@@ -45,12 +53,12 @@ $(document).ready(function() {
 
                 addResult({
                     player: player,
-                    error: "Some error encountered, please try again"
+                    error: 'Unknown error encountered'
                 });
             });
     };
 
-    var load = function() {
+    var loadNext = function() {
         while (toLoad.length > 0 && loading.length < LOAD_BATCH_SIZE) {
             var next = _.head(toLoad);
             toLoad = _.tail(toLoad);
@@ -59,6 +67,10 @@ $(document).ready(function() {
         }
 
         render();
+    };
+
+    var getProblemId = function(player) {
+        return "problem-" + player.id;
     };
 
     var render = function() {
@@ -84,9 +96,13 @@ $(document).ready(function() {
 
                 if (result.report == null) {
                     problemsContainer.removeClass("hidden").show();
-                    var problemId = "problem-" + result.player.id;
+                    var problemId = getProblemId(result.player);
                     if (problemsContainer.find("#" + problemId).size() == 0) {
-                        problemsContainer.append($("<div />").attr("id", problemId).html(result.player.ign + ": " + result.error));
+                        problemsContainer.append(
+                            $("<div />").attr("id", problemId)
+                                .html(result.player.ign + ": " + result.error + " ")
+                                .append($('<a />').data('player', result.player).addClass('try-player-again btn btn-default btn-xs').html('try again'))
+                        );
                     }
                     
                     return;
@@ -135,5 +151,5 @@ $(document).ready(function() {
         );
     };
 
-    load();
+    loadNext();
 });

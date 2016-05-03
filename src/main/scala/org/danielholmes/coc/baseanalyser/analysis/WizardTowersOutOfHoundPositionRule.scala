@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
-import org.danielholmes.coc.baseanalyser.model.troops.{Minion, MinionAttackPosition, WizardTowerHoundTargeting}
+import org.danielholmes.coc.baseanalyser.model.troops.{LavaHound, Minion, MinionAttackPosition, WizardTowerHoundTargeting}
 import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.model.defense.{AirDefense, WizardTower}
 
@@ -10,23 +10,21 @@ class WizardTowersOutOfHoundPositionsRule extends Rule {
         .filter(_.isInstanceOf[WizardTower])
         .map(_.asInstanceOf[WizardTower])
 
-    // TODO: Introduce hound object
-    val wtInRange = wts.map(wt => (wt, village.airDefenses.filter(ad => wt.range.touches(ad.block))))
+    val wtInRange = wts.map(wt => (wt, village.airDefenses.filter(ad => wt.range.touches(LavaHound.getRestingArea(ad)))))
       .filter(_._2.nonEmpty)
-      .flatMap(pair => pair._2.map(WizardTowerHoundTargeting(pair._1, _)))
+      .flatMap(pair => pair._2.map(ad => WizardTowerHoundTargeting(pair._1, ad, LavaHound.getRestingArea(ad))))
 
     val outOfRange = wts.filterNot(wt => wtInRange.exists(_.tower == wt))
 
-    WizardTowersOutOfHoundPositionsRuleResult(
-      outOfRange,
-      wtInRange,
-      village.airDefenses
-    )
+    WizardTowersOutOfHoundPositionsRuleResult(outOfRange, wtInRange)
   }
 }
 
-case class WizardTowersOutOfHoundPositionsRuleResult(outOfRange: Set[WizardTower], inRange: Set[WizardTowerHoundTargeting], houndPositions: Set[AirDefense]) extends RuleResult {
-  val success = inRange.size <= outOfRange.size
+case class WizardTowersOutOfHoundPositionsRuleResult(
+  outOfRange: Set[WizardTower],
+  inRange: Set[WizardTowerHoundTargeting]
+) extends RuleResult {
+  val success = inRange.map(_.tower).size <= outOfRange.size
   val ruleDetails = WizardTowersOutOfHoundPositionsRule.Details
 }
 

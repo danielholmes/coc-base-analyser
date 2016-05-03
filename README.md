@@ -44,21 +44,19 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - Some TH9 rules - to get Xtian onboard
+ - work on the sweeper. Needs to impact air sniped ground defenses rule. Should store angle
+ - change to exact same coordinate system as clash with 3 tiles off edge of map
+ 
+ - TH10s without infernos should go under TH 9.5 rules?
+ - Some TH9 rules
   - Queen Charge into wall breakable compartment shouldnt get to 2 air defs
   - It should require either a jump spell or 2 wall breaker groups in order to access the queen.
  
- - bug in WT hound range rule - 1 WT in range of 2 air ds counts double
-   - Pretty sure hounds target 1 tile in of air def
-   
  - on equidistant hog lure, mark it as such or ignore it all together (maybe a pink line showing equidistant, non luring alternative path
  
- - high HP rule needs to be more lenient
- 
- - work on the sweeper. Needs to impact air sniped ground defenses rule
  - separate hole in the base rule - just to highlight really bad issues (due to ignoring some others)
  
- - expand possible trap locations for channel bases. e.g. see spandan and vicious 2.0
+ - expand possible trap locations for channel bases. e.g. see spandan and vicious 2.0 an sparta home base
  
  - Begin on DGB:
   - class PossibleDoubleGiantBomb(anchors: (Either[Defense, PossibleTrapLocation], Either[Defense, PossibleTrapLocation]), gbs: (PossibleTrapLocation, PossibleTrapLocation))
@@ -81,7 +79,6 @@ then deploy it manually through the AWS console:
  - TH11 rendering - new levels and warden + eagle
  
  - own connection - see UCS server for help creating
- - change to exact same coordinate system as clash with 3 tiles off edge of map
  - sbt deploy task
  - 3d render
  - separate rule groups for farm vs arranged

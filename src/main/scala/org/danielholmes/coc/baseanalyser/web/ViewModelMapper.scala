@@ -80,7 +80,7 @@ case class ArcherTargetingViewModel(standingPosition: TileCoordinateViewModel, t
 case class ArcherQueenAttackingViewModel(standingPosition: TileCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 case class WallCompartmentViewModel(id: String, walls: Set[String], innerTiles: Set[TileViewModel], elementIds: Set[String])
 case class PossibleLargeTrapViewModel(x: Int, y: Int)
-case class WizardTowerHoundTargetingViewModel(tower: String, airDefense: String)
+case class WizardTowerHoundTargetingViewModel(tower: String, airDefense: String, houndTarget: BlockViewModel)
 case class MinionAttackPositionViewModel(startPosition: MapCoordinateViewModel, targetingId: String, hitPoint: TileCoordinateViewModel)
 
 sealed trait RuleResultViewModel {
@@ -140,7 +140,6 @@ case class WizardTowersOutOfHoundPositionsResultViewModel(
   success: Boolean,
   outOfRange: Set[String],
   inRange: Set[WizardTowerHoundTargetingViewModel],
-  houndPositions: Set[BlockViewModel],
   code: String,
   title: String,
   description: String
@@ -244,7 +243,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val minionAttackPositionFormat = jsonFormat3(MinionAttackPositionViewModel)
   implicit val hogTargetingFormat = jsonFormat3(HogTargetingViewModel)
   implicit val archerQueenAttackingFormat = jsonFormat3(ArcherQueenAttackingViewModel)
-  implicit val wizardTowerHoundTargetingFormat = jsonFormat2(WizardTowerHoundTargetingViewModel)
+  implicit val wizardTowerHoundTargetingFormat = jsonFormat3(WizardTowerHoundTargetingViewModel)
 
   implicit val hogCCLureResultFormat = jsonFormat5(HogCCLureResultViewModel)
   implicit val archerAnchorResultFormat = jsonFormat6(ArcherAnchorResultViewModel)
@@ -252,7 +251,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val airSnipedDefenseResultFormat = jsonFormat6(AirSnipedDefenseResultViewModel)
   implicit val minimumCompartmentsResultFormat = jsonFormat6(MinimumCompartmentsResultViewModel)
   implicit val bkSwappableResultFormat = jsonFormat5(BKSwappableResultViewModel)
-  implicit val wizardTowersOutOfHoundPositionsResultFormat = jsonFormat7(WizardTowersOutOfHoundPositionsResultViewModel)
+  implicit val wizardTowersOutOfHoundPositionsResultFormat = jsonFormat6(WizardTowersOutOfHoundPositionsResultViewModel)
   implicit val queenWalkedAirDefenseResultFormat = jsonFormat6(QueenWalkedAirDefenseResultViewModel)
   implicit val queenWontLeaveCompartmentResultFormat = jsonFormat4(QueenWontLeaveCompartmentRuleResultViewModel)
   implicit val enoughPossibleTrapLocationsResultFormat = jsonFormat6(EnoughPossibleTrapLocationsRuleResultViewModel)
@@ -368,7 +367,6 @@ class ViewModelMapper {
         w.success,
         w.outOfRange.map(objectId),
         w.inRange.map(wizardTowerHoundTargeting),
-        w.houndPositions.map(_.block).map(block),
         w.ruleDetails.code,
         w.ruleDetails.name,
         w.ruleDetails.description
@@ -496,7 +494,11 @@ class ViewModelMapper {
   }
 
   private def wizardTowerHoundTargeting(targeting: WizardTowerHoundTargeting): WizardTowerHoundTargetingViewModel = {
-    WizardTowerHoundTargetingViewModel(objectId(targeting.tower), objectId(targeting.airDefense))
+    WizardTowerHoundTargetingViewModel(
+      objectId(targeting.tower),
+      objectId(targeting.airDefense),
+      block(targeting.houndTarget)
+    )
   }
 
   // TODO: Look up compile time checking for matches

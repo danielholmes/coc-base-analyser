@@ -118,7 +118,20 @@ var mapDisplay2d = (function(document) {
         eachBuildingDisplay(
             _.pluck(result.inRange, 'airDefense'),
             function (buildingContainer) {
-                applyColour(buildingContainer, 1, 0.5, 0.5);
+                applyColour(buildingContainer, 1, 0.8, 0.8);
+            }
+        );
+        _.each(
+            _.pluck(result.inRange, 'houndTarget'),
+            function(target) {
+                var display = new createjs.Shape();
+                display.alpha = 0.5;
+                display.graphics
+                    .beginFill(failColour)
+                    .drawRect(0, 0, target.size * mapConfig.tileSize, target.size * mapConfig.tileSize);
+                display.x = target.x * mapConfig.tileSize;
+                display.y = target.y * mapConfig.tileSize;
+                extrasContainer.addChild(display);
             }
         );
         renderElementRangesByIds(mapConfig, _.union(inRangeTowerIds, result.outOfRange));

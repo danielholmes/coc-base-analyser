@@ -65,8 +65,19 @@ case class Block(tile: Tile, size: PosInt) {
 
   def expandBy(offset: PosInt): Block = expandToSize(PosInt.from(size + (offset * 2)).get)
 
+  def contractBy(offset: PosInt): Block = contractToSize(PosInt.from(size - (offset * 2)).get)
+
   def expandToSize(newSize: PosInt): Block = {
     if (newSize < size) throw new IllegalArgumentException("newSize must be greater than size")
+    setSize(newSize)
+  }
+
+  private def contractToSize(newSize: PosInt): Block = {
+    if (newSize > size) throw new IllegalArgumentException("newSize must be greater than size")
+    setSize(newSize)
+  }
+
+  private def setSize(newSize: PosInt): Block = {
     if ((size - newSize) % 2 != 0) throw new IllegalArgumentException("Must increase by factors of 2")
     if (newSize == size) {
       this

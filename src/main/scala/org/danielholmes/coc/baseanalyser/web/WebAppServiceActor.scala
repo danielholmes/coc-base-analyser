@@ -26,7 +26,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
 
   def receive: Actor.Receive = runRoute(route)
 
-  implicit val timeout = Timeout(30.seconds)
+  implicit val timeout = Timeout(120.seconds)
 
   override def timeoutRoute: Route = complete(StatusCodes.InternalServerError, "Took too long")
 
