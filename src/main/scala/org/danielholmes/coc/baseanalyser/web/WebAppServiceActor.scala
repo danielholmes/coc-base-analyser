@@ -15,9 +15,9 @@ import spray.json._
 import ViewModelProtocol._
 import com.google.common.net.UrlEscapers
 import org.danielholmes.coc.baseanalyser.analysis.AnalysisReport
-import org.danielholmes.coc.baseanalyser.apigatherer.ClanSeekerProtocol.{ClanDetails, PlayerSummary}
+import org.danielholmes.coc.baseanalyser.gameconnection.ClanSeekerProtocol.{ClanDetails, PlayerSummary}
 import org.danielholmes.coc.baseanalyser.model.Layout.Layout
-import org.danielholmes.coc.baseanalyser.model.Layout
+import org.danielholmes.coc.baseanalyser.model.{Layout, Tile}
 import org.danielholmes.coc.baseanalyser.util.GameConnectionNotAvailableException
 import spray.util.LoggingContext
 
@@ -80,7 +80,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
     get {
       permittedClans.find(_.code == code)
         .map(clan =>
-          clanSeeker.getClanDetails(clan.id)
+          gameConnection.getClanDetails(clan.id)
             .getOrElse(throw new GameConnectionNotAvailableException)
         )
         .map(handler)
@@ -96,132 +96,133 @@ class WebAppServiceActor extends Actor with HttpService with Services {
             pathSingleSlash {
               getFromResource("web/index.html")
             } ~
-            path("clans" / Segment) { (clanCode) =>
-              getClanByCode(clanCode) {
-                (clanDetails) =>
-                  complete(
-                    mustacheRenderer.render(
-                      "web/clan.mustache",
-                      Map(
-                        "name" -> clanDetails.name,
-                        "bulkAnalysisUrl" -> s"/clans/$clanCode/war-bases",
-                        "players" -> clanDetails.players
-                          .toSeq
-                          .sortBy(_.avatar.userName.toLowerCase)
-                          .map(p => Map(
-                            "ign" -> p.avatar.userName,
-                            "warAnalysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.War),
-                            "homeAnalysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.Home)
-                          ))
-                      )
-                    )
-                  )
-              }
-            } ~
-            path("clans" / Segment / "war-bases") { clanCode =>
-              getClanByCode(clanCode) {
-                (clanDetails) =>
-                  complete(
-                    mustacheRenderer.render(
-                      "web/war-bases.mustache",
-                      Map(
-                        "name" -> clanDetails.name,
-                        "players" -> clanDetails.players
-                          .map(p => Map(
-                            "id" -> p.avatar.currentHomeId,
-                            "ign" -> p.avatar.userName,
-                            "analysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.War),
-                            "analysisSummaryUrl" -> generatePlayerAnalysisSummaryUrl(clanCode, p, Layout.War)
-                          ))
-                      )
-                    )
-                  )
-              }
-            } ~
-            path("clans" / Segment / "players" / LongNumber / Segment) { (clanCode, playerId, layoutName) =>
-              get {
-                facades.getVillageAnalysis(clanCode, playerId, layoutName)
-                  .map({
-                    case (clan, report, village, player, layout, start) =>
-                      report.map(analysis =>
-                        complete(
-                          mustacheRenderer.render(
-                            "web/base-analysis.mustache",
-                            Map(
-                              "clanName" -> clan.name,
-                              "playerIgn" -> player.avatar.userName,
-                              "layoutDescription" -> Layout.getDescription(layout),
-                              "report" -> viewModelMapper.analysisReport(
-                                analysis,
-                                Duration.ofMillis(System.currentTimeMillis - start)
-                              ).toJson.compactPrint
-                            )
-                          )
+              path("clans" / Segment) { (clanCode) =>
+                getClanByCode(clanCode) {
+                  (clanDetails) =>
+                    complete(
+                      mustacheRenderer.render(
+                        "web/clan.mustache",
+                        Map(
+                          "name" -> clanDetails.name,
+                          "bulkAnalysisUrl" -> s"/clans/$clanCode/war-bases",
+                          "players" -> clanDetails.players
+                            .toSeq
+                            .sortBy(_.avatar.userName.toLowerCase)
+                            .map(p => Map(
+                              "ign" -> p.avatar.userName,
+                              "warAnalysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.War),
+                              "homeAnalysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.Home)
+                            ))
                         )
                       )
-                      .getOrElse(
-                        complete(
-                          mustacheRenderer.render(
-                            "web/base-analysis.mustache",
-                            Map(
-                              "clanName" -> clan.name,
-                              "playerIgn" -> player.avatar.userName,
-                              "warning" -> s"${player.avatar.userName} village can't be analysed - currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}",
-                              "report" -> viewModelMapper.analysisReport(
-                                AnalysisReport(village, Set.empty),
-                                Duration.ofMillis(System.currentTimeMillis - start)
-                              ).toJson.compactPrint
-                            )
-                          )
+                    )
+                }
+              } ~
+              path("clans" / Segment / "war-bases") { clanCode =>
+                getClanByCode(clanCode) {
+                  (clanDetails) =>
+                    complete(
+                      mustacheRenderer.render(
+                        "web/war-bases.mustache",
+                        Map(
+                          "name" -> clanDetails.name,
+                          "players" -> clanDetails.players
+                            .map(p => Map(
+                              "id" -> p.avatar.currentHomeId,
+                              "ign" -> p.avatar.userName,
+                              "analysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.War),
+                              "analysisSummaryUrl" -> generatePlayerAnalysisSummaryUrl(clanCode, p, Layout.War)
+                            ))
                         )
                       )
-                  })
-                  .recover(notFoundPage)
-                  .get
-              }
-            }
-          } ~
-          pathPrefix("assets") {
-            getFromResourceDirectory("web/assets")
-          } ~
-          path("sys" / "exception") {
-            get {
-              complete {
-                println("Exception on purpose")
-                throw new RuntimeException("Some exception happened")
-              }
-            }
-          } ~
-          path("sys" / "timeout") { ctx =>
-            println("Provoking Timeout")
-            // we simply let the request drop to provoke a timeout
-          } ~
-          respondWithMediaType(`application/json`) {
-            path("clans" / Segment / "players" / LongNumber / Segment / "summary") { (clanCode, playerId, layoutName) =>
-              get {
-                facades.getVillageAnalysis(clanCode, playerId, layoutName)
-                  .map({
-                    case (clan, report, village, player, layout, start) =>
-                      report
-                        .map(analysis =>
-                          complete(viewModelMapper.analysisSummary(
-                            player.avatar.userName,
-                            analysis,
-                            Duration.ofMillis(System.currentTimeMillis - start)
-                          ))
+                    )
+                }
+              } ~
+              path("clans" / Segment / "players" / LongNumber / Segment) { (clanCode, playerId, layoutName) =>
+                get {
+                  facades.getVillageAnalysis(clanCode, playerId, layoutName)
+                    .map({
+                      case (clan, report, village, player, layout, start) =>
+                        report.map(analysis =>
+                          complete(
+                            mustacheRenderer.render(
+                              "web/base-analysis.mustache",
+                              Map(
+                                "mapTiles" -> Tile.MapSize.toInt,
+                                "borderTiles" -> Tile.OutsideBorder.toInt,
+                                "clanName" -> clan.name,
+                                "playerIgn" -> player.avatar.userName,
+                                "layoutDescription" -> Layout.getDescription(layout),
+                                "report" -> viewModelMapper.analysisReport(
+                                  analysis,
+                                  Duration.ofMillis(System.currentTimeMillis - start)
+                                ).toJson.compactPrint
+                              )
+                            )
+                          )
                         )
                         .getOrElse(
                           complete(
-                            StatusCodes.BadRequest,
-                            s""""${player.avatar.userName} village can't be analysed - currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}""""
+                            mustacheRenderer.render(
+                              "web/base-analysis.mustache",
+                              Map(
+                                "mapTiles" -> Tile.MapSize.toInt,
+                                "borderTiles" -> Tile.OutsideBorder.toInt,
+                                "clanName" -> clan.name,
+                                "playerIgn" -> player.avatar.userName,
+                                "warning" -> s"${player.avatar.userName} village can't be analysed - currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}",
+                                "report" -> viewModelMapper.analysisReport(
+                                  AnalysisReport(village, Set.empty),
+                                  Duration.ofMillis(System.currentTimeMillis - start)
+                                ).toJson.compactPrint
+                              )
+                            )
                           )
                         )
-                  })
-                  .recover(message => complete(StatusCodes.NotFound, message.toJson.compactPrint))
-                  .get
+                    })
+                    .recover(notFoundPage)
+                    .get
+                }
+              }
+          } ~
+            path("sys" / "exception") {
+              get {
+                complete {
+                  println("Exception on purpose")
+                  throw new RuntimeException("Some exception happened")
+                }
+              }
+            } ~
+            path("sys" / "timeout") { ctx =>
+              println("Provoking Timeout")
+              // we simply let the request drop to provoke a timeout
+            } ~
+            respondWithMediaType(`application/json`) {
+              path("clans" / Segment / "players" / LongNumber / Segment / "summary") { (clanCode, playerId, layoutName) =>
+                get {
+                  facades.getVillageAnalysis(clanCode, playerId, layoutName)
+                    .map({
+                      case (clan, report, village, player, layout, start) =>
+                        report
+                          .map(analysis =>
+                            complete(viewModelMapper.analysisSummary(
+                              player.avatar.userName,
+                              analysis,
+                              Duration.ofMillis(System.currentTimeMillis - start)
+                            ))
+                          )
+                          .getOrElse(
+                            complete(
+                              StatusCodes.BadRequest,
+                              s""""${player.avatar.userName} village can't be analysed - currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}""""
+                            )
+                          )
+                    })
+                    .recover(message => complete(StatusCodes.NotFound, message.toJson.compactPrint))
+                    .get
+                }
               }
             }
-          }
         }
       }
     }

@@ -19,7 +19,7 @@ class HardCodedElementFactorySpec extends FlatSpec with Matchers {
   }
 
   it should "create construction buildings as level 1" in {
-    factory.build(new RawElement(1000008, -1, 3, 4)) should contain (Cannon(1, Tile(1, 2)))
+    factory.build(new RawElement(1000008, -1, 3, 4)) should contain (Cannon(1, Tile(3, 4)))
   }
 
   it should "ignore obstacles" in {

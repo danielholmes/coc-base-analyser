@@ -1,8 +1,8 @@
 package org.danielholmes.coc.baseanalyser
 
 import org.danielholmes.coc.baseanalyser.analysis.{AnalysisReport, VillageAnalyser}
-import org.danielholmes.coc.baseanalyser.apigatherer.ClanSeekerProtocol.PlayerVillage
-import org.danielholmes.coc.baseanalyser.apigatherer.ClanSeekerServiceAgent
+import org.danielholmes.coc.baseanalyser.gameconnection.ClanSeekerProtocol.PlayerVillage
+import org.danielholmes.coc.baseanalyser.gameconnection.GameConnection
 import org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParser
 import org.danielholmes.coc.baseanalyser.model.Layout._
 import org.danielholmes.coc.baseanalyser.model.{Layout, Village}
@@ -11,7 +11,7 @@ import org.scalactic.{Bad, Good, Or}
 
 class Facades(
   permittedClans: Set[PermittedClan],
-  clanSeeker: ClanSeekerServiceAgent,
+  clanSeeker: GameConnection,
   villageJsonParser: VillageJsonParser,
   villageAnalyser: VillageAnalyser
 ) {

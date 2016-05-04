@@ -1,9 +1,9 @@
-package org.danielholmes.coc.baseanalyser.apigatherer
+package org.danielholmes.coc.baseanalyser.gameconnection
 
-import org.danielholmes.coc.baseanalyser.apigatherer.ClanSeekerProtocol._
+import org.danielholmes.coc.baseanalyser.gameconnection.ClanSeekerProtocol._
 import org.danielholmes.coc.baseanalyser.web.PermittedClan
 
-class HardcodedClanSeekerServiceAgent(private val permittedClans: Set[PermittedClan]) extends ClanSeekerServiceAgent {
+class StubGameConnection(private val permittedClans: Set[PermittedClan]) extends GameConnection {
   def getClanDetails(id: Long): Option[ClanDetails] = {
     permittedClans.find(_.id == id)
       .filter(_.code != "uncool")

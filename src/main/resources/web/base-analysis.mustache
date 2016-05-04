@@ -4,9 +4,8 @@
     {{$heading}}{{clanName}} - {{playerIgn}} - {{layoutDescription}}{{/heading}}
 
     {{$styles}}
-        <link rel="stylesheet" type="text/css" href="/assets/base-analysis.css" />
+        <link rel="stylesheet" type="text/css" href="/css/base-analysis.css" />
     {{/styles}}
-
 
     {{$content}}
         {{#warning}}
@@ -52,20 +51,24 @@
 
         <script type="text/javascript">
             var report = {{{report}}};
+            var mapConfig = {
+                mapTiles: {{mapTiles}},
+                borderTiles: {{borderTiles}}
+            };
         </script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
         <script type="text/javascript" src="//code.createjs.com/easeljs-0.8.2.min.js"></script>
         <script type="text/javascript" src="//code.createjs.com/preloadjs-0.6.2.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
-        <script type="text/javascript" src="/assets/js/console-polyfill.js"></script>
-        <script type="text/javascript" src="/assets/js/base-analysis/preloader.js"></script>
-        <script type="text/javascript" src="/assets/js/base-analysis/model.js"></script>
-        <script type="text/javascript" src="/assets/js/base-analysis/RedMoonBuildingSpriteSheet.js"></script>
-        <script type="text/javascript" src="/assets/js/base-analysis/RedMoonBuildingSpriteSheet.js"></script>
-        <script type="text/javascript" src="/assets/js/base-analysis/RedMoonWallSpriteSheet.js"></script>
-        <script type="text/javascript" src="/assets/js/base-analysis/mapDisplay2d.js"></script>
-        <script type="text/javascript" src="/assets/js/base-analysis/ui.js"></script>
-        <script type="text/javascript" src="/assets/js/base-analysis/main.js"></script>
+        <script type="text/javascript" src="/js/console-polyfill.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/preloader.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/model.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/RedMoonBuildingSpriteSheet.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/RedMoonBuildingSpriteSheet.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/RedMoonWallSpriteSheet.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/mapDisplay2d.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/ui.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/main.js"></script>
     {{/scripts}}
 {{/base}}

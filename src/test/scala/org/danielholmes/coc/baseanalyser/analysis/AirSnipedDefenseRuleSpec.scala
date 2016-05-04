@@ -21,7 +21,7 @@ class AirSnipedDefenseRuleSpec extends FlatSpec with Matchers {
   }
 
   it should "return no sniped ground when air def" in {
-    val airDef = AirDefense(1, Tile(4, 4))
+    val airDef = AirDefense(1, Tile(6, 6))
     rule.analyse(Village(Set(Cannon(1, Tile.MapOrigin), airDef))) should be (AirSnipedDefenseRuleResult(
       Set.empty,
       Set(airDef)

@@ -184,7 +184,7 @@ var RedMoonBuildingSpriteSheet = function(image) {
         }
     };
     
-    var create = function(element, mapConfig) {
+    var create = function(element, mapDimensions) {
         var sheetDef = defs[element.typeName];
         if (sheetDef == null) {
             console.error("Cannot render " + element.typeName);
@@ -192,8 +192,8 @@ var RedMoonBuildingSpriteSheet = function(image) {
             display.sourceRect = new createjs.Rectangle(0, 0, 0, 0);
             return display;
         }
-        var widthRatio = element.block.size * mapConfig.tileSize / sheetDef.width;
-        var heightRatio = element.block.size * mapConfig.tileSize / sheetDef.height;
+        var widthRatio = mapDimensions.toCanvasSize(element.block.size) / sheetDef.width;
+        var heightRatio = mapDimensions.toCanvasSize(element.block.size) / sheetDef.height;
         var useScale = Math.min(widthRatio, heightRatio);
         var sheetIndex = element.level - 1;
         var bitmap = new createjs.Bitmap(image);

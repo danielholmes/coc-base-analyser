@@ -1,4 +1,4 @@
-package org.danielholmes.coc.baseanalyser.apigatherer
+package org.danielholmes.coc.baseanalyser.gameconnection
 
 import akka.actor.ActorSystem
 import org.scalactic.anyvals.PosZInt
@@ -35,7 +35,7 @@ object ClanSeekerProtocol extends DefaultJsonProtocol {
 import ClanSeekerProtocol._
 
 // TODO: Having problems with types when refactor into common functionality, but should refactor this
-class ClanSeekerAkkaServiceAgent extends ClanSeekerServiceAgent {
+class ClanSeekerGameConnection extends GameConnection {
   private val rootUrl: String = "http://api.clanseeker.co"
   private val timeout = 1.minute
 

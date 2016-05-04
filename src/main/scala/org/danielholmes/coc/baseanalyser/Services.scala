@@ -3,7 +3,7 @@ package org.danielholmes.coc.baseanalyser
 import com.github.mustachejava.DefaultMustacheFactory
 import com.twitter.mustache.ScalaObjectHandler
 import org.danielholmes.coc.baseanalyser.analysis._
-import org.danielholmes.coc.baseanalyser.apigatherer.{ClanSeekerAkkaServiceAgent, HardcodedClanSeekerServiceAgent}
+import org.danielholmes.coc.baseanalyser.gameconnection.{ClanSeekerGameConnection, StubGameConnection}
 import org.danielholmes.coc.baseanalyser.baseparser.{HardCodedElementFactory, VillageJsonParser}
 import org.danielholmes.coc.baseanalyser.stringdisplay.{StringDisplayer, StringTroopDropDisplayer}
 import org.danielholmes.coc.baseanalyser.web.{MustacheRenderer, PermittedClan, ViewModelMapper}
@@ -12,8 +12,8 @@ import org.scalactic.anyvals.PosInt
 trait Services {
   import com.softwaremill.macwire._
 
-  lazy val clanSeeker = wire[ClanSeekerAkkaServiceAgent]
-  //lazy val clanSeeker = wire[HardcodedClanSeekerServiceAgent]
+  lazy val gameConnection = wire[ClanSeekerGameConnection]
+  //lazy val gameConnection = wire[StubGameConnection]
   private lazy val elementFactory = wire[HardCodedElementFactory]
   lazy val villageJsonParser = wire[VillageJsonParser]
   private lazy val th8Rules: Set[Rule] = Set(

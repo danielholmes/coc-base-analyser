@@ -1,6 +1,6 @@
 var RedMoonWallSpriteSheet = function(image) {
     // TODO: Nearly repeated in building sprite sheet, sheetIndex only difference
-    var create = function(element, mapConfig) {
+    var create = function(element, mapDimensions) {
         var sheetDef = {
             x: 80,
             y: 10 + (element.level - 1) * 52,
@@ -9,8 +9,8 @@ var RedMoonWallSpriteSheet = function(image) {
             gap: 0
         };
 
-        var widthRatio = element.block.size * mapConfig.tileSize / sheetDef.width;
-        var heightRatio = element.block.size * mapConfig.tileSize / sheetDef.height;
+        var widthRatio = mapDimensions.toCanvasSize(element.block.size) / sheetDef.width;
+        var heightRatio = mapDimensions.toCanvasSize(element.block.size) / sheetDef.height;
         var useScale = Math.min(widthRatio, heightRatio);
         var sheetIndex = 0;
 

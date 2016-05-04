@@ -22,14 +22,14 @@ class HighHPUnderAirDefRuleSpec extends FlatSpec with Matchers {
   }
 
   it should "return fail for base with air def cutting storage" in {
-    val storageOutside = GoldStorage(1, Tile(5, 9))
-    val storageInside = GoldStorage(1, Tile(5, 3))
+    val storageOutside = GoldStorage(1, Tile(7, 11))
+    val storageInside = GoldStorage(1, Tile(7, 5))
     rule.analyse(Village(Set(AirDefense(1, Tile.MapOrigin), storageOutside, storageInside))) should be
-      (HighHPUnderAirDefRuleResult(Set(storageOutside), Set(storageInside)))
+      HighHPUnderAirDefRuleResult(Set(storageOutside), Set(storageInside))
   }
 
   it should "return true for base with air def just covering storage" in {
-    rule.analyse(Village(Set(AirDefense(1, Tile.MapOrigin), GoldStorage(1, Tile(3, 5))))).success should be (true)
+    rule.analyse(Village(Set(AirDefense(1, Tile.MapOrigin), GoldStorage(1, Tile(5, 7))))).success should be (true)
   }
 
   it should "return success for base with storage requiring 2 air defs for full coverage" in {

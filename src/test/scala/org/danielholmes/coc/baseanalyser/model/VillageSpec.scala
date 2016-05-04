@@ -57,29 +57,29 @@ class VillageSpec extends FlatSpec with Matchers {
   }
 
   it should "return single simple compartment" in {
-    val walls = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(1, 1), Wall(1, _))
+    val walls = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(5, 5), Wall(1, _))
     Village(walls.map(_.asInstanceOf[Element])).wallCompartments should be (Set(WallCompartment(
-      walls, Set(Tile(2, 2)), Set.empty
+      walls, Set(Tile(6, 6)), Set.empty
     )))
   }
 
   it should "return single compartment with a building inside" in {
-    val walls = ElementsBuilder.elementFence(Tile(1, 1), 5, 5)
-    val barrack = Barrack(1, Tile(2, 2))
+    val walls = ElementsBuilder.elementFence(Tile(6, 6), 5, 5)
+    val barrack = Barrack(1, Tile(7, 7))
 
     Village(walls + barrack).wallCompartments should be (Set(WallCompartment(
       walls.map(_.asInstanceOf[Wall]),
-      Tile(2, 2).matrixOfTilesTo(Tile(4, 4)),
+      Tile(7, 7).matrixOfTilesTo(Tile(9, 9)),
       Set(barrack)
     )))
   }
 
   it should "return multiple compartments" in {
-    val walls1 = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(1, 1), Wall(1, _))
-    val walls2 = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(11, 1), Wall(1, _))
+    val walls1 = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(6, 6), Wall(1, _))
+    val walls2 = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(16, 6), Wall(1, _))
     Village((walls1 ++ walls2).map(_.asInstanceOf[Element])).wallCompartments should be (Set(
-      WallCompartment(walls1, Set(Tile(2, 2)), Set.empty),
-      WallCompartment(walls2, Set(Tile(12, 2)), Set.empty)
+      WallCompartment(walls1, Set(Tile(7, 7)), Set.empty),
+      WallCompartment(walls2, Set(Tile(17, 7)), Set.empty)
     ))
   }
 }

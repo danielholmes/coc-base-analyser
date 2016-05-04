@@ -29,8 +29,8 @@ object Tile {
 
   def apply(x: PosZInt, y: PosZInt): Tile = applyMemo.apply(x, y)
 
-  private val MapSize: PosInt = 44
-  private val OutsideBorder: PosInt = 1 // TODO: Should maybe be the full 3 that clash natively uses
+  val MapSize: PosInt = 44
+  val OutsideBorder: PosInt = 3 // TODO: Should maybe be the full 3 that clash natively uses
 
   val MaxCoordinate: PosInt = PosInt.from(MapSize + (OutsideBorder * 2) - 1).get
 

@@ -11,8 +11,8 @@ var preloader = (function() {
 
             queue.on("complete", handleAssetsLoadComplete, this);
             queue.loadManifest([
-                { id: "redMoonBuildings", src:"/assets/buildings-sprite.png" },
-                { id: "redMoonWalls", src:"/assets/walls.png" }
+                { id: "redMoonBuildings", src:"/images/buildings-sprite.png" },
+                { id: "redMoonWalls", src:"/images/walls.png" }
             ]);
         }
     };

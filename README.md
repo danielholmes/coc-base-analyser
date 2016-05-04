@@ -45,7 +45,7 @@ then deploy it manually through the AWS console:
 
 ## General TODO
  - work on the sweeper. Needs to impact air sniped ground defenses rule. Should store angle
- - change to exact same coordinate system as clash with 3 tiles off edge of map
+ - gzip css, etc
  
  - TH10s without infernos should go under TH 9.5 rules?
  - Some TH9 rules
@@ -106,7 +106,7 @@ then deploy it manually through the AWS console:
  - skele traps not lurable
  - skele traps + air traps not within dgb positions (gives info for cleanup if first hit was with air)
  - 3 viable DGB spots (more difficult)
- - farm wars - tes;as in diff compaertmant for gowipe
+ - farm wars - teslas in diff compartment for gowipe
 
 
 ## TH9 Rules
@@ -126,10 +126,9 @@ then deploy it manually through the AWS console:
 ## Expansion ideas
  - Hog pathing analysis - start paths from each tile and be able to select/see individual paths from defense to defense
    to show DGB issues
- - war day analysis - analyse all bases for above criteria, also if have CCs filled
  - multiple goals/rulesets:
    - farming (protected loot, give away easy shield - one star, but no value for more than)
    - war - depending on clan and level, this might be to prevent 1 star, prevent 2 star, or just prevent 3 star
    - trophy?
  - provide weaknesses for attack types. e.g. drags doesnt consider DGB locations, hogs dont consider air def high hp.
- - queen walk
+ - queen walk pathing from drop point

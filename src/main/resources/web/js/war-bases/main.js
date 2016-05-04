@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    var LOAD_BATCH_SIZE = 6;
+    var LOAD_BATCH_SIZE = 4;
     var toLoad = players.slice(0);
     var loading = [];
     var results = [];
@@ -16,6 +16,7 @@ $(document).ready(function() {
 
     $(document).on('click', '.try-player-again', function(event) {
         var player = $(event.currentTarget).data('player');
+        results = _.reject(results, function(result) { return result.player == player; });
         $("#" + getProblemId(player)).remove();
         toLoad.push(player);
         loadNext();

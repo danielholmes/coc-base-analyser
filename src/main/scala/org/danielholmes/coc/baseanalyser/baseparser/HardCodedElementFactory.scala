@@ -15,9 +15,7 @@ class HardCodedElementFactory extends ElementFactory {
 
   private def elementLevel(rawLevel: Int): PosInt = PosInt.from(Math.max(1, rawLevel + 1)).get
 
-  private val zeroCoordinateSystemOffset = -2
-
-  private def elementTile(raw: RawElement) = Tile(PosZInt.from(raw.x + zeroCoordinateSystemOffset).get, PosZInt.from(raw.y + zeroCoordinateSystemOffset).get)
+  private def elementTile(raw: RawElement) = Tile(PosZInt.from(raw.x).get, PosZInt.from(raw.y).get)
 
   private val elementConstructorByCode: Map[Int, RawElement => Element] = Map(
     // Buildings
