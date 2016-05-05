@@ -10,8 +10,8 @@ trait Tile {
   val x: PosZInt
   val y: PosZInt
   val isWithinMap: Boolean
-  val touchingTiles: Set[Tile]
-  val centre: MapCoordinate
+  val neighbours: Set[Tile]
+  val centre: FloatMapCoordinate
   def distanceTo(other: Tile): PosZDouble
   def centreDistanceTo(other: Tile): PosZDouble
   def manhattanDistanceTo(other: Tile): PosZInt
@@ -28,10 +28,10 @@ object Tile {
 
   def apply(x: PosZInt, y: PosZInt): Tile = applyMemo.apply(x, y)
 
-  val MapSize: PosInt = 44
-  val OutsideBorder: PosInt = 3 // TODO: Should maybe be the full 3 that clash natively uses
+  val MapSize = PosInt(44)
+  val OutsideBorder = PosInt(3)
 
-  val MaxCoordinate: PosInt = PosInt.from(MapSize + (OutsideBorder * 2) - 1).get
+  val MaxCoordinate = PosInt.from(MapSize + (OutsideBorder * 2) - 1).get
 
   val Origin = Tile(0, 0)
   val End = Tile(MaxCoordinate, MaxCoordinate)
@@ -54,16 +54,30 @@ object Tile {
 
     lazy val isWithinMap = AllInMap.contains(this)
 
-    lazy val touchingTiles = {
-      Range.inclusive(x - 1, x + 1)
-        .flatMap(tileX => Range.inclusive(y - 1, y + 1).map(tileY => Tuple2(tileX, tileY)))
-        .filter(possible => possible._1 >= 0 && possible._1 <= Tile.MaxCoordinate && possible._2 >= 0 && possible._2 <= Tile.MaxCoordinate)
-        .map(coord => Tile(PosZInt.from(coord._1).get, PosZInt.from(coord._2).get))
-        .filterNot(_ == this)
-        .toSet
+    lazy val neighbours: Set[Tile] = {
+      Set(up, down, left, right, upLeft, upRight, downLeft, downRight).flatMap(_.iterator)
     }
 
-    lazy val centre = MapCoordinate(PosZDouble.from(x + 0.5).get, PosZDouble.from(y + 0.5).get)
+    private lazy val right = tryOffset(1, 0)
+    private lazy val left = tryOffset(-1, 0)
+    private lazy val down = tryOffset(0, 1)
+    private lazy val up = tryOffset(0, -1)
+    private lazy val upLeft = tryOffset(-1, -1)
+    private lazy val upRight = tryOffset(1, -1)
+    private lazy val downRight = tryOffset(1, 1)
+    private lazy val downLeft = tryOffset(-1, 1)
+
+    private def tryOffset(xOffset: Int, yOffset: Int): Option[Tile] = {
+      val proposedX = x + xOffset
+      val proposedY = y + yOffset
+      if (proposedX >= 0 && proposedX <= Tile.MaxCoordinate && proposedY >= 0 && proposedY <= Tile.MaxCoordinate) {
+        Some(Tile(PosZInt.from(proposedX).get, PosZInt.from(proposedY).get))
+      } else {
+        None
+      }
+    }
+
+    lazy val centre = FloatMapCoordinate(PosZDouble.from(x + 0.5).get, PosZDouble.from(y + 0.5).get)
 
     def distanceTo(other: Tile): PosZDouble = {
       allCoordinates.flatMap(otherCoord => other.allCoordinates.map(_.distanceTo(otherCoord))).min

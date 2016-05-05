@@ -9,15 +9,15 @@ class TroopSpec extends FlatSpec with Matchers {
   "Troop" should "return correct points can attack building from" in {
     val LowCornerCoord = PosDouble.from(2.0 - Math.sqrt(0.75 / 2)).get
     val HighCornerCoord = PosDouble.from(6.0 - LowCornerCoord).get
-    ExampleTroop.getAttackPositions(BuilderHut(Tile(2, 2))) should contain theSameElementsAs
+    ExampleTroop.getAttackFloatCoordinates(BuilderHut(Tile(2, 2))) should contain theSameElementsAs
       (Set(
-        MapCoordinate(LowCornerCoord, LowCornerCoord), MapCoordinate(2, 1.25), MapCoordinate(3, 1.25),
-          MapCoordinate(4, 1.25), MapCoordinate(HighCornerCoord, LowCornerCoord),
-          MapCoordinate(1.25, 2), MapCoordinate(2, 2), MapCoordinate(3, 2), MapCoordinate(4, 2), MapCoordinate(4.75, 2),
-          MapCoordinate(1.25, 3), MapCoordinate(2, 3), MapCoordinate(3, 3), MapCoordinate(4, 3), MapCoordinate(4.75, 3),
-          MapCoordinate(1.25, 4), MapCoordinate(2, 4), MapCoordinate(3, 4), MapCoordinate(4, 4), MapCoordinate(4.75, 4),
-          MapCoordinate(LowCornerCoord, HighCornerCoord), MapCoordinate(2, 4.75), MapCoordinate(3, 4.75),
-          MapCoordinate(4, 4.75), MapCoordinate(HighCornerCoord, HighCornerCoord)
+        FloatMapCoordinate(LowCornerCoord, LowCornerCoord), FloatMapCoordinate(2, 1.25), FloatMapCoordinate(3, 1.25),
+          FloatMapCoordinate(4, 1.25), FloatMapCoordinate(HighCornerCoord, LowCornerCoord),
+          FloatMapCoordinate(1.25, 2), FloatMapCoordinate(2, 2), FloatMapCoordinate(3, 2), FloatMapCoordinate(4, 2), FloatMapCoordinate(4.75, 2),
+          FloatMapCoordinate(1.25, 3), FloatMapCoordinate(2, 3), FloatMapCoordinate(3, 3), FloatMapCoordinate(4, 3), FloatMapCoordinate(4.75, 3),
+          FloatMapCoordinate(1.25, 4), FloatMapCoordinate(2, 4), FloatMapCoordinate(3, 4), FloatMapCoordinate(4, 4), FloatMapCoordinate(4.75, 4),
+          FloatMapCoordinate(LowCornerCoord, HighCornerCoord), FloatMapCoordinate(2, 4.75), FloatMapCoordinate(3, 4.75),
+          FloatMapCoordinate(4, 4.75), FloatMapCoordinate(HighCornerCoord, HighCornerCoord)
       ))
   }
 

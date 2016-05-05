@@ -11,10 +11,17 @@ class ArcherAnchorRule extends Rule {
         case d: DelayedActivation => false
         case g: Defense => true
       })
+
+    val safeCoords = village.coordinatesAllowedToDropTroop
+      .filter(coord => !targetImmediateArcherGroundDefenses.exists(_.range.contains(coord)))
+    val possibleTargets = Archer.getAllPossibleTargets(village)
+
     ArcherAnchorRuleResult(
-      village.coordinatesAllowedToDropTroop
-        .filter(coord => !targetImmediateArcherGroundDefenses.exists(_.range.contains(coord)))
-        .flatMap(coord => Archer.findReachableTargets(coord, village).map(ArcherTargeting(coord, _))),
+      possibleTargets.flatMap(possibleTarget => {
+        safeCoords.intersect(Archer.getAttackTileCoordinates(possibleTarget))
+          .find(_ => true)
+          .map(coord => ArcherTargeting(coord, possibleTarget))
+      }),
       targetImmediateArcherGroundDefenses
     )
   }

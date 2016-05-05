@@ -57,7 +57,7 @@ class VillageSpec extends FlatSpec with Matchers {
   }
 
   it should "return single simple compartment" in {
-    val walls = ElementsBuilder.fromString("WWW\nW W\nWWW", Tile(5, 5), Wall(1, _))
+    val walls = ElementsBuilder.wallFence(Tile(5, 5), 3, 3)
     Village(walls.map(_.asInstanceOf[Element])).wallCompartments should be (Set(WallCompartment(
       walls, Set(Tile(6, 6)), Set.empty
     )))

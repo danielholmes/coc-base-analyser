@@ -9,20 +9,22 @@ import org.scalactic.anyvals.{PosInt, PosZDouble, PosZInt}
 trait TileCoordinate {
   val x: PosZInt
   val y: PosZInt
-  def distanceTo(other: MapCoordinate): PosZDouble
+  def distanceTo(other: FloatMapCoordinate): PosZDouble
   def offset(xAmount: Int, yAmount: Int): TileCoordinate
-  def offset(xAmount: Double, yAmount: Double): MapCoordinate
+  def offset(xAmount: Double, yAmount: Double): FloatMapCoordinate
   def matrixOfCoordinatesTo(other: TileCoordinate, step: PosInt): Set[TileCoordinate]
   def matrixOfCoordinatesTo(other: TileCoordinate): Set[TileCoordinate]
   def xAxisCoordsTo(other: TileCoordinate, step: PosInt): Set[TileCoordinate]
   def yAxisCoordsTo(other: TileCoordinate, step: PosInt): Set[TileCoordinate]
+  def neighbours: Set[TileCoordinate]
 }
 
 object TileCoordinate {
   private val applyMemo = Memo2[PosZInt, PosZInt, TileCoordinate](TileCoordinateImpl)
   def apply(x: PosZInt, y: PosZInt): TileCoordinate = applyMemo.apply(x, y)
 
-  implicit def widenToMapCoordinate(coord: TileCoordinate): MapCoordinate = MapCoordinate(coord.x, coord.y)
+  // TODO: Remove this to try and reduce new mapcoordinate creation
+  implicit def widenToMapCoordinate(coord: TileCoordinate): FloatMapCoordinate = FloatMapCoordinate(coord.x, coord.y)
 
   implicit def widenToVector2D(coord: TileCoordinate): Vector2D = new Vector2D(coord.x, coord.y)
 
@@ -46,14 +48,14 @@ object TileCoordinate {
     require((0 to MaxCoordinate).contains(x.toInt), s"TileCoordinates.x must be >= 0 <= $MaxCoordinate, given: $x")
     require((0 to MaxCoordinate).contains(y.toInt), s"TileCoordinates.y must be >= 0 <= $MaxCoordinate, given: $y")
 
-    def distanceTo(other: MapCoordinate): PosZDouble = other.distanceTo(this)
+    def distanceTo(other: FloatMapCoordinate): PosZDouble = PosZDouble.from(Math.hypot(x - other.x, y - other.y)).get
 
     def offset(xAmount: Int, yAmount: Int): TileCoordinate = {
       TileCoordinate(PosZInt.from(x + xAmount).get, PosZInt.from(y + yAmount).get)
     }
 
-    def offset(xAmount: Double, yAmount: Double): MapCoordinate = {
-      MapCoordinate(PosZDouble.from(x + xAmount).get, PosZDouble.from(y + yAmount).get)
+    def offset(xAmount: Double, yAmount: Double): FloatMapCoordinate = {
+      FloatMapCoordinate(PosZDouble.from(x + xAmount).get, PosZDouble.from(y + yAmount).get)
     }
 
     def xAxisCoordsTo(other: TileCoordinate, step: PosInt): Set[TileCoordinate] = {
@@ -70,6 +72,15 @@ object TileCoordinate {
     }
 
     def matrixOfCoordinatesTo(other: TileCoordinate): Set[TileCoordinate] = matrixOfCoordinatesTo(other, 1)
+
+    lazy val neighbours: Set[TileCoordinate] = {
+      Set(up, down, left, right).flatMap(_.iterator)
+    }
+
+    private lazy val right: Option[TileCoordinate] = Some(x).filter(_ < TileCoordinate.MaxCoordinate).map(x => offset(1, 0))
+    private lazy val left: Option[TileCoordinate] = Some(x).filter(_ > 0).map(x => offset(-1, 0))
+    private lazy val down: Option[TileCoordinate] = Some(y).filter(_ < TileCoordinate.MaxCoordinate).map(y => offset(0, 1))
+    private lazy val up: Option[TileCoordinate] = Some(y).filter(_ > 0).map(y => offset(0, -1))
 
     override val toString = s"TileCoordinate($x, $y)"
   }

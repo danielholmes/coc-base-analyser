@@ -155,10 +155,12 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                                 "clanName" -> clan.name,
                                 "playerIgn" -> player.avatar.userName,
                                 "layoutDescription" -> Layout.getDescription(layout),
-                                "report" -> viewModelMapper.analysisReport(
-                                  analysis,
-                                  Duration.ofMillis(System.currentTimeMillis - start)
-                                ).toJson.compactPrint
+                                "timeSecs" -> "%.2f".format(Duration.ofMillis(System.currentTimeMillis - start).toMillis / 1000.0),
+                                "times" -> analysis.results
+                                  .groupBy(_.result.ruleDetails.shortName)
+                                  .mapValues(result => "%.2f".format(result.toList.head.time.toMillis / 1000.0))
+                                  .toSet,
+                                "report" -> viewModelMapper.analysisReport(analysis).toJson.compactPrint
                               )
                             )
                           )
@@ -174,10 +176,9 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                                 "playerIgn" -> player.avatar.userName,
                                 "warning" -> s"""${player.avatar.userName} village can't be analysed - currently only supporting
                                   |TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}""".stripMargin,
-                                "report" -> viewModelMapper.analysisReport(
-                                  AnalysisReport(village, Set.empty),
-                                  Duration.ofMillis(System.currentTimeMillis - start)
-                                ).toJson.compactPrint
+                                "report" -> viewModelMapper.analysisReport(AnalysisReport(village, Set.empty)).toJson.compactPrint,
+                                "timeSecs" -> 0,
+                                "times" -> Set.empty
                               )
                             )
                           )

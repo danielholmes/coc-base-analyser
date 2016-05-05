@@ -83,7 +83,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val enoughPossibleTrapLocationsResultFormat = jsonFormat6(EnoughPossibleTrapLocationsRuleResultViewModel)
 
   implicit val villageFormat = jsonFormat3(VillageViewModel)
-  implicit val analysisReportFormat = jsonFormat3(AnalysisReportViewModel)
+  implicit val analysisReportFormat = jsonFormat2(AnalysisReportViewModel)
   implicit val cantAnalyseVillageFormat = jsonFormat2(CantAnalyseVillageViewModel)
 
   implicit val resultSummaryFormat = jsonFormat2(ResultSummaryViewModel)

@@ -9,23 +9,23 @@ class TileSpec extends FlatSpec with Matchers {
       Set(Tile(2, 2), Tile(2, 3), Tile(3, 2), Tile(3, 3))
   }
 
-  it should "return correct touching tiles" in {
-    Tile(1, 1).touchingTiles should be (Set(
+  it should "return correct neighbours" in {
+    Tile(1, 1).neighbours should be (Set(
       Tile(0, 0), Tile(1, 0), Tile(2, 0),
       Tile(0, 1), /*Tile(1, 1),*/ Tile(2, 1),
       Tile(0, 2), Tile(1, 2), Tile(2, 2)
     ))
   }
 
-  it should "return correct touching tiles at origin" in {
-    Tile(0, 0).touchingTiles should be (Set(
+  it should "return correct neighbours at origin" in {
+    Tile(0, 0).neighbours should be (Set(
       /*Tile(0, 0), */ Tile(1, 0),
       Tile(0, 1), Tile(1, 1)
     ))
   }
 
-  it should "return correct touching tiles at end" in {
-    Tile(Tile.MaxCoordinate, Tile.MaxCoordinate).touchingTiles should be (Set(
+  it should "return correct neighbours at end" in {
+    Tile(Tile.MaxCoordinate, Tile.MaxCoordinate).neighbours should be (Set(
       Tile(PosZInt.from(Tile.MaxCoordinate - 1).get, PosZInt.from(Tile.MaxCoordinate - 1).get),
       Tile(PosZInt.from(Tile.MaxCoordinate - 1).get, Tile.MaxCoordinate),
       Tile(Tile.MaxCoordinate, PosZInt.from(Tile.MaxCoordinate - 1).get)

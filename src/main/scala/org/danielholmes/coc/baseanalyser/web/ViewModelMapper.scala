@@ -27,16 +27,12 @@ class ViewModelMapper {
   def analysisSummary(userName: String, report: AnalysisReport, time: Duration): AnalysisReportSummaryViewModel = {
     AnalysisReportSummaryViewModel(
       report.village.townHallLevel.get,
-      report.results.map(r => ResultSummaryViewModel(r.ruleDetails.shortName, r.success))
+      report.results.map(r => ResultSummaryViewModel(r.result.ruleDetails.shortName, r.result.success))
     )
   }
 
-  def analysisReport(report: AnalysisReport, time: Duration): AnalysisReportViewModel = {
-    AnalysisReportViewModel(
-      village(report.village),
-      report.results.map(ruleResult),
-      time.toMillis
-    )
+  def analysisReport(report: AnalysisReport): AnalysisReportViewModel = {
+    AnalysisReportViewModel(village(report.village), report.results.map(invocation => ruleResult(invocation.result)))
   }
 
   def cantAnalyseVillage(invalidVillage: Village, message: String): CantAnalyseVillageViewModel = {
@@ -270,7 +266,7 @@ class ViewModelMapper {
     TileCoordinateViewModel(coord.x, coord.y)
   }
 
-  private def mapCoordinate(coord: MapCoordinate): MapCoordinateViewModel = {
+  private def mapCoordinate(coord: FloatMapCoordinate): MapCoordinateViewModel = {
     MapCoordinateViewModel(coord.x, coord.y)
   }
 

@@ -19,7 +19,7 @@ class AirSnipedDefenseRule extends Rule {
   }
 
   private def bestNonAirCoveredAttackPosition(ground: Defense, air: Set[Defense]): Option[MinionAttackPosition] = {
-    Minion.getAttackPositions(ground)
+    Minion.getAttackFloatCoordinates(ground)
       .filter(coordinate => !air.exists(_.range.contains(coordinate)))
       .map(MinionAttackPosition(_, ground))
       .headOption

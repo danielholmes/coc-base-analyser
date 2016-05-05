@@ -16,11 +16,11 @@ class HighHPUnderAirDefRule extends Rule {
   }
 
   private def willSomeAirDefCoverDragonShooting(highHP: Structure, airDefs: Set[AirDefense]): Boolean = {
-    willSomeAirDefCoverDragonShooting(Dragon.getAttackPositions(highHP), airDefs)
+    willSomeAirDefCoverDragonShooting(Dragon.getAttackFloatCoordinates(highHP), airDefs)
   }
 
   @tailrec
-  private def willSomeAirDefCoverDragonShooting(highHPCoords: Set[MapCoordinate], airDefs: Set[AirDefense]): Boolean = {
+  private def willSomeAirDefCoverDragonShooting(highHPCoords: Set[FloatMapCoordinate], airDefs: Set[AirDefense]): Boolean = {
     highHPCoords.toList match {
       case Nil => true
       case head :: tail => airDefs.exists(_.range.contains(head)) && willSomeAirDefCoverDragonShooting(tail.toSet, airDefs)

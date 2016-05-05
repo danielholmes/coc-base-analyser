@@ -13,7 +13,7 @@ class QueenWalkedAirDefenseRuleSpec extends FlatSpec with Matchers {
     rule.analyse(Village.empty).success should be (true)
   }
 
-  it should "return violation for non-walled air defese" in {
+  it should "return violation for non-walled air defense" in {
     val ad = AirDefense(1, Tile(1, 1))
     val result = rule.analyse(Village(Set(ad))).asInstanceOf[QueenWalkedAirDefenseRuleResult]
     result.success should be (false)
@@ -23,7 +23,7 @@ class QueenWalkedAirDefenseRuleSpec extends FlatSpec with Matchers {
 
   it should "return success for deep-walled air defense" in {
     val ad = AirDefense(1, Tile(15, 15))
-    val elements: Set[Element] = ElementsBuilder.rectangle[Element](Tile(10, 10), 13, 13, 1, Wall(1, _)) ++
+    val elements: Set[Element] = ElementsBuilder.elementFence(Tile(10, 10), 13, 13) ++
       ElementsBuilder.rectangle(Tile(12, 12), 3, 3, 3, Barrack(1, _)) ++
       Set(ad)
     val result = rule.analyse(Village(elements)).asInstanceOf[QueenWalkedAirDefenseRuleResult]
@@ -34,7 +34,7 @@ class QueenWalkedAirDefenseRuleSpec extends FlatSpec with Matchers {
 
   it should "return fail for shallow-walled air defense" in {
     val ad = AirDefense(1, Tile(15, 15))
-    val elements: Set[Element] = ElementsBuilder.rectangle[Element](Tile(11, 11), 11, 11, 1, Wall(1, _)) ++
+    val elements: Set[Element] = ElementsBuilder.elementFence(Tile(11, 11), 11, 11) ++
       ElementsBuilder.rectangle(Tile(12, 12), 3, 3, 3, Barrack(1, _)) ++
       Set(ad)
     val result = rule.analyse(Village(elements)).asInstanceOf[QueenWalkedAirDefenseRuleResult]

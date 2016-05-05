@@ -13,7 +13,7 @@ trait Structure extends Element {
     }
   }
 
-  def findClosestHitCoordinate(from: MapCoordinate): TileCoordinate = {
+  def findClosestHitCoordinate(from: FloatMapCoordinate): TileCoordinate = {
     hitBlock.findClosestCoordinate(from)
   }
 }

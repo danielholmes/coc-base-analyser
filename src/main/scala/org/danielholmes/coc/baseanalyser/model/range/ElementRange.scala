@@ -1,9 +1,9 @@
 package org.danielholmes.coc.baseanalyser.model.range
 
-import org.danielholmes.coc.baseanalyser.model.{Block, MapCoordinate, Tile}
+import org.danielholmes.coc.baseanalyser.model.{Block, FloatMapCoordinate, Tile}
 
 trait ElementRange {
-  def contains(testCoordinate: MapCoordinate): Boolean
+  def contains(testCoordinate: FloatMapCoordinate): Boolean
 
   def touchesEdge(tile: Tile): Boolean = {
     val touchResults = tile.allCoordinates.partition(contains(_))

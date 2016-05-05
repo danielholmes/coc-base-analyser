@@ -4,14 +4,16 @@ import org.danielholmes.coc.baseanalyser.model.troops.{ArcherQueen, ArcherQueenA
 import org.danielholmes.coc.baseanalyser.model.Village
 import org.danielholmes.coc.baseanalyser.model.defense.AirDefense
 
+
 class QueenWalkedAirDefenseRule extends Rule {
   def analyse(village: Village): RuleResult = {
-    val attackings: Set[ArcherQueenAttacking] = village.airDefenses.flatMap(el =>
-      ArcherQueen.firstPossibleAttackingCoordinate(el, village.outerTileCoordinates)
+    val attackings: Set[ArcherQueenAttacking] = village.airDefenses
+      .flatMap(el =>
+        ArcherQueen.firstPossibleAttackingCoordinate(el, village.outerTileCoordinates)
           .map(ArcherQueenAttacking(_, el))
-    )
-    val nonReachableAirDefs = village.airDefenses.filterNot(a => attackings.exists(_.targeting == a))
-
+      )
+    val targetings = attackings.map(_.targeting).map(_.asInstanceOf[AirDefense])
+    val nonReachableAirDefs = village.airDefenses.diff(targetings)
     QueenWalkedAirDefenseRuleResult(attackings, nonReachableAirDefs)
   }
 }

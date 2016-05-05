@@ -8,7 +8,7 @@ class HogCCLureRule extends Rule {
     village.clanCastle
       .map(_.range)
       .map(range =>
-        village.coordinatesAllowedToDropTroop
+        village.edgeOfHitCoordinatesAllowedToDropTroop
           .flatMap(coord => HogRider.findTargets(coord, village).map(HogTargeting(coord, _)))
           .filter(_.cutsRadius(range))
       )

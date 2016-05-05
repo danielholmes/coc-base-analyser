@@ -41,15 +41,16 @@ case class Village(elements: Set[Element]) {
 
   lazy val tilesAllowedToDropTroop = Tile.All -- tilesNotAllowedToDropTroop
 
-  lazy val coordinatesAllowedToDropTroop: Set[TileCoordinate] = tilesAllowedToDropTroop.flatMap(_.allCoordinates) ++ TileCoordinate.AllEdge
+  lazy val coordinatesAllowedToDropTroop: Set[TileCoordinate] = tilesAllowedToDropTroop.flatMap(_.allCoordinates)
+
+  // TODO: Consider when empty village, prob want all
+  lazy val edgeOfHitCoordinatesAllowedToDropTroop: Set[TileCoordinate] = {
+    coordinatesAllowedToDropTroop.intersect(preventsTroopDropStructures.map(_.preventTroopDropBlock).flatMap(_.border))
+  }
 
   lazy val wallCompartments: Set[WallCompartment] = {
-    val innerTiles = Tile.All -- outerTiles -- walls.map(_.block.tile)
-    if (walls.isEmpty || innerTiles.isEmpty) {
-      Set.empty
-    } else {
-      detectAllCompartments(innerTiles, Set.empty)
-    }
+    val innerTiles = Tile.All -- outerTiles -- wallsByTile.keySet
+    detectAllCompartments(innerTiles, Set.empty)
   }
 
   // TODO: Need to consider channel bases
@@ -66,7 +67,7 @@ case class Village(elements: Set[Element]) {
   private def getElementsByType[T: ClassTag] =
     elements.filter(classTag[T].runtimeClass.isInstance(_)).map(_.asInstanceOf[T])
 
-  private def findElementByType[T: ClassTag] =
+  def findElementByType[T: ClassTag](): Option[T] =
     elements.find(classTag[T].runtimeClass.isInstance(_)).map(_.asInstanceOf[T])
 
   @tailrec
@@ -74,29 +75,41 @@ case class Village(elements: Set[Element]) {
     innerTiles.toList match {
       case Nil => current
       case head :: tail =>
-        val compartment = detectCompartment(Set(head))
+        val compartment = detectCompartment(head)
         detectAllCompartments(innerTiles -- compartment.innerTiles, current + compartment)
     }
   }
 
+  private def detectCompartment(toProcess: Tile): WallCompartment = {
+    detectCompartment(List(toProcess), Set(toProcess), Set.empty, Set.empty)
+  }
+
   private def detectCompartment(toProcess: Set[Tile]): WallCompartment = {
-    detectCompartment(toProcess, Set.empty, Set.empty)
+    detectCompartment(toProcess.toList, toProcess, Set.empty, Set.empty)
   }
 
   @tailrec
-  private def detectCompartment(toProcess: Set[Tile], currentInnerTiles: Set[Tile], currentWalls: Set[Wall]): WallCompartment = {
-    toProcess.toList match {
-      case Nil => WallCompartment(currentWalls, currentInnerTiles, elements.filter(e => currentInnerTiles.contains(e.block.tile)))
+  private def detectCompartment(toProcess: List[Tile], seenTiles: Set[Tile], currentInnerTiles: Set[Tile], currentWalls: Set[Wall]): WallCompartment = {
+    toProcess match {
+      case Nil => WallCompartment(
+        currentWalls,
+        currentInnerTiles,
+        elements.filter(e => currentInnerTiles.contains(e.block.tile))
+      )
       case head :: tail =>
-        val notSeenTouching = head.touchingTiles.diff(currentInnerTiles)
-        val touchingWalls = walls.filter(wall => notSeenTouching.contains(wall.block.tile))
+        val notSeenNeighbours = head.neighbours.diff(seenTiles)
+        val wallNeighbours = notSeenNeighbours.flatMap(wallsByTile.get)
+        val nonWallNeighbours = notSeenNeighbours.diff(wallNeighbours.map(_.block.tile))
         detectCompartment(
-          toProcess.tail ++ notSeenTouching -- touchingWalls.map(_.block.tile),
-          currentInnerTiles + toProcess.head,
-          currentWalls ++ touchingWalls
+          tail ::: nonWallNeighbours.toList,
+          seenTiles ++ notSeenNeighbours,
+          currentInnerTiles + head,
+          currentWalls ++ wallNeighbours
         )
     }
   }
+
+  private lazy val wallsByTile = walls.map(w => (w.block.tile, w)).toMap
 }
 
 object Village {

@@ -26,7 +26,7 @@ class BKSwappableRule extends Rule {
     touchingTrigger.toList match {
       case Nil => current
       case head :: tail =>
-        val exposedTouchingTrigger = touchingTrigger.head.touchingTiles.intersect(exposedToCheck)
+        val exposedTouchingTrigger = touchingTrigger.head.neighbours.intersect(exposedToCheck)
         findTouchingTiles(
           touchingTrigger ++ exposedTouchingTrigger -- current,
           exposedToCheck -- exposedTouchingTrigger,
@@ -36,9 +36,7 @@ class BKSwappableRule extends Rule {
   }
 
   private def findTriggerTiles(village: Village, exposedTiles: Set[Tile]) = {
-    village.elements
-      .find(_.isInstanceOf[BarbarianKingAltar])
-      .map(_.asInstanceOf[BarbarianKingAltar])
+    village.findElementByType[BarbarianKingAltar]
       .map(_.range)
       .map(_.inset(MinExposedDistance))
       .map(_.allTouchingTiles)

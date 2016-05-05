@@ -16,7 +16,7 @@ case class Block(tile: Tile, size: PosInt) {
 
   lazy val isWithinMap = tiles.forall(_.isWithinMap)
 
-  lazy val centre = MapCoordinate(PosZDouble.from(x + size.toDouble / 2.0).get, PosZDouble.from(y + size.toDouble / 2.0).get)
+  lazy val centre = FloatMapCoordinate(PosZDouble.from(x + size.toDouble / 2.0).get, PosZDouble.from(y + size.toDouble / 2.0).get)
 
   lazy val internalCoordinates = {
     if (size < 2) {
@@ -49,7 +49,11 @@ case class Block(tile: Tile, size: PosInt) {
 
   lazy val tiles = tile.matrixOfTilesInDirection(size, size)
 
-  def findClosestCoordinate(from: MapCoordinate): TileCoordinate = {
+  lazy val border = leftSide ++ rightSide ++ bottomSide ++ topSide
+
+  def touchesEdge(coord: TileCoordinate): Boolean = border.contains(coord)
+
+  def findClosestCoordinate(from: FloatMapCoordinate): TileCoordinate = {
     possibleIntersectionPoints.min(Ordering.by((_: TileCoordinate)
       .distanceTo(from)))
   }

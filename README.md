@@ -23,6 +23,7 @@ To find available SBT dependency updates run `sbt dependencyUpdates`
 
 `sbt 'run-main org.danielholmes.coc.baseanalyser.PrintVillage alpha "I AM SPARTA!!1!"'`
 `sbt 'run-main org.danielholmes.coc.baseanalyser.PrintAttackPlacements alpha "I AM SPARTA!!1!"'`
+`sbt 'run-main org.danielholmes.coc.baseanalyser.ProfileAnalysis alpha "I AM SPARTA!!1!"'`
 
 
 ## Running dev version of site (automatically reloads on changes)
@@ -44,15 +45,21 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - gzip css, etc
- - double check sweeper angles being rendered as in game once clan seeker up
+ - analysis performance, currently too slow
+   - MapCoordinate trait with underlying FloatMapCoordinate, TileCoordinate, Tile
+   - Views of tile sets (e.g. TileBlock returned from matrix
+   - Redo ranges - should include underlying cached set of tiles + tilecoordinates contained
  
- - TH10s without infernos should go under TH 9.5 rules?
+ - gzip css, etc
+ 
+ - double check sweeper angles being rendered same as in game once clan seeker up
  - Some TH9 rules
   - Queen Charge into wall breakable compartment shouldnt get to 2 air defs
   - It should require either a jump spell or 2 wall breaker groups in order to access the queen.
  
  - on equidistant hog lure, mark it as such or ignore it all together (maybe a pink line showing equidistant, non luring alternative path
+ 
+ - TH10s without infernos should go under TH 9.5 rules?
  
  - separate hole in the base rule - just to highlight really bad issues (due to ignoring some others)
  
@@ -63,11 +70,6 @@ then deploy it manually through the AWS console:
  
  - BK Trigger rule further tweaks. should show red for all non-compartment tiles floodfilled from triggered
  
- - analysis performance, currently too slow
-  - return time taken for analysis and each rule so can inspect
-  - hog cc lure analysis - dont need all external tiles - just need outer coords touching drop boundary
-  - note that first ran rules will be longer since creating wall compartments, etc for first time
-  - try running rules in par if not already
  - change js to use classes and instances rather than global modules
  
  - clarify AQ range - see iphoto screenshot of greg raid. possibly shown on ppetes war base

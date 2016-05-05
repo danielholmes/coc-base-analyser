@@ -4,22 +4,40 @@
     <title>Clash War Base Analyser - {{$title}}{{/title}}</title>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
     {{$styles}}{{/styles}}
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="alert alert-info">
-                    <strong>Note!</strong> this is an alpha release. The connection to the game is a bit unreliable
-                    and you might need to refresh sometimes to try it again and get it to work. Hidden Teslas and
-                    traps are not yet implemented, this will be available soon. Any feedback or bug reports are much
-                    appreciated
-                </div>
-                <h1>{{$heading}}{{/heading}}</h1>
+    <nav class="navbar navbar-default navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-contents" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand">{{$heading}}{{/heading}}</a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbar-contents">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Note! Early release <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li class="alert alert-info">
+                                This is an early release. The game connection is unreliable and you might need to refresh. Traps are
+                                not yet implemented. Any feedback or bug reports are much appreciated
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                {{$navbar}}{{/navbar}}
             </div>
         </div>
+    </nav>
 
+    <div class="container-fluid">
         {{$content}}{{/content}}
     </div>
     <script type="text/javascript" src="//code.jquery.com/jquery-2.2.1.min.js"></script>
