@@ -42,14 +42,6 @@ lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
 compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value
 (compile in Compile) <<= (compile in Compile) dependsOn compileScalastyle
 
-webappPostProcess := {
-  webappDir: File =>
-    val webDir = baseDirectory.value / "src" / "main" / "resources" / "web"
-    IO.copyDirectory(webDir / "css", webappDir / "css")
-    IO.copyDirectory(webDir / "images", webappDir / "images")
-    IO.copyDirectory(webDir / "js", webappDir / "js")
-}
-
 // Runs with tomcat:start, only want for war task
 //(packageBin in Compile) <<= (packageBin in Compile) dependsOn (test in Test)
 

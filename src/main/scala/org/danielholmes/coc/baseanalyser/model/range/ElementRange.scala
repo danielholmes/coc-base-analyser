@@ -1,14 +1,14 @@
 package org.danielholmes.coc.baseanalyser.model.range
 
-import org.apache.commons.math3.geometry.euclidean.twod.Segment
 import org.danielholmes.coc.baseanalyser.model.{Block, MapCoordinate, Tile}
 
 trait ElementRange {
   def contains(testCoordinate: MapCoordinate): Boolean
 
-  def cutBy(segment: Segment): Boolean
-
-  def touchesEdge(tile: Tile): Boolean
+  def touchesEdge(tile: Tile): Boolean = {
+    val touchResults = tile.allCoordinates.partition(contains(_))
+    touchResults._1.nonEmpty && touchResults._2.nonEmpty
+  }
 
   def touches(tile: Tile): Boolean = tile.allCoordinates.exists(contains(_))
 

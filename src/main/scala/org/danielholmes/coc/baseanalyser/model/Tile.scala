@@ -1,6 +1,6 @@
 package org.danielholmes.coc.baseanalyser.model
 
-import org.danielholmes.coc.baseanalyser.util.{Memo2, PathFinder}
+import org.danielholmes.coc.baseanalyser.util.Memo2
 
 import org.scalactic.anyvals.{PosInt, PosZInt, PosZDouble}
 
@@ -15,7 +15,6 @@ trait Tile {
   def distanceTo(other: Tile): PosZDouble
   def centreDistanceTo(other: Tile): PosZDouble
   def manhattanDistanceTo(other: Tile): PosZInt
-  def shortestTilePathTo(other: Tile, wallTiles: Set[Tile]): Option[List[Tile]]
   def matrixOfTilesTo(other: Tile): Set[Tile]
   def matrixOfTilesTo(other: Tile, step: PosInt): Set[Tile]
   // Should prob allow 0 too, but not negative obviously
@@ -73,16 +72,6 @@ object Tile {
     def centreDistanceTo(other: Tile): PosZDouble = centre.distanceTo(other.centre)
 
     def manhattanDistanceTo(other: Tile): PosZInt = PosZInt.from(Math.abs(other.x - x) + Math.abs(other.y - y)).get
-
-    def shortestTilePathTo(other: Tile, wallTiles: Set[Tile]): Option[List[Tile]] = {
-      PathFinder.apply(
-        this,
-        other,
-        (subject: Tile) => subject.touchingTiles.diff(wallTiles).toList,
-        (tile1: Tile, tile2: Tile) => tile1.centreDistanceTo(tile2).toFloat,
-        (tile1: Tile, tile2: Tile) => 1
-      )
-    }
 
     def matrixOfTilesTo(other: Tile): Set[Tile] = matrixOfTilesTo(other, 1)
 

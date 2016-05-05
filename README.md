@@ -44,8 +44,8 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - work on the sweeper. Needs to impact air sniped ground defenses rule. Should store angle
  - gzip css, etc
+ - double check sweeper angles being rendered as in game once clan seeker up
  
  - TH10s without infernos should go under TH 9.5 rules?
  - Some TH9 rules

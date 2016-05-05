@@ -39,7 +39,9 @@ class WebAppServiceActor extends Actor with HttpService with Services {
             StatusCodes.ServiceUnavailable,
             Map(
               "message" -> "Connection to Game Servers not available",
-              "details" -> "We're currently using a third party service for this which can be unreliable. It's usually only temporary though and worth trying again shortly"
+              "details" ->
+                """We're currently using a third party service for this which can be unreliable.
+                  | It's usually only temporary though and worth trying again shortly""".stripMargin
             )
           )
         }
@@ -96,26 +98,26 @@ class WebAppServiceActor extends Actor with HttpService with Services {
             pathSingleSlash {
               getFromResource("web/index.html")
             } ~
-              path("clans" / Segment) { (clanCode) =>
-                getClanByCode(clanCode) {
-                  (clanDetails) =>
-                    complete(
-                      mustacheRenderer.render(
-                        "web/clan.mustache",
-                        Map(
-                          "name" -> clanDetails.name,
-                          "bulkAnalysisUrl" -> s"/clans/$clanCode/war-bases",
-                          "players" -> clanDetails.players
-                            .toSeq
-                            .sortBy(_.avatar.userName.toLowerCase)
-                            .map(p => Map(
-                              "ign" -> p.avatar.userName,
-                              "warAnalysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.War),
-                              "homeAnalysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.Home)
-                            ))
-                        )
+            path("clans" / Segment) { (clanCode) =>
+              getClanByCode(clanCode) {
+                (clanDetails) =>
+                  complete(
+                    mustacheRenderer.render(
+                      "web/clan.mustache",
+                      Map(
+                        "name" -> clanDetails.name,
+                        "bulkAnalysisUrl" -> s"/clans/$clanCode/war-bases",
+                        "players" -> clanDetails.players
+                          .toSeq
+                          .sortBy(_.avatar.userName.toLowerCase)
+                          .map(p => Map(
+                            "ign" -> p.avatar.userName,
+                            "warAnalysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.War),
+                            "homeAnalysisUrl" -> generatePlayerAnalysisUrl(clanCode, p, Layout.Home)
+                          ))
                       )
                     )
+                  )
                 }
               } ~
               path("clans" / Segment / "war-bases") { clanCode =>
@@ -170,7 +172,8 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                                 "borderTiles" -> Tile.OutsideBorder.toInt,
                                 "clanName" -> clan.name,
                                 "playerIgn" -> player.avatar.userName,
-                                "warning" -> s"${player.avatar.userName} village can't be analysed - currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}",
+                                "warning" -> s"""${player.avatar.userName} village can't be analysed - currently only supporting
+                                  |TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}""".stripMargin,
                                 "report" -> viewModelMapper.analysisReport(
                                   AnalysisReport(village, Set.empty),
                                   Duration.ofMillis(System.currentTimeMillis - start)
@@ -214,7 +217,8 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                           .getOrElse(
                             complete(
                               StatusCodes.BadRequest,
-                              s""""${player.avatar.userName} village can't be analysed - currently only supporting TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}""""
+                              s""""${player.avatar.userName} village can't be analysed - currently only supporting
+                                 |TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}"""".stripMargin
                             )
                           )
                     })

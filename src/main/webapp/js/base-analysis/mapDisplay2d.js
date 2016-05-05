@@ -26,8 +26,8 @@ var mapDisplay2d = (function(document, mapConfig) {
         _.chain(elements)
             .map(function (elementToDraw) {
                 switch (elementToDraw.range.typeName) {
-                    case "Wedge":
-                        return new createjs.Container();
+                    case "Sector":
+                        return createSectorElementRangeDisplay(mapDimensions, elementToDraw);
                     case "Circular":
                         return createCircularElementRangeDisplay(mapDimensions, elementToDraw);
                     default:
@@ -37,6 +37,54 @@ var mapDisplay2d = (function(document, mapConfig) {
             .each(function (circle) {
                 extrasContainer.addChild(circle);
             });
+    };
+
+    var createSectorElementRangeDisplay = function(mapDimensions, element) {
+        var angleSizeRadians = element.range.angleSize / 180 * Math.PI;
+        var minLine = createSectorLineDetails(Math.PI / 2, element.range.innerSize, element.range.outerSize);
+        var maxLine = createSectorLineDetails(Math.PI / 2 - angleSizeRadians, element.range.innerSize, element.range.outerSize);
+
+        var display = new createjs.Shape();
+        display.x = mapDimensions.toCanvasCoord(element.block.x + element.block.size / 2);
+        display.y = mapDimensions.toCanvasCoord(element.block.y + element.block.size / 2);
+
+        display.graphics
+            .beginStroke("#ffffff")
+            .moveTo(mapDimensions.toCanvasSize(minLine.coord1.x), mapDimensions.toCanvasSize(minLine.coord1.y))
+            .lineTo(mapDimensions.toCanvasSize(minLine.coord2.x), mapDimensions.toCanvasSize(minLine.coord2.y))
+            .arc(0, 0, mapDimensions.toCanvasSize(element.range.outerSize), 0, angleSizeRadians)
+            .lineTo(mapDimensions.toCanvasSize(maxLine.coord1.x), mapDimensions.toCanvasSize(maxLine.coord1.y))
+            .arc(0, 0, mapDimensions.toCanvasSize(element.range.innerSize), angleSizeRadians, 0, true);
+
+        display.rotation = 180 + element.range.angle + (element.range.angleSize - element.range.angle) / 2;
+        return display;
+    };
+
+    var createSectorLineDetails = function(angle, innerSize, outerSize) {
+        return {
+            coord1: {
+                x: Math.sin(angle) * innerSize,
+                y: Math.cos(angle) * innerSize
+            },
+            coord2: {
+                x: Math.sin(angle) * outerSize,
+                y: Math.cos(angle) * outerSize
+            }
+        };
+    };
+
+    var createLine = function(coord1, coord2, colour, mapDimensions) {
+        var line = new createjs.Shape();
+        line.graphics
+            .beginStroke(colour)
+            .moveTo(0, 0)
+            .lineTo(
+                mapDimensions.toCanvasSize(coord1.x - coord2.x),
+                mapDimensions.toCanvasSize(coord1.y - coord2.y)
+            );
+        line.x = mapDimensions.toCanvasCoord(coord2.x);
+        line.y = mapDimensions.toCanvasCoord(coord2.y);
+        return line;
     };
 
     var createCircularElementRangeDisplay = function(mapDimensions, element) {
@@ -353,20 +401,6 @@ var mapDisplay2d = (function(document, mapConfig) {
         renderElementRangesByTypeName(mapDimensions, "ClanCastle");
     };
 
-    var createLine = function(coord1, coord2, colour, mapDimensions) {
-        var line = new createjs.Shape();
-        line.graphics
-            .beginStroke(colour)
-            .moveTo(0, 0)
-            .lineTo(
-                mapDimensions.toCanvasSize(coord1.x - coord2.x),
-                mapDimensions.toCanvasSize(coord1.y - coord2.y)
-            );
-        line.x = mapDimensions.toCanvasCoord(coord2.x);
-        line.y = mapDimensions.toCanvasCoord(coord2.y);
-        return line;
-    };
-
     var renderHighHPUnderAirDef = function(result, mapDimensions) {
         eachBuildingDisplay(
             result.outOfAirDefRange,
@@ -454,7 +488,7 @@ var mapDisplay2d = (function(document, mapConfig) {
         }
         allPrevents.filters = [
             new createjs.ColorFilter(
-                1, 1, 1, 0.1,
+                1, 1, 1, 0.15,
                 0, 0, 0, 0
             )
         ];

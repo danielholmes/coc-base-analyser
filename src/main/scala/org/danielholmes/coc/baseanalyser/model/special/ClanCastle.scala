@@ -7,5 +7,5 @@ import org.scalactic.anyvals.PosInt
 case class ClanCastle(level: PosInt, tile: Tile) extends Building with PreventsTroopDrop {
   val size = PosInt(3)
 
-  lazy val range = CircularElementRange(block.centre, 12)
+  lazy val range = CircularElementRange(block.centre, 12.0)
 }

@@ -8,7 +8,7 @@ case class MapCoordinate(x: PosZDouble, y: PosZDouble) {
   require(y >= 0.0 && y <= TileCoordinate.MaxCoordinate, s"MapCoordinates.y must be >= 0 <= ${TileCoordinate.MaxCoordinate}, given: $y")
 
   def distanceTo(other: MapCoordinate): PosZDouble = {
-    PosZDouble.from(Math.sqrt(Math.pow(x - other.x, 2) + Math.pow(y - other.y, 2))).get
+    PosZDouble.from(Math.hypot(x - other.x, y - other.y)).get
   }
 }
 

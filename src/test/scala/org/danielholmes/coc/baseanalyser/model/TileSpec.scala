@@ -43,23 +43,4 @@ class TileSpec extends FlatSpec with Matchers {
   it should "return correct distance to diagonal" in {
     Tile(10, 10).distanceTo(Tile(6, 5)) should be (PosZDouble(5))
   }
-
-  it should "return correct shortest tile path to straight" in {
-    Tile(11, 10).shortestTilePathTo(Tile(14, 10), Set.empty) should contain (List(
-      Tile(11, 10), Tile(12, 10), Tile(13, 10), Tile(14, 10)
-    ))
-  }
-
-  it should "return correct shortest tile path to diagonal" in {
-    Tile(10, 10).shortestTilePathTo(Tile(13, 13), Set.empty) should contain (List(
-      Tile(10, 10), Tile(11, 11), Tile(12, 12), Tile(13, 13)
-    ))
-  }
-
-  it should "return correct shortest tile path with wall in the way" in {
-    val wallTiles = Tile(11, 9).matrixOfTilesTo(Tile(11, 20))
-    Tile(10, 10).shortestTilePathTo(Tile(12, 10), wallTiles) should contain (List(
-      Tile(10, 10), Tile(10, 9), Tile(11, 8), Tile(12, 9), Tile(12, 10)
-    ))
-  }
 }

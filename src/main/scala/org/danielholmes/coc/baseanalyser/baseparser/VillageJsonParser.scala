@@ -5,7 +5,7 @@ import org.danielholmes.coc.baseanalyser.model.Village
 import spray.json._
 
 object VillageJsonProtocol extends DefaultJsonProtocol {
-  implicit val buildingFormat = jsonFormat14(RawBuilding)
+  implicit val buildingFormat = jsonFormat16(RawBuilding)
   implicit val rawVillageFormat = jsonFormat2(RawVillage)
 }
 
@@ -16,7 +16,7 @@ class VillageJsonParser(elementFactory: ElementFactory) {
     try {
       val rawVillage = input.parseJson.convertTo[RawVillage]
       Villages(
-        parseVillage(rawVillage, b => Some(RawElement(b.data, b.lvl, b.x, b.y))),
+        parseVillage(rawVillage, b => Some(RawElement(b.data, b.lvl, b.x, b.y, b.aim_angle))),
         rawVillage.war_layout
           .map(layoutIndex => parseVillage(rawVillage, b => parseWarElement(b, layoutIndex)))
       )
@@ -40,7 +40,7 @@ class VillageJsonParser(elementFactory: ElementFactory) {
 
   private def parseWarElement(raw: RawBuilding, index: Int): Option[RawElement] = {
     parseWarCoordinates(raw, index)
-        .map(coords => RawElement(raw.data, raw.lvl, coords._1, coords._2))
+        .map(coords => RawElement(raw.data, raw.lvl, coords._1, coords._2, raw.aim_angle_war))
   }
 
   private def parseWarCoordinates(raw: RawBuilding, index: Int): Option[(Int, Int)] = {
@@ -64,9 +64,17 @@ case class RawBuilding(
   l2x: Option[Int], l2y: Option[Int],
   l3x: Option[Int], l3y: Option[Int],
   l4x: Option[Int], l4y: Option[Int],
-  l5x: Option[Int], l5y: Option[Int]
+  l5x: Option[Int], l5y: Option[Int],
+  aim_angle: Option[Int],
+  aim_angle_war: Option[Int]
 )
-case class RawElement(data: Int, lvl: Int, x: Int, y: Int)
+case class RawElement(data: Int, lvl: Int, x: Int, y: Int, aimAngle: Option[Int])
+
+object RawElement {
+  def apply(data: Int, lvl: Int, x: Int, y: Int): RawElement = {
+    RawElement(data, lvl, x, y, None)
+  }
+}
 
 case class Villages(home: Village, war: Option[Village]) {
   import Layout._

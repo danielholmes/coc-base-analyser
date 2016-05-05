@@ -48,15 +48,18 @@ class ClanSeekerGameConnection extends GameConnection {
       val pipeline = sendReceive ~> unmarshal[ClanDetailsResponse]
       val response = pipeline(Get(s"$rootUrl/clan_details?id=$id"))
       val result = Await.result(response, timeout)
-      if (result.clan.isDefined || attemptNumber == 3) return result.clan
-      Thread.sleep(400 * attemptNumber)
-      attempt(attemptNumber + 1)
+      if (result.clan.isDefined || attemptNumber == 3) {
+        result.clan
+      } else {
+        Thread.sleep(400 * attemptNumber)
+        attempt(attemptNumber + 1)
+      }
     }
 
     try {
       attempt(0)
     } finally {
-      system.shutdown()
+      system.terminate()
     }
   }
 
@@ -69,15 +72,18 @@ class ClanSeekerGameConnection extends GameConnection {
       val pipeline = sendReceive ~> unmarshal[PlayerVillageResponse]
       val response = pipeline(Get(s"$rootUrl/player_village?id=$id"))
       val result = Await.result(response, timeout)
-      if (result.player.isDefined || attemptNumber == 3) return result.player
-      Thread.sleep(400 * attemptNumber)
-      attempt(attemptNumber + 1)
+      if (result.player.isDefined || attemptNumber == 3) {
+        result.player
+      } else {
+        Thread.sleep(400 * attemptNumber)
+        attempt(attemptNumber + 1)
+      }
     }
 
     try {
       attempt(0)
     } finally {
-      system.shutdown()
+      system.terminate()
     }
   }
 }

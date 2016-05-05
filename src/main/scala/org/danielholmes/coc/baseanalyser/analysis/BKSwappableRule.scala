@@ -62,12 +62,6 @@ class BKSwappableRule extends Rule {
   }
 
   private def closestDropDistance(village: Village, tile: Tile): PosZDouble = {
-    // Currently hangs, likely something wrong in a star heuristic
-    /*village.tilesAllowedToDropTroop
-      .flatMap(_.shortestTilePathTo(tile, village.wallTiles))
-      .map(_.size)
-      .min*/
-
     village.tilesAllowedToDropTroop
       .map(_.distanceTo(tile))
       .min

@@ -33,6 +33,7 @@ object WizardTowersOutOfHoundPositionsRule {
     "WizardTowersOutOfHoundPositions",
     "WTs avoid hounds",
     "Enough Wizard Towers out of hound range",
-    "Wizard Towers are strong against loons, they shouldn't be too close to air defenses where hounds can tank for them. You should have at least 2 that wont target resting hounds"
+    """Wizard Towers are strong against loons, they shouldn't be too close to air defenses where hounds can tank for them.
+      |You should have at least 2 that wont target resting hounds""".stripMargin
   )
 }
