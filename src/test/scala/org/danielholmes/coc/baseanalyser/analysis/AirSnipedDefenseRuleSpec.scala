@@ -1,7 +1,8 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
-import org.danielholmes.coc.baseanalyser.model.defense.{AirDefense, Cannon}
+import org.danielholmes.coc.baseanalyser.model.defense.{AirDefense, AirSweeper, Cannon}
+import org.danielholmes.coc.baseanalyser.model.trash.BuilderHut
 import org.danielholmes.coc.baseanalyser.model.troops.{Minion, MinionAttackPosition}
 import org.scalatest._
 
@@ -25,6 +26,14 @@ class AirSnipedDefenseRuleSpec extends FlatSpec with Matchers {
     rule.analyse(Village(Set(Cannon(1, Tile.MapOrigin), airDef))) should be (AirSnipedDefenseRuleResult(
       Set.empty,
       Set(airDef)
+    ))
+  }
+
+  it should "return no sniped ground when air sweeper" in {
+    val airSweeper = AirSweeper(1, Tile(10, 10), Angle.Quarter * 7)
+    rule.analyse(Village(Set(BuilderHut(Tile(4, 4)), airSweeper))) should be (AirSnipedDefenseRuleResult(
+      Set.empty,
+      Set(airSweeper)
     ))
   }
 }

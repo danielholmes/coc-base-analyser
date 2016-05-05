@@ -14,10 +14,9 @@ trait AirSweeperAngle {
 object AirSweeperAngle {
   implicit def widenToPosZInt(angle: AirSweeperAngle): PosZInt = PosZInt.from(angle.toInt).get
 
-  implicit def apply(value: Int): AirSweeperAngle = {
-    val angle = Angle.degrees(value)
-    if (value % 45 != 0) {
-      throw new IllegalArgumentException(s"angle should be increments of 45")
+  implicit def apply(angle: Angle): AirSweeperAngle = {
+    if (angle.degrees % 45 != 0) {
+      throw new IllegalArgumentException(s"$angle should be increments of 45")
     }
 
     AirSweeperAngleImpl(angle)

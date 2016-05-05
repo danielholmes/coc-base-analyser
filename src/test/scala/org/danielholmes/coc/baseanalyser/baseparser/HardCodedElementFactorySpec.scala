@@ -31,6 +31,6 @@ class HardCodedElementFactorySpec extends FlatSpec with Matchers {
   }
 
   it should "parse correct air sweeper" in {
-    factory.build(RawElement(1000028, 4, 5, 6, Some(45))) should contain (AirSweeper(5, Tile(5, 6), 45))
+    factory.build(RawElement(1000028, 4, 5, 6, Some(45))) should contain (AirSweeper(5, Tile(5, 6), Angle.degrees(45)))
   }
 }

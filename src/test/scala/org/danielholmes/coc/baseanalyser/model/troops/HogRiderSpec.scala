@@ -36,7 +36,7 @@ class HogRiderSpec extends FlatSpec with Matchers {
   }
 
   it should "include air sweeper as target" in {
-    val as = AirSweeper(1, Tile(10, 10), 45)
+    val as = AirSweeper(1, Tile(10, 10), Angle.Half)
     val closeBarrack = Barrack(1, Tile(2, 2))
     HogRider.findTargets(origin, Village(Set(as, closeBarrack))) should contain (as)
   }

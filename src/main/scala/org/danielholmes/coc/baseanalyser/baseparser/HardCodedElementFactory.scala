@@ -47,7 +47,7 @@ class HardCodedElementFactory extends ElementFactory {
     1000025 -> levelAndCoordinateConstructor(ArcherQueenAltar),
     1000026 -> levelAndCoordinateConstructor(DarkBarrack),
     1000027 -> levelAndCoordinateConstructor(InfernoTower),
-    1000028 -> ((raw: RawElement) => AirSweeper(elementLevel(raw.lvl), elementTile(raw), raw.aimAngle.get)),
+    1000028 -> ((raw: RawElement) => AirSweeper(elementLevel(raw.lvl), elementTile(raw), Angle.degrees(raw.aimAngle.get))),
     1000029 -> levelAndCoordinateConstructor(DarkSpellFactory),
     1000030 -> levelAndCoordinateConstructor(GrandWarden),
     1000031 -> levelAndCoordinateConstructor(EagleArtillery),
