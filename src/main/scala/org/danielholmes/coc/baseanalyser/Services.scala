@@ -12,8 +12,8 @@ import org.scalactic.anyvals.PosInt
 trait Services {
   import com.softwaremill.macwire._
 
-  //lazy val gameConnection = wire[ClanSeekerGameConnection]
-  lazy val gameConnection = wire[StubGameConnection]
+  lazy val gameConnection = wire[ClanSeekerGameConnection]
+  //lazy val gameConnection = wire[StubGameConnection]
   private lazy val elementFactory = wire[HardCodedElementFactory]
   lazy val villageJsonParser = wire[VillageJsonParser]
   private lazy val th8Rules: Set[Rule] = Set(
