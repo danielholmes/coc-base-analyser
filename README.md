@@ -45,6 +45,8 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
+ - maintenance mode for site - different runRoute if connection to game unavailable
+ - grid checkbox in navbar
  - analysis performance, currently too slow
    - MapCoordinate trait with underlying FloatMapCoordinate, TileCoordinate, Tile
    - Views of tile sets (e.g. TileBlock returned from matrix
