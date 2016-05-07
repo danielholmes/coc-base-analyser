@@ -4,13 +4,18 @@ import java.time.Duration
 import java.util.{Base64, UUID}
 
 import org.danielholmes.coc.baseanalyser.analysis._
+import org.danielholmes.coc.baseanalyser.gameconnection.ClanSeekerProtocol.{ClanDetails, PlayerSummary, PlayerVillage}
+import org.danielholmes.coc.baseanalyser.model.Layout.Layout
 import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.model.defense.HiddenTesla
 import org.danielholmes.coc.baseanalyser.model.heroes.HeroAltar
-import org.danielholmes.coc.baseanalyser.model.range.{BlindSpotCircularElementRange, CircularElementRange, ElementRange, BlindSpotSectorElementRange}
+import org.danielholmes.coc.baseanalyser.model.range.{BlindSpotCircularElementRange, BlindSpotSectorElementRange, CircularElementRange, ElementRange}
 import org.danielholmes.coc.baseanalyser.model.special.ClanCastle
 import org.danielholmes.coc.baseanalyser.model.troops._
 import spray.http.Uri
+import spray.httpx.SprayJsonSupport._
+import spray.json._
+import ViewModelProtocol._
 
 class ViewModelMapper {
   def exception(uri: Uri, e: Exception): ExceptionViewModel = {
@@ -29,6 +34,87 @@ class ViewModelMapper {
       report.village.townHallLevel.get,
       report.results.map(r => ResultSummaryViewModel(r.result.ruleDetails.shortName, r.result.success))
     )
+  }
+
+  def baseAnalysis(
+    clan: PermittedClan,
+    player: PlayerVillage,
+    layout: Layout,
+    analysis: AnalysisReport,
+    connectionDuration: Duration,
+    analysisDuration: Duration
+  ): BaseAnalysisViewModel = {
+    baseAnalysis(
+      clan,
+      player,
+      layout,
+      analysis,
+      connectionDuration,
+      analysisDuration,
+      None
+    )
+  }
+
+  private def baseAnalysis(
+    clan: PermittedClan,
+    player: PlayerVillage,
+    layout: Layout,
+    analysis: AnalysisReport,
+    connectionDuration: Duration,
+    analysisDuration: Duration,
+    warning: Option[String]
+  ): BaseAnalysisViewModel = {
+    BaseAnalysisViewModel(
+      Tile.MapSize.toInt,
+      Tile.OutsideBorder.toInt,
+      clan.name,
+      player.avatar.userName,
+      Layout.getDescription(layout),
+      analysisReport(analysis).toJson.compactPrint,
+      warning,
+      baseAnalysisProfiling(connectionDuration, analysisDuration, analysis)
+    )
+  }
+
+  def baseAnalysisError(
+    clan: PermittedClan,
+    player: PlayerVillage,
+    layout: Layout,
+    village: Village,
+    connectionDuration: Duration,
+    warning: String
+  ): BaseAnalysisViewModel = {
+    baseAnalysis(
+      clan,
+      player,
+      layout,
+      AnalysisReport(village, Set.empty),
+      connectionDuration,
+      Duration.ZERO,
+      Some(warning)
+    )
+  }
+
+  private def baseAnalysisProfiling(
+    connectionDuration: Duration,
+    analysisDuration: Duration,
+    analysis: AnalysisReport
+  ): BaseAnalysisProfilingViewModel = {
+    BaseAnalysisProfilingViewModel(
+      formatSecs(connectionDuration),
+      formatSecs(analysisDuration),
+      analysis.results
+        .groupBy(_.result.ruleDetails.shortName)
+        .mapValues(_.toList.head)
+        .toSeq
+        .sortBy(_._2.time)
+        .reverse
+        .map(tuple => (tuple._1, formatSecs(tuple._2.time)))
+    )
+  }
+
+  private def formatSecs(duration: Duration): String = {
+    "%.3f".format(duration.toMillis / 1000.0) + "s"
   }
 
   def analysisReport(report: AnalysisReport): AnalysisReportViewModel = {

@@ -1,38 +1,45 @@
 package org.danielholmes.coc.baseanalyser
 
+import java.time.Duration
+
 import org.danielholmes.coc.baseanalyser.analysis.{AnalysisReport, VillageAnalyser}
 import org.danielholmes.coc.baseanalyser.gameconnection.ClanSeekerProtocol.PlayerVillage
 import org.danielholmes.coc.baseanalyser.gameconnection.GameConnection
 import org.danielholmes.coc.baseanalyser.baseparser.VillageJsonParser
 import org.danielholmes.coc.baseanalyser.model.Layout._
 import org.danielholmes.coc.baseanalyser.model.{Layout, Village}
+import org.danielholmes.coc.baseanalyser.util.TimedInvocation
 import org.danielholmes.coc.baseanalyser.web.PermittedClan
 import org.scalactic.{Bad, Good, Or}
 
 class Facades(
   permittedClans: Set[PermittedClan],
-  clanSeeker: GameConnection,
+  gameConnection: GameConnection,
   villageJsonParser: VillageJsonParser,
   villageAnalyser: VillageAnalyser
 ) {
   def getVillageAnalysis(clanCode: String, playerId: Long, layoutName: String):
-    ((PermittedClan, Option[AnalysisReport], Village, PlayerVillage, Layout, Long) Or String) = {
+    ((PermittedClan, Option[AnalysisReport], Village, PlayerVillage, Layout, Duration, Duration) Or String) = {
     permittedClans.find(_.code == clanCode)
       .map(clan =>
         Layout.values.find(_.toString == layoutName)
           .map(layout =>
-            clanSeeker.getPlayerVillage(playerId)
-              .filter(_.avatar.clanId == clan.id)
-              .map(player =>
-                villageJsonParser.parse(player.village.raw)
-                  .getByLayout(layout)
-                  .map(village => {
-                    val start = System.currentTimeMillis
-                    Good((clan, villageAnalyser.analyse(village), village, player, layout, start))
-                  })
-                  .getOrElse(Bad(s"Player ${player.avatar.userName} doesn't have $layout village"))
-              )
-              .getOrElse(Bad(s"id $playerId not found in clan ${clan.name}"))
+            TimedInvocation.run(() => gameConnection.getPlayerVillage(playerId)) match {
+              case (p: Option[PlayerVillage], d: Duration) =>
+                p.filter(_.avatar.clanId == clan.id)
+                  .map(player =>
+                    villageJsonParser.parse(player.village.raw)
+                      .getByLayout(layout)
+                      .map(village => {
+                        val start = System.currentTimeMillis
+                        val analysis = villageAnalyser.analyse(village)
+                        val analysisDuration = Duration.ofMillis(System.currentTimeMillis - start)
+                        Good((clan, analysis, village, player, layout, d, analysisDuration))
+                      })
+                      .getOrElse(Bad(s"Player ${player.avatar.userName} doesn't have $layout village"))
+                  )
+                  .getOrElse(Bad(s"id $playerId not found in clan ${clan.name}"))
+            }
           )
           .getOrElse(Bad(s"Layout type $layoutName unknown"))
       )
@@ -42,12 +49,12 @@ class Facades(
   def getWarVillageByUserName(clanCode: String, userName: String): Village Or String = {
     permittedClans.find(_.code == clanCode)
       .map(clan =>
-        clanSeeker.getClanDetails(clan.id)
+        gameConnection.getClanDetails(clan.id)
           .map(clanDetails =>
             clanDetails.players.find(_.avatar.userName.equalsIgnoreCase(userName))
               .map(_.avatar.currentHomeId)
               .map(userId =>
-                clanSeeker.getPlayerVillage(userId)
+                gameConnection.getPlayerVillage(userId)
                   .map(_.village.raw)
                   .map(villageJsonParser.parse)
                   .map(

@@ -13,7 +13,7 @@ object ProfileAnalysis extends App with Services {
   val clanCode = args(0)
   val userName = args(1)
 
-  private def formatSecs(millis: Long): String = "%.2f".format(millis / 1000.0) + "s"
+  private def formatSecs(millis: Long): String = "%.3f".format(millis / 1000.0) + "s"
 
   private def formatSecs(duration: Duration): String = formatSecs(duration.toMillis)
 

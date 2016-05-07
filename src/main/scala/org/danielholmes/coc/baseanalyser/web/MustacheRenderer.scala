@@ -5,7 +5,7 @@ import java.io.StringWriter
 import com.github.mustachejava.MustacheFactory
 
 class MustacheRenderer(val mustacheFactory: MustacheFactory) {
-  def render(name: String, vars: Map[String, Any]): String = {
+  def render(name: String, vars: Object): String = {
     val mustache = mustacheFactory.compile(name)
 
     val writer = new StringWriter()

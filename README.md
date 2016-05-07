@@ -49,9 +49,7 @@ then deploy it manually through the AWS console:
  - grid checkbox in navbar
  - analysis performance, currently too slow
    - outer 2 layers of border tiles shouldnt go through full outer tiles algo - we know they are empty
-   - change analysis times to 3 decimals since pretty low for some rules
    - In analysis times on web page include building blocks ala ProfileAnalysis
-   - In analysis times include game connection time
    - MapCoordinate trait with underlying FloatMapCoordinate, TileCoordinate, Tile - encourage integer math where possible and prevent widening
    - show analysis times in bulk page
    - Views of tile sets (e.g. TileBlock returned from matrix

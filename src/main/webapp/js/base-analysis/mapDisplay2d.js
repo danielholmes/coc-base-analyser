@@ -196,7 +196,7 @@ var mapDisplay2d = (function(document, mapConfig) {
         _.each(
             result.attackings,
             function(attacking) {
-                extrasContainer.addChild(createLine(targeting.hitPoint, targeting.standingPosition, failColour, mapDimensions));
+                extrasContainer.addChild(createLine(attacking.hitPoint, attacking.standingPosition, failColour, mapDimensions));
             }
         );
     };

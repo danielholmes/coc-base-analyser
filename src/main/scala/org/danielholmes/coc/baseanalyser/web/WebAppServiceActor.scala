@@ -144,23 +144,18 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                 get {
                   facades.getVillageAnalysis(clanCode, playerId, layoutName)
                     .map({
-                      case (clan, report, village, player, layout, start) =>
+                      case (clan, report, village, player, layout, connectionDuration, analysisDuration) =>
                         report.map(analysis =>
                           complete(
                             mustacheRenderer.render(
                               "web/base-analysis.mustache",
-                              Map(
-                                "mapTiles" -> Tile.MapSize.toInt,
-                                "borderTiles" -> Tile.OutsideBorder.toInt,
-                                "clanName" -> clan.name,
-                                "playerIgn" -> player.avatar.userName,
-                                "layoutDescription" -> Layout.getDescription(layout),
-                                "timeSecs" -> "%.2f".format(Duration.ofMillis(System.currentTimeMillis - start).toMillis / 1000.0),
-                                "times" -> analysis.results
-                                  .groupBy(_.result.ruleDetails.shortName)
-                                  .mapValues(result => "%.2f".format(result.toList.head.time.toMillis / 1000.0))
-                                  .toSet,
-                                "report" -> viewModelMapper.analysisReport(analysis).toJson.compactPrint
+                              viewModelMapper.baseAnalysis(
+                                clan,
+                                player,
+                                layout,
+                                analysis,
+                                connectionDuration,
+                                analysisDuration
                               )
                             )
                           )
@@ -169,16 +164,14 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                           complete(
                             mustacheRenderer.render(
                               "web/base-analysis.mustache",
-                              Map(
-                                "mapTiles" -> Tile.MapSize.toInt,
-                                "borderTiles" -> Tile.OutsideBorder.toInt,
-                                "clanName" -> clan.name,
-                                "playerIgn" -> player.avatar.userName,
-                                "warning" -> s"""${player.avatar.userName} village can't be analysed - currently only supporting
-                                  |TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}""".stripMargin,
-                                "report" -> viewModelMapper.analysisReport(AnalysisReport(village, Set.empty)).toJson.compactPrint,
-                                "timeSecs" -> 0,
-                                "times" -> Set.empty
+                              viewModelMapper.baseAnalysisError(
+                                clan,
+                                player,
+                                layout,
+                                village,
+                                connectionDuration,
+                                s"""${player.avatar.userName} village can't be analysed - currently only supporting
+                                   |TH${villageAnalyser.minTownHallLevel.toInt}-${villageAnalyser.maxTownHallLevel.toInt}""".stripMargin
                               )
                             )
                           )
@@ -206,13 +199,13 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                 get {
                   facades.getVillageAnalysis(clanCode, playerId, layoutName)
                     .map({
-                      case (clan, report, village, player, layout, start) =>
+                      case (clan, report, village, player, layout, connectionDuration, analysisDuration) =>
                         report
                           .map(analysis =>
                             complete(viewModelMapper.analysisSummary(
                               player.avatar.userName,
                               analysis,
-                              Duration.ofMillis(System.currentTimeMillis - start)
+                              analysisDuration
                             ))
                           )
                           .getOrElse(

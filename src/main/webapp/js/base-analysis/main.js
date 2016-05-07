@@ -12,5 +12,4 @@ $(document).ready(function() {
     });
 
     model.setReport(report);
-    console.log("Analysis")
 });
