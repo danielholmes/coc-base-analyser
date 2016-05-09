@@ -64,11 +64,7 @@ class ClanSeekerGameConnection extends GameConnection {
         }
       } catch {
         case e: ConnectionAttemptFailedException =>
-          if (attemptNumber == maxAttempts) {
-            throw new GameConnectionNotAvailableException()
-          } else {
-            tryAgain(attemptNumber)
-          }
+          throw new GameConnectionNotAvailableException()
       }
     }
 
@@ -101,11 +97,7 @@ class ClanSeekerGameConnection extends GameConnection {
         }
       } catch {
         case e: ConnectionAttemptFailedException =>
-          if (attemptNumber == maxAttempts) {
-            throw new GameConnectionNotAvailableException()
-          } else {
-            tryAgain(attemptNumber)
-          }
+          throw new GameConnectionNotAvailableException()
       }
     }
 
