@@ -97,7 +97,7 @@ class ViewModelMapper {
   ): BaseAnalysisProfilingViewModel = {
     BaseAnalysisProfilingViewModel(
       formatSecs(connectionDuration),
-      formatSecs(profiling.rulesDuration),
+      formatSecs(profiling.rulesDuration.plus(profiling.buildingBlocksDuration)),
       Seq(
         ("Game Connection", Seq(("Total", formatSecs(connectionDuration)))),
         (
