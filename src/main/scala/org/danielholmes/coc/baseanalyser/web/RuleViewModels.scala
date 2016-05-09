@@ -7,7 +7,7 @@ sealed trait RuleResultViewModel {
   val success: Boolean
 }
 
-case class ResultSummaryViewModel(shortName: String, success: Boolean)
+case class RuleResultSummaryViewModel(shortName: String, success: Boolean)
 
 case class HogCCLureResultViewModel(
   success: Boolean,

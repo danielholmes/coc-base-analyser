@@ -88,8 +88,8 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val baseAnalysisProfilingFormat = jsonFormat3(BaseAnalysisProfilingViewModel)
   implicit val baseAnalysisFormat = jsonFormat8(BaseAnalysisViewModel)
 
-  implicit val resultSummaryFormat = jsonFormat2(ResultSummaryViewModel)
-  implicit val analysisReportSummaryFormat = jsonFormat2(AnalysisReportSummaryViewModel)
+  implicit val resultSummaryFormat = jsonFormat2(RuleResultSummaryViewModel)
+  implicit val analysisReportSummaryFormat = jsonFormat4(AnalysisReportSummaryViewModel)
 
   implicit val exceptionFormat = jsonFormat4(ExceptionViewModel)
 }

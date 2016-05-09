@@ -203,7 +203,8 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                           .map(analysis =>
                             complete(viewModelMapper.analysisSummary(
                               player.avatar.userName,
-                              analysis
+                              analysis,
+                              connectionDuration
                             ))
                           )
                           .getOrElse(

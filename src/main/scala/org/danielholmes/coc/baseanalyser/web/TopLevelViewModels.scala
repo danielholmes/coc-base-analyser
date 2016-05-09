@@ -1,6 +1,11 @@
 package org.danielholmes.coc.baseanalyser.web
 
-case class AnalysisReportSummaryViewModel(townHallLevel: Int, resultSummaries: Set[ResultSummaryViewModel])
+case class AnalysisReportSummaryViewModel(
+  townHallLevel: Int,
+  resultSummaries: Set[RuleResultSummaryViewModel],
+  connectionTime: String,
+  analysisTime: String
+)
 
 case class AnalysisReportViewModel(village: VillageViewModel, results: Set[RuleResultViewModel])
 

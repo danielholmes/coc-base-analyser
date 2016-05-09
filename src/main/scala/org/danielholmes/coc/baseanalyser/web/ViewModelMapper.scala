@@ -29,11 +29,17 @@ class ViewModelMapper {
     )
   }
 
-  def analysisSummary(userName: String, report: AnalysisReport): AnalysisReportSummaryViewModel = {
+  def analysisSummary(userName: String, report: AnalysisReport, connectionDuration: Duration): AnalysisReportSummaryViewModel = {
     AnalysisReportSummaryViewModel(
       report.village.townHallLevel.get,
-      report.results.map(r => ResultSummaryViewModel(r.ruleDetails.shortName, r.success))
+      report.results.map(ruleResultSummary),
+      formatSecs(connectionDuration),
+      formatSecs(report.profiling.total)
     )
+  }
+
+  private def ruleResultSummary(ruleResult: RuleResult): RuleResultSummaryViewModel = {
+    RuleResultSummaryViewModel(ruleResult.ruleDetails.shortName, ruleResult.success)
   }
 
   def baseAnalysis(

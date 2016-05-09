@@ -17,6 +17,10 @@
     {{$content}}
         <div class="row">
             <div id="loading" class="col-md-12">
+                Analysing: <span class="loading-names"></span>
+                <button class="btn btn-link btn-xs queued-button" data-toggle="collapse"
+                        data-target="#loading-queued-names" aria-expanded="false" aria-controls="loading-queued-names">+ <span class="queued-count"></span> queued</button>
+                <div id="loading-queued-names" class="queued-names text-muted collapse"></div>
             </div>
         </div>
 
@@ -59,6 +63,7 @@
                                 [[#rules]]
                                     <th data-rule="[[.]]" class="result-col col-[[.]]">[[.]]</th>
                                 [[/rules]]
+                                <th><span class="glyphicon glyphicon-time"></span></th>
                             </tr>
                         </thead>
                         <tbody>

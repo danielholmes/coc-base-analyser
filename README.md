@@ -45,11 +45,10 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - maintenance mode for site - different runRoute if connection to game unavailable
  - grid checkbox in navbar
  - analysis performance, currently too slow
+   - move to WV (closest DC) with better ping to clanseeker, cheaper hosting and possibly be able to use smaller machines
    - MapCoordinate trait with underlying FloatMapCoordinate, TileCoordinate, Tile - encourage integer math where possible and prevent widening
-   - show analysis times in bulk page
    - Views of tile sets (e.g. TileBlock returned from matrix
    - Redo ranges - should include underlying cached set of tiles + tilecoordinates contained
  
@@ -82,6 +81,7 @@ then deploy it manually through the AWS console:
  - include obstacles? affect some rules such as empty space analysis within base
  
  - TH11 rendering - new levels and warden + eagle
+ - maintenance mode for site - different runRoute if connection to game unavailable
  
  - own connection - see UCS server for help creating
  - sbt deploy task
