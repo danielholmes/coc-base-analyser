@@ -99,8 +99,15 @@ class ViewModelMapper {
       formatSecs(connectionDuration),
       formatSecs(profiling.rulesDuration),
       Seq(
-        ("Building blocks", profiling.buildingBlocksSorted.map(t => (t._1, formatSecs(t._2)))),
-        ("Analysis", profiling.rulesSorted.map(t => (t._1.shortName, formatSecs(t._2))))
+        ("Game Connection", Seq(("Total", formatSecs(connectionDuration)))),
+        (
+          s"Building blocks (${formatSecs(profiling.buildingBlocksDuration)})",
+          profiling.buildingBlocksSorted.map(t => (t._1, formatSecs(t._2)))
+        ),
+        (
+          s"Analysis (${formatSecs(profiling.rulesDuration)})",
+          profiling.rulesSorted.map(t => (t._1.shortName, formatSecs(t._2)))
+        )
       )
     )
   }

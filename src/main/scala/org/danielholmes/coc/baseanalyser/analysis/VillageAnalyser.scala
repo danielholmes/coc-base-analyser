@@ -28,7 +28,6 @@ class VillageAnalyser(private val rulesByThLevel: Map[PosInt, Set[Rule]]) {
   private def runBuildingBlocks(village: Village): Map[String, Duration] = {
     // Walls?
     Seq(
-      ("Tile Stuff", () => Tile.AllNotTouchingMap),
       ("Outer Tiles", () => village.outerTiles),
       ("Wall Compartments", () => village.wallCompartments),
       ("Allowed To Drop", () => village.coordinatesAllowedToDropTroop),
