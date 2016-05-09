@@ -16,8 +16,8 @@ $(document).ready(function() {
         loadNext();
     };
 
-    var addTemporaryError = function(player, message) {
-        results.push({ player: player, error: message + ", trying again shortly" });
+    var addTemporaryError = function(player, message, numAttempts) {
+        results.push({ player: player, error: message + ", trying again shortly", numAttempts: numAttempts });
         loading = _.reject(loading, _.matcher(player));
         toLoad.push(player);
         loadNext();
@@ -29,32 +29,47 @@ $(document).ready(function() {
         loadNext();
     };
 
-    var loadPlayer = function(player) {
-        jQuery.getJSON(player.analysisSummaryUrl)
-            .done(function(report) {
-                addResult(player, report);
-            })
-            .fail(function(response) {
-                if (response.status == 404 || response.status == 400) {
-                    addPermanentError(player, response.responseJSON);
-                    return;
-                }
+    var loadPlayer = function(player, attemptNum) {
+        var timeout = Math.pow(attemptNum - 1, 1.5) * 1000;
+        if (timeout > 0) {
+            console.log("Loading", player.ign, "with timeout " + timeout);
+        }
+        setTimeout(
+            function() {
+                loading.push(next);
+                jQuery.getJSON(player.analysisSummaryUrl)
+                    .done(function (report) {
+                        addResult(player, report);
+                    })
+                    .fail(function (response) {
+                        if (response.status == 404 || response.status == 400) {
+                            addPermanentError(player, response.responseJSON);
+                            return;
+                        }
 
-                if (response.status == 503) {
-                    addTemporaryError(player, "Game Servers connection not available");
-                    return;
-                }
+                        if (response.status == 503) {
+                            addTemporaryError(player, "Game Servers connection not available", attemptNum);
+                            return;
+                        }
 
-                addTemporaryError(player, 'Unknown error encountered');
-            });
+                        addTemporaryError(player, 'Unknown error encountered', attemptNum);
+                    });
+            },
+            timeout
+        );
     };
 
     var loadNext = function() {
         while (toLoad.length > 0 && loading.length < LOAD_BATCH_SIZE) {
             var next = _.head(toLoad);
             toLoad = _.tail(toLoad);
-            loading.push(next);
-            loadPlayer(next);
+
+            var attemptNum = 1;
+            var report = _.find(results, function(result) { return result.player == next; });
+            if (report != null && report.numAttempts) {
+                attemptNum = report.numAttempts + 1;
+            }
+            loadPlayer(next, attemptNum);
         }
 
         render();
