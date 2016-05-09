@@ -2,6 +2,7 @@ package org.danielholmes.coc.baseanalyser.gameconnection
 
 import akka.actor.ActorSystem
 import org.scalactic.anyvals.PosZInt
+import spray.can.Http.ConnectionAttemptFailedException
 import spray.httpx.SprayJsonSupport._
 import spray.json.DefaultJsonProtocol
 import spray.http._
@@ -36,7 +37,7 @@ import ClanSeekerProtocol._
 
 // TODO: Having problems with types when refactor into common functionality, but should refactor this
 class ClanSeekerGameConnection extends GameConnection {
-  private val rootUrl: String = "http://api.clanseeker.co"
+  private val rootUrl = "http://api.clanseeker.co"
   private val timeout = 1.minute
 
   def getClanDetails(id: Long): Option[ClanDetails] = {
@@ -46,13 +47,17 @@ class ClanSeekerGameConnection extends GameConnection {
     @tailrec
     def attempt(attemptNumber: Int): Option[ClanDetails] = {
       val pipeline = sendReceive ~> unmarshal[ClanDetailsResponse]
-      val response = pipeline(Get(s"$rootUrl/clan_details?id=$id"))
-      val result = Await.result(response, timeout)
-      if (result.clan.isDefined || attemptNumber == 3) {
-        result.clan
-      } else {
-        Thread.sleep(400 * attemptNumber)
-        attempt(attemptNumber + 1)
+      try {
+        val response = pipeline(Get(s"$rootUrl/clan_details?id=$id"))
+        val result = Await.result(response, timeout)
+        if (result.clan.isDefined || attemptNumber == 3) {
+          result.clan
+        } else {
+          Thread.sleep(400 * attemptNumber)
+          attempt(attemptNumber + 1)
+        }
+      } catch {
+        case e: ConnectionAttemptFailedException => None
       }
     }
 
@@ -70,13 +75,17 @@ class ClanSeekerGameConnection extends GameConnection {
     @tailrec
     def attempt(attemptNumber: Int): Option[PlayerVillage] = {
       val pipeline = sendReceive ~> unmarshal[PlayerVillageResponse]
-      val response = pipeline(Get(s"$rootUrl/player_village?id=$id"))
-      val result = Await.result(response, timeout)
-      if (result.player.isDefined || attemptNumber == 3) {
-        result.player
-      } else {
-        Thread.sleep(400 * attemptNumber)
-        attempt(attemptNumber + 1)
+      try {
+        val response = pipeline(Get(s"$rootUrl/player_village?id=$id"))
+        val result = Await.result(response, timeout)
+        if (result.player.isDefined || attemptNumber == 3) {
+          result.player
+        } else {
+          Thread.sleep(400 * attemptNumber)
+          attempt(attemptNumber + 1)
+        }
+      } catch {
+        case e: ConnectionAttemptFailedException => None
       }
     }
 
