@@ -1,6 +1,7 @@
 package org.danielholmes.coc.baseanalyser.gameconnection
 
 import akka.actor.ActorSystem
+import org.danielholmes.coc.baseanalyser.util.GameConnectionNotAvailableException
 import org.scalactic.anyvals.PosZInt
 import spray.can.Http.ConnectionAttemptFailedException
 import spray.httpx.SprayJsonSupport._
@@ -37,6 +38,7 @@ import ClanSeekerProtocol._
 
 // TODO: Having problems with types when refactor into common functionality, but should refactor this
 class ClanSeekerGameConnection extends GameConnection {
+  private val maxAttempts = 3
   private val rootUrl = "http://api.clanseeker.co"
   private val timeout = 1.minute
 
@@ -44,20 +46,29 @@ class ClanSeekerGameConnection extends GameConnection {
     implicit val system = ActorSystem()
     import system.dispatcher // execution context for futures
 
-    @tailrec
+    def tryAgain(attemptNumber: Int): Option[ClanDetails] = {
+      Thread.sleep(400 * attemptNumber)
+      attempt(attemptNumber + 1)
+    }
+
+    //@tailrec
     def attempt(attemptNumber: Int): Option[ClanDetails] = {
       val pipeline = sendReceive ~> unmarshal[ClanDetailsResponse]
       try {
         val response = pipeline(Get(s"$rootUrl/clan_details?id=$id"))
         val result = Await.result(response, timeout)
-        if (result.clan.isDefined || attemptNumber == 3) {
+        if (result.clan.isDefined || attemptNumber == maxAttempts) {
           result.clan
         } else {
-          Thread.sleep(400 * attemptNumber)
-          attempt(attemptNumber + 1)
+          tryAgain(attemptNumber)
         }
       } catch {
-        case e: ConnectionAttemptFailedException => None
+        case e: ConnectionAttemptFailedException =>
+          if (attemptNumber == maxAttempts) {
+            throw new GameConnectionNotAvailableException()
+          } else {
+            tryAgain(attemptNumber)
+          }
       }
     }
 
@@ -72,20 +83,29 @@ class ClanSeekerGameConnection extends GameConnection {
     implicit val system = ActorSystem()
     import system.dispatcher // execution context for futures
 
-    @tailrec
+    def tryAgain(attemptNumber: Int): Option[PlayerVillage] = {
+      Thread.sleep(400 * attemptNumber)
+      attempt(attemptNumber + 1)
+    }
+
+    //@tailrec
     def attempt(attemptNumber: Int): Option[PlayerVillage] = {
       val pipeline = sendReceive ~> unmarshal[PlayerVillageResponse]
       try {
         val response = pipeline(Get(s"$rootUrl/player_village?id=$id"))
         val result = Await.result(response, timeout)
-        if (result.player.isDefined || attemptNumber == 3) {
+        if (result.player.isDefined || attemptNumber == maxAttempts) {
           result.player
         } else {
-          Thread.sleep(400 * attemptNumber)
-          attempt(attemptNumber + 1)
+          tryAgain(attemptNumber)
         }
       } catch {
-        case e: ConnectionAttemptFailedException => None
+        case e: ConnectionAttemptFailedException =>
+          if (attemptNumber == maxAttempts) {
+            throw new GameConnectionNotAvailableException()
+          } else {
+            tryAgain(attemptNumber)
+          }
       }
     }
 

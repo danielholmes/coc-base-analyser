@@ -33,18 +33,12 @@ class WebAppServiceActor extends Actor with HttpService with Services {
   implicit def exceptionHandler(implicit log: LoggingContext): ExceptionHandler =
     ExceptionHandler {
       case g: GameConnectionNotAvailableException =>
-        respondWithMediaType(`application/json`) {
-          log.error(g, g.getMessage)
-          complete(
-            StatusCodes.ServiceUnavailable,
-            Map(
-              "message" -> "Connection to Game Servers not available",
-              "details" ->
-                """We're currently using a third party service for this which can be unreliable.
-                  | It's usually only temporary though and worth trying again shortly""".stripMargin
-            )
-          )
-        }
+        errorPage(
+          StatusCodes.ServiceUnavailable,
+          "Connection to Game Servers not available",
+          """We're currently using a third party service for this which can be unreliable.
+            | It's usually only temporary though and worth trying again shortly""".stripMargin
+        )
       case e: Exception =>
         respondWithMediaType(`application/json`) {
           requestUri { uri =>
@@ -70,10 +64,14 @@ class WebAppServiceActor extends Actor with HttpService with Services {
   }
 
   private def notFoundPage(message: String) = {
+    errorPage(StatusCodes.NotFound, "Not Found", message)
+  }
+
+  private def errorPage(status: StatusCode, title: String, message: String) = {
     respondWithMediaType(`text/html`) {
       complete(
-        StatusCodes.NotFound,
-        mustacheRenderer.render("web/error.mustache", Map("title" -> "Not Found", "message" -> message))
+        status,
+        mustacheRenderer.render("web/error.mustache", Map("title" -> title, "message" -> message))
       )
     }
   }
