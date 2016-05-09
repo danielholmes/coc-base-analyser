@@ -144,7 +144,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                 get {
                   facades.getVillageAnalysis(clanCode, playerId, layoutName)
                     .map({
-                      case (clan, report, village, player, layout, connectionDuration, analysisDuration) =>
+                      case (clan, report, village, player, layout, connectionDuration) =>
                         report.map(analysis =>
                           complete(
                             mustacheRenderer.render(
@@ -154,8 +154,7 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                                 player,
                                 layout,
                                 analysis,
-                                connectionDuration,
-                                analysisDuration
+                                connectionDuration
                               )
                             )
                           )
@@ -199,13 +198,12 @@ class WebAppServiceActor extends Actor with HttpService with Services {
                 get {
                   facades.getVillageAnalysis(clanCode, playerId, layoutName)
                     .map({
-                      case (clan, report, village, player, layout, connectionDuration, analysisDuration) =>
+                      case (clan, report, village, player, layout, connectionDuration) =>
                         report
                           .map(analysis =>
                             complete(viewModelMapper.analysisSummary(
                               player.avatar.userName,
-                              analysis,
-                              analysisDuration
+                              analysis
                             ))
                           )
                           .getOrElse(

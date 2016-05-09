@@ -17,6 +17,7 @@ trait Tile {
   def manhattanDistanceTo(other: Tile): PosZInt
   def matrixOfTilesTo(other: Tile): Set[Tile]
   def matrixOfTilesTo(other: Tile, step: PosInt): Set[Tile]
+  def rectangleTo(other: Tile): Set[Tile]
   // Should prob allow 0 too, but not negative obviously
   def matrixOfTilesInDirection(width: PosInt, height: PosInt): Set[Tile]
   val allCoordinates: Set[TileCoordinate]
@@ -41,6 +42,8 @@ object Tile {
   val MapEnd = MapOrigin.offset(MapSize - 1, MapSize - 1)
   val AllInMap = MapOrigin.matrixOfTilesTo(End)
   val AllOutsideMap = All -- AllInMap
+  val InnerBorder = MapOrigin.offset(-1, -1).rectangleTo(MapEnd.offset(1, 1))
+  val AllNotTouchingMap = AllOutsideMap -- InnerBorder
 
   implicit def widenToTileCoordinate(tile: Tile): TileCoordinate = TileCoordinate(tile.x, tile.y)
 
@@ -86,6 +89,12 @@ object Tile {
     def centreDistanceTo(other: Tile): PosZDouble = centre.distanceTo(other.centre)
 
     def manhattanDistanceTo(other: Tile): PosZInt = PosZInt.from(Math.abs(other.x - x) + Math.abs(other.y - y)).get
+
+    // Top + bottom + left + right
+    def rectangleTo(other: Tile): Set[Tile] = this.matrixOfTilesTo(Tile(other.x, y), 1) ++
+      Tile(x, other.y).matrixOfTilesTo(Tile(other.x, other.y), 1) ++
+      this.matrixOfTilesTo(Tile(x, other.y)) ++
+      Tile(other.x, y).matrixOfTilesTo(Tile(other.x, other.y))
 
     def matrixOfTilesTo(other: Tile): Set[Tile] = matrixOfTilesTo(other, 1)
 

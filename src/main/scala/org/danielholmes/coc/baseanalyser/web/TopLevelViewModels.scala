@@ -19,4 +19,8 @@ case class BaseAnalysisViewModel(
   times: BaseAnalysisProfilingViewModel
 )
 
-case class BaseAnalysisProfilingViewModel(connection: String, analysis: String, analysisRules: Seq[(String, String)])
+case class BaseAnalysisProfilingViewModel(
+  connection: String,
+  analysis: String,
+  times: Seq[(String, Seq[(String, String)])]
+)

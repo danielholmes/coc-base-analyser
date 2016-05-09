@@ -19,22 +19,20 @@ class Facades(
   villageAnalyser: VillageAnalyser
 ) {
   def getVillageAnalysis(clanCode: String, playerId: Long, layoutName: String):
-    ((PermittedClan, Option[AnalysisReport], Village, PlayerVillage, Layout, Duration, Duration) Or String) = {
+    ((PermittedClan, Option[AnalysisReport], Village, PlayerVillage, Layout, Duration) Or String) = {
     permittedClans.find(_.code == clanCode)
       .map(clan =>
         Layout.values.find(_.toString == layoutName)
           .map(layout =>
             TimedInvocation.run(() => gameConnection.getPlayerVillage(playerId)) match {
-              case (p: Option[PlayerVillage], d: Duration) =>
+              case (p: Option[PlayerVillage], connectionDuration: Duration) =>
                 p.filter(_.avatar.clanId == clan.id)
                   .map(player =>
                     villageJsonParser.parse(player.village.raw)
                       .getByLayout(layout)
                       .map(village => {
-                        val start = System.currentTimeMillis
                         val analysis = villageAnalyser.analyse(village)
-                        val analysisDuration = Duration.ofMillis(System.currentTimeMillis - start)
-                        Good((clan, analysis, village, player, layout, d, analysisDuration))
+                        Good((clan, analysis, village, player, layout, connectionDuration))
                       })
                       .getOrElse(Bad(s"Player ${player.avatar.userName} doesn't have $layout village"))
                   )

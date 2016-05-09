@@ -4,7 +4,7 @@ import java.time.Duration
 import java.util.{Base64, UUID}
 
 import org.danielholmes.coc.baseanalyser.analysis._
-import org.danielholmes.coc.baseanalyser.gameconnection.ClanSeekerProtocol.{ClanDetails, PlayerSummary, PlayerVillage}
+import org.danielholmes.coc.baseanalyser.gameconnection.ClanSeekerProtocol.PlayerVillage
 import org.danielholmes.coc.baseanalyser.model.Layout.Layout
 import org.danielholmes.coc.baseanalyser.model._
 import org.danielholmes.coc.baseanalyser.model.defense.HiddenTesla
@@ -29,10 +29,10 @@ class ViewModelMapper {
     )
   }
 
-  def analysisSummary(userName: String, report: AnalysisReport, time: Duration): AnalysisReportSummaryViewModel = {
+  def analysisSummary(userName: String, report: AnalysisReport): AnalysisReportSummaryViewModel = {
     AnalysisReportSummaryViewModel(
       report.village.townHallLevel.get,
-      report.results.map(r => ResultSummaryViewModel(r.result.ruleDetails.shortName, r.result.success))
+      report.results.map(r => ResultSummaryViewModel(r.ruleDetails.shortName, r.success))
     )
   }
 
@@ -41,8 +41,7 @@ class ViewModelMapper {
     player: PlayerVillage,
     layout: Layout,
     analysis: AnalysisReport,
-    connectionDuration: Duration,
-    analysisDuration: Duration
+    connectionDuration: Duration
   ): BaseAnalysisViewModel = {
     baseAnalysis(
       clan,
@@ -50,7 +49,6 @@ class ViewModelMapper {
       layout,
       analysis,
       connectionDuration,
-      analysisDuration,
       None
     )
   }
@@ -61,7 +59,6 @@ class ViewModelMapper {
     layout: Layout,
     analysis: AnalysisReport,
     connectionDuration: Duration,
-    analysisDuration: Duration,
     warning: Option[String]
   ): BaseAnalysisViewModel = {
     BaseAnalysisViewModel(
@@ -72,7 +69,7 @@ class ViewModelMapper {
       Layout.getDescription(layout),
       analysisReport(analysis).toJson.compactPrint,
       warning,
-      baseAnalysisProfiling(connectionDuration, analysisDuration, analysis)
+      baseAnalysisProfiling(connectionDuration, analysis.profiling)
     )
   }
 
@@ -88,28 +85,23 @@ class ViewModelMapper {
       clan,
       player,
       layout,
-      AnalysisReport(village, Set.empty),
+      AnalysisReport(village, Set.empty, AnalysisProfiling(Map.empty, Map.empty)),
       connectionDuration,
-      Duration.ZERO,
       Some(warning)
     )
   }
 
   private def baseAnalysisProfiling(
     connectionDuration: Duration,
-    analysisDuration: Duration,
-    analysis: AnalysisReport
+    profiling: AnalysisProfiling
   ): BaseAnalysisProfilingViewModel = {
     BaseAnalysisProfilingViewModel(
       formatSecs(connectionDuration),
-      formatSecs(analysisDuration),
-      analysis.results
-        .groupBy(_.result.ruleDetails.shortName)
-        .mapValues(_.toList.head)
-        .toSeq
-        .sortBy(_._2.time)
-        .reverse
-        .map(tuple => (tuple._1, formatSecs(tuple._2.time)))
+      formatSecs(profiling.rulesDuration),
+      Seq(
+        ("Building blocks", profiling.buildingBlocksSorted.map(t => (t._1, formatSecs(t._2)))),
+        ("Analysis", profiling.rulesSorted.map(t => (t._1.shortName, formatSecs(t._2))))
+      )
     )
   }
 
@@ -118,7 +110,7 @@ class ViewModelMapper {
   }
 
   def analysisReport(report: AnalysisReport): AnalysisReportViewModel = {
-    AnalysisReportViewModel(village(report.village), report.results.map(invocation => ruleResult(invocation.result)))
+    AnalysisReportViewModel(village(report.village), report.results.map(ruleResult))
   }
 
   def cantAnalyseVillage(invalidVillage: Village, message: String): CantAnalyseVillageViewModel = {

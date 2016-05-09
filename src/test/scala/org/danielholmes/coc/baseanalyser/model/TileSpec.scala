@@ -9,6 +9,15 @@ class TileSpec extends FlatSpec with Matchers {
       Set(Tile(2, 2), Tile(2, 3), Tile(3, 2), Tile(3, 3))
   }
 
+  it should "return correct rectangle of tiles" in {
+    Tile(2, 2).rectangleTo(Tile(4, 4)) should contain theSameElementsAs
+      Set(
+        Tile(2, 2), Tile(3, 2), Tile(4, 2),
+        Tile(2, 3), /*Tile(3, 2),*/ Tile(4, 3),
+        Tile(2, 4), Tile(3, 4), Tile(4, 4)
+      )
+  }
+
   it should "return correct neighbours" in {
     Tile(1, 1).neighbours should be (Set(
       Tile(0, 0), Tile(1, 0), Tile(2, 0),
