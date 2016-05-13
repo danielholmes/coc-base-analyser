@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var Ui = function($, model, mapDisplay, window, displaySettings) {
     var reportValid = false;

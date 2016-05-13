@@ -2,7 +2,7 @@
 // https://github.com/paulmillr/console-polyfill
 // Make it safe to do console.log() always.
 (function(global) {
-    'use strict';
+    "use strict";
     global.console = global.console || {};
     var con = global.console;
     var prop, method;

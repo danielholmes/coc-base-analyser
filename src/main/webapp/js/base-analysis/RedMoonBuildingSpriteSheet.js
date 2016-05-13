@@ -1,3 +1,5 @@
+"use strict";
+
 var RedMoonBuildingSpriteSheet = function(image) {
     var defs = {
         "TownHall": {

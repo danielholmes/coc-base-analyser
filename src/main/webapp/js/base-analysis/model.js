@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var Model = function() {
     var currentReport = null;

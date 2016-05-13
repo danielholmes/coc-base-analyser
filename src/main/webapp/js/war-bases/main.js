@@ -1,3 +1,5 @@
+"use strict";
+
 $(document).ready(function() {
     var LOAD_BATCH_SIZE = 3;
     var toLoad = players.slice(0);

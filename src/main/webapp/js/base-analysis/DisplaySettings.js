@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var DisplaySettings = function(jStorage) {
     var KEY = "baseDisplaySettings";

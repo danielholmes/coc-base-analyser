@@ -1,3 +1,5 @@
+"use strict";
+
 var RedMoonWallSpriteSheet = function(image) {
     // TODO: Nearly repeated in building sprite sheet, sheetIndex only difference
     var create = function(element, mapDimensions) {

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var MapDisplay2d = function(canvas, mapConfig, model, displaySettings) {
     var stage = new createjs.Stage(canvas);

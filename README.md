@@ -45,9 +45,10 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - check http://www.thestoreshop.com/TH8/TH8basebuildingsm.pdf for rules
+ - own connection
+  - purchase from alex
+  - set up on own small EB app
  - analysis performance, currently too slow
-   - move to WV (closest DC) with better ping to clanseeker, cheaper hosting and possibly be able to use smaller machines
    - MapCoordinate trait with underlying FloatMapCoordinate, TileCoordinate, Tile - encourage integer math where possible and prevent widening
    - Views of tile sets (e.g. TileBlock returned from matrix
    - Redo ranges - should include underlying cached set of tiles + tilecoordinates contained
@@ -81,9 +82,9 @@ then deploy it manually through the AWS console:
  - TH11 rendering - new levels and warden + eagle
  - maintenance mode for site - different runRoute if connection to game unavailable
  
- - own connection - see UCS server for help creating
  - sbt deploy task
  - 3d render
+  - split map display 2d apart. New inner stage container - drawLine(tile1, tile2) which transforms to 2d or 3d view
  - separate rule groups for farm vs arranged
  - pass, warning, fail levels (e.g. for minion anchors)
  - dynamic sizing of canvas still a bit funky - find proper js solution
@@ -106,10 +107,11 @@ then deploy it manually through the AWS console:
 
 ## TH8 TODO Rules once traps available
  - spring trap locations (resting on defenses)
- - skele traps not lurable
+ - skele traps should be on ground and not triggerable during cc lure
  - skele traps + air traps not within dgb positions (gives info for cleanup if first hit was with air)
  - 3 viable DGB spots (more difficult)
  - farm wars - teslas in diff compartment for gowipe
+ - trash buildings in front of all outer ring defenses
 
 
 ## TH9 Rules
