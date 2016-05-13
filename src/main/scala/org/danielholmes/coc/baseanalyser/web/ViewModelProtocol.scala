@@ -10,6 +10,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
       case c: ClanCastleElementViewModel => clanCastleElementFormat.write(c)
       case s: BaseStructureElementViewModel => baseStructureElementFormat.write(s)
       case t: TrapElementViewModel => trapElementFormat.write(t)
+      case d: DecorationElementViewModel => decorationElementFormat.write(d)
     }
 
     def read(value: JsValue): ElementViewModel = {
@@ -59,6 +60,7 @@ object ViewModelProtocol extends DefaultJsonProtocol {
   implicit val wallCompartmentFormat = jsonFormat4(WallCompartmentViewModel)
   implicit val possibleLargeTrapFormat = jsonFormat2(PossibleLargeTrapViewModel)
 
+  implicit val decorationElementFormat = jsonFormat3(DecorationElementViewModel)
   implicit val trapElementFormat = jsonFormat4(TrapElementViewModel)
   implicit val baseStructureElementFormat = jsonFormat5(BaseStructureElementViewModel)
   implicit val hiddenTeslaFormat = jsonFormat5(HiddenTeslaViewModel)

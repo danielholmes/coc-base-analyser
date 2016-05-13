@@ -45,10 +45,8 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - include obstacles:
-   - affect some rules such as empty space analysis within base. Modify this because currently doesnt consider space taken up by traps
-   - Obstacles anywhere but outer 3 border tiles rule
-   - just use generic obstacle render atm
+ - Obstacles anywhere but outer 3 border tiles rule
+ - just use generic obstacle render atm
 
  - Once api up again 
   - store skeleton trap mode once can see and verify on live data

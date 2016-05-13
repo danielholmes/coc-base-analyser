@@ -329,6 +329,11 @@ class ViewModelMapper {
         t.level,
         block(t.block)
       )
+      case d: Decoration => DecorationElementViewModel(
+        objectId(d),
+        typeName,
+        block(d.block)
+      )
       case e: Element => throw new RuntimeException(s"Can't map ${element.getClass.getSimpleName}")
     }
   }

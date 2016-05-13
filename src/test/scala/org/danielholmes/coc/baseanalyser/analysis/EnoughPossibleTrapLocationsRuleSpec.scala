@@ -1,6 +1,8 @@
 package org.danielholmes.coc.baseanalyser.analysis
 
 import org.danielholmes.coc.baseanalyser.model._
+import org.danielholmes.coc.baseanalyser.model.defense.HiddenTesla
+import org.danielholmes.coc.baseanalyser.model.traps.GiantBomb
 import org.danielholmes.coc.baseanalyser.util.ElementsBuilder
 import org.scalactic.anyvals.{PosZDouble, PosZInt}
 import org.scalatest._
@@ -32,17 +34,35 @@ class EnoughPossibleTrapLocationsRuleSpec extends FlatSpec with Matchers {
   }
 
   it should "return no violation if 24 possibilities" in {
-    val walls = Range.inclusive(1, 4)
-      .flatMap(row =>
-        Range.inclusive(1, 6)
-          .map(col => Tile(PosZInt.from(col * 4).get, PosZInt.from(row * 4).get))
-          .flatMap(ElementsBuilder.elementFence(_, 4, 4))
-      )
-      .toSet
-    val village = Village(walls)
+    val elements = create24CompartmentsHolding(t => None)
+    val village = Village(elements)
     assert(village.possibleInternalLargeTraps.size == 24)
 
     rule.analyse(village).success should be (true)
+  }
+
+  it should "return no violation if 24 possibilities with real Teslas" in {
+    val elements = create24CompartmentsHolding(t => Some(HiddenTesla(1, t)))
+    val village = Village(elements)
+    assert(village.possibleInternalLargeTraps.size == 24)
+
+    rule.analyse(village).success should be (true)
+  }
+
+  it should "return no violation if 24 possibilities with real Giant Bomb" in {
+    val elements = create24CompartmentsHolding(t => Some(GiantBomb(1, t)))
+    val village = Village(elements)
+    assert(village.possibleInternalLargeTraps.size == 24)
+
+    rule.analyse(village).success should be (true)
+  }
+
+  it should "return violation if 24 possibilities with Decoration" in {
+    val elements = create24CompartmentsHolding(t => Some(Decoration(t)))
+    val village = Village(elements)
+    assert(village.possibleInternalLargeTraps.isEmpty)
+
+    rule.analyse(village).success should be (false)
   }
 
   it should "allocate an equal score for 2 separate 2x2s as 1 3x3" in {
@@ -61,5 +81,15 @@ class EnoughPossibleTrapLocationsRuleSpec extends FlatSpec with Matchers {
 
   it should "single trap should score 1.0" in {
      rule.calculateScore(Village(ElementsBuilder.elementFence(Tile(10, 10), 4, 4))) should be (PosZDouble(1.0))
+  }
+
+  private def create24CompartmentsHolding(factory: Tile => Option[Element]): Set[Element] = {
+    Range.inclusive(1, 4)
+      .flatMap(row =>
+        Range.inclusive(1, 6)
+          .map(col => Tile(PosZInt.from(col * 4).get, PosZInt.from(row * 4).get))
+          .flatMap(t => ElementsBuilder.elementFence(t, 4, 4) ++ factory.apply(t.offset(1, 1)))
+      )
+      .toSet
   }
 }

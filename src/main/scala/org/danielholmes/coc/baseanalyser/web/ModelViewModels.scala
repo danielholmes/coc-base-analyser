@@ -21,26 +21,30 @@ case class TileViewModel(x: Int, y: Int)
 sealed trait ElementViewModel {
   def id: String
   def typeName: String
-  def level: Int
   def block: BlockViewModel
 }
+case class DecorationElementViewModel(
+  override val id: String,
+  override val typeName: String,
+  override val block: BlockViewModel
+) extends ElementViewModel
 case class TrapElementViewModel(
   override val id: String,
   override val typeName: String,
-  override val level: Int,
+  level: Int,
   override val block: BlockViewModel
 ) extends ElementViewModel
 case class BaseStructureElementViewModel(
   override val id: String,
   override val typeName: String,
-  override val level: Int,
+  level: Int,
   override val block: BlockViewModel,
   noTroopDropBlock: BlockViewModel
 ) extends ElementViewModel
 case class DefenseElementViewModel(
   override val id: String,
   override val typeName: String,
-  override val level: Int,
+  level: Int,
   override val block: BlockViewModel,
   noTroopDropBlock: BlockViewModel,
   range: ElementRangeViewModel
@@ -48,14 +52,14 @@ case class DefenseElementViewModel(
 case class HiddenTeslaViewModel(
   override val id: String,
   override val typeName: String,
-  override val level: Int,
+  level: Int,
   override val block: BlockViewModel,
   range: ElementRangeViewModel
 ) extends ElementViewModel
 case class ClanCastleElementViewModel(
   override val id: String,
   override val typeName: String,
-  override val level: Int,
+  level: Int,
   override val block: BlockViewModel,
   noTroopDropBlock: BlockViewModel,
   range: ElementRangeViewModel

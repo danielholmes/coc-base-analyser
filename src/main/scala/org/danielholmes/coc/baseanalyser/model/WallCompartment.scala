@@ -8,7 +8,9 @@ case class WallCompartment(walls: Set[Wall], innerTiles: Set[Tile], elements: Se
   //require(walls.nonEmpty) Currently use wall compartment to represent outer area in algorithms. Should change this
   require(innerTiles.nonEmpty)
 
-  lazy val emptyTiles = innerTiles -- elements.map(_.block).flatMap(_.tiles)
+  private lazy val visibleElements = elements.filterNot(_.isInstanceOf[Hidden])
+
+  lazy val emptyTiles = innerTiles -- visibleElements.map(_.block).flatMap(_.tiles)
 
   lazy val possibleLargeTraps = findPossibleLargeTraps(emptyTiles.toList, Set.empty)
 

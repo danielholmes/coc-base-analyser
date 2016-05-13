@@ -21,6 +21,8 @@ class HardCodedElementFactory extends ElementFactory {
 
   private def elementTile(raw: RawElement) = Tile(PosZInt.from(raw.x).get, PosZInt.from(raw.y).get)
 
+  private val decorationConstructor = (element: RawElement) => Decoration(elementTile(element))
+
   private val elementConstructorByCode: Map[Int, RawElement => Element] = Map(
     // Buildings
     1000001 -> levelAndCoordinateConstructor(TownHall),
@@ -65,102 +67,92 @@ class HardCodedElementFactory extends ElementFactory {
     12000005 -> levelAndCoordinateConstructor(AirBomb),
     12000006 -> levelAndCoordinateConstructor(SeekingAirMine),
     12000007 -> levelAndCoordinateConstructor(SantaTrap),
-    12000008 -> levelAndCoordinateConstructor(SkeletonTrap)
+    12000008 -> levelAndCoordinateConstructor(SkeletonTrap),
+
+    // Decorations/Obstacles
+    18000000 -> decorationConstructor, // Barbarian Statue
+    18000001 -> decorationConstructor, // Torch
+    18000002 -> decorationConstructor, // Goblin Pole
+    18000003 -> decorationConstructor, // White Flag
+    18000004 -> decorationConstructor, // Skull Flag
+    18000005 -> decorationConstructor, // Flower box 1
+    18000006 -> decorationConstructor, // Flower box 2
+    18000007 -> decorationConstructor, // Windmeter
+    18000008 -> decorationConstructor, // Down Arrow Flag
+    18000009 -> decorationConstructor, // Up Arrow Flag
+    18000010 -> decorationConstructor, // Skull Altar
+    18000011 -> decorationConstructor, // USA Flag
+    18000012 -> decorationConstructor, // Canada Flag
+    18000013 -> decorationConstructor, // Italia Flag
+    18000014 -> decorationConstructor, // Germany Flag
+    18000015 -> decorationConstructor, // Finland Flag
+    18000016 -> decorationConstructor, // Spain Flag
+    18000017 -> decorationConstructor, // France Flag
+    18000018 -> decorationConstructor, // GBR Flag
+    18000019 -> decorationConstructor, // Brazil Flag
+    18000020 -> decorationConstructor, // China Flag
+    18000021 -> decorationConstructor, // Norway Flag
+    18000022 -> decorationConstructor, // Thailand Flag
+    18000023 -> decorationConstructor, // Thailand Flag
+    18000024 -> decorationConstructor, // India Flag
+    18000025 -> decorationConstructor, // Australia Flag
+    18000026 -> decorationConstructor, // South Korea Flag
+    18000027 -> decorationConstructor, // Japan Flag
+    18000028 -> decorationConstructor, // Turkey Flag
+    18000029 -> decorationConstructor, // Indonesia Flag
+    18000030 -> decorationConstructor, // Netherlands Flag
+    18000031 -> decorationConstructor, // Philippines Flag
+    18000032 -> decorationConstructor, // Singapore Flag
+    18000033 -> decorationConstructor, // PEKKA Statue
+    18000034 -> decorationConstructor, // Russia Flag
+    18000035 -> decorationConstructor, // Russia Flag
+    18000036 -> decorationConstructor, // Greece Flag
+
+    8000000 -> decorationConstructor, // Pine Tree
+    8000001 -> decorationConstructor, // Large Stone
+    8000002 -> decorationConstructor, // Small Stone 1
+    8000003 -> decorationConstructor, // Small Stone 2
+    8000004 -> decorationConstructor, // Square Bush
+    8000005 -> decorationConstructor, // Square Tree
+    8000006 -> decorationConstructor, // Tree Trunk 1
+    8000007 -> decorationConstructor, // Tree Trunk 2
+    8000008 -> decorationConstructor, // Mushrooms
+    8000009 -> decorationConstructor, // TombStone
+    8000010 -> decorationConstructor, // Fallen Tree
+    8000011 -> decorationConstructor, // Small Stone 3
+    8000012 -> decorationConstructor, // Small Stone 4
+    8000013 -> decorationConstructor, // Square Tree 2
+    8000014 -> decorationConstructor, // Stone Pillar 1
+    8000015 -> decorationConstructor, // Large Stone
+    8000016 -> decorationConstructor, // Sharp Stone 1
+    8000017 -> decorationConstructor, // Sharp Stone 2
+    8000018 -> decorationConstructor, // Sharp Stone 3
+    8000019 -> decorationConstructor, // Sharp Stone 4
+    8000020 -> decorationConstructor, // Sharp Stone 5
+    8000021 -> decorationConstructor, // Xmas tree
+    8000022 -> decorationConstructor, // Hero TombStone
+    8000023 -> decorationConstructor, // DarkTombStone
+    8000024 -> decorationConstructor, // Passable Stone 1
+    8000025 -> decorationConstructor, // Passable Stone 2
+    8000026 -> decorationConstructor, // Campfire
+    8000027 -> decorationConstructor, // Campfire
+    8000028 -> decorationConstructor, // Xmas tree2013
+    8000029 -> decorationConstructor, // Xmas TombStone
+    8000030 -> decorationConstructor, // Bonus Gembox
+    8000031 -> decorationConstructor, // Halloween2014
+    8000032 -> decorationConstructor, // Xmas tree2014
+    8000033 -> decorationConstructor, // Xmas TombStone2014
+    8000034 -> decorationConstructor, // Npc Plant 1
+    8000035 -> decorationConstructor, // Npc Plant 2
+    8000036 -> decorationConstructor // Halloween2015
   )
 
   def build(raw: RawElement): Option[Element] = {
     Some(raw)
-      .filter(shouldInclude)
       .map(
         value => elementConstructorByCode.get(value.data)
           .orElse(throw new RuntimeException("No building with code " + raw.data))
           .get(raw)
       )
   }
-
-  private def shouldInclude(raw: RawElement): Boolean = {
-    Set("1800", "800").forall(!raw.data.toString.startsWith(_))
-  }
 }
-
-/*
-Decorations
-18000000 Barbarian Statue
-18000001 Torch
-18000002 Goblin Pole
-18000003 White Flag
-18000004 Skull Flag
-18000005 Flower box 1
-18000006 Flower box 2
-18000007 Windmeter
-18000008 Down Arrow Flag
-18000009 Up Arrow Flag
-18000010 Skull Altar
-18000011 USA Flag
-18000012 Canada Flag
-18000013 Italia Flag
-18000014 Germany Flag
-18000015 Finland Flag
-18000016 Spain Flag
-18000017 France Flag
-18000018 GBR Flag
-18000019 Brazil Flag
-18000020 China Flag
-18000021 Norway Flag
-18000022 Thailand Flag
-18000023 Thailand Flag
-18000024 India Flag
-18000025 Australia Flag
-18000026 South Korea Flag
-18000027 Japan Flag
-18000028 Turkey Flag
-18000029 Indonesia Flag
-18000030 Netherlands Flag
-18000031 Philippines Flag
-18000032 Singapore Flag
-18000033 PEKKA Statue
-18000034 Russia Flag
-18000035 Russia Flag
-18000036 Greece Flag
-
-
-obstacles ID:
-Code:
-8000000 Pine Tree
-8000001 Large Stone
-8000002 Small Stone 1
-8000003 Small Stone 2
-8000004 Square Bush
-8000005 Square Tree
-8000006 Tree Trunk 1
-8000007 Tree Trunk 2
-8000008 Mushrooms
-8000009 TombStone
-8000010 Fallen Tree
-8000011 Small Stone 3
-8000012 Small Stone 4
-8000013 Square Tree 2
-8000014 Stone Pillar 1
-8000015 Large Stone
-8000016 Sharp Stone 1
-8000017 Sharp Stone 2
-8000018 Sharp Stone 3
-8000019 Sharp Stone 4
-8000020 Sharp Stone 5
-8000021 Xmas tree
-8000022 Hero TombStone
-8000023 DarkTombStone
-8000024 Passable Stone 1
-8000025 Passable Stone 2
-8000026 Campfire
-8000027 Campfire
-8000028 Xmas tree2013
-8000029 Xmas TombStone
-8000030 Bonus Gembox
-8000031 Halloween2014
-8000032 Xmas tree2014
-8000033 Xmas TombStone2014
-8000034 Npc Plant 1
-8000035 Npc Plant 2
-8000036 Halloween2015
-*/

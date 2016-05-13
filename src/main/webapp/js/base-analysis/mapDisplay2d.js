@@ -203,7 +203,6 @@ var MapDisplay2d = function(canvas, mapConfig, model, displaySettings) {
     var renderEnoughPossibleTrapLocations = function(result, mapDimensions) {
         var colour = result.success ? successColour : failColour;
         var display = new createjs.Shape();
-        display.alpha = 0.3;
         _.each(
             model.getReport().village.possibleInternalLargeTraps,
             function(trap) {
@@ -218,6 +217,13 @@ var MapDisplay2d = function(canvas, mapConfig, model, displaySettings) {
                     .endFill();
             }
         );
+        display.filters = [
+            new createjs.ColorFilter(
+                1, 1, 1, 0.4,
+                0, 0, 0, 0
+            )
+        ];
+        display.cache(0, 0, 1500, 1500);
         extrasContainer.addChild(display);
     };
 
