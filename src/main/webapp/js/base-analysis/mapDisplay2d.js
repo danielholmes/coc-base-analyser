@@ -1,7 +1,6 @@
 'use strict';
 
-var mapDisplay2d = (function(document, mapConfig) {
-    var canvas = document.getElementById("villageImage");
+var MapDisplay2d = function(canvas, mapConfig, model, displaySettings) {
     var stage = new createjs.Stage(canvas);
     stage.autoClear = false;
     var bgContainer = new createjs.Container();
@@ -626,6 +625,10 @@ var mapDisplay2d = (function(document, mapConfig) {
     }*/
 
     var renderGrid = function(mapDimensions) {
+        if (!displaySettings.getShowGrid()) {
+            return;
+        }
+
         var colour = "#ff0000";
         var alpha = 0.3;
         var mapIndexes = _.range(mapDimensions.totalTiles);
@@ -664,25 +667,27 @@ var mapDisplay2d = (function(document, mapConfig) {
         _.chain(mapIndexes)
             .filter(function(mapIndex) { return mapIndex != 0 && mapIndex % 5 == 0; })
             .map(function(mapIndex) {
-                var rowLeft = new createjs.Text(mapIndex, "9px monospace", colour);
+                var textSize = Math.ceil(canvas.width / 50);
+
+                var rowLeft = new createjs.Text(mapIndex, textSize + "px monospace", colour);
                 rowLeft.x = 0;
                 rowLeft.y = mapDimensions.toCanvasCoord(mapIndex);
                 rowLeft.textBaseline = "top";
 
-                var colTop = new createjs.Text(mapIndex, "9px monospace", colour);
+                var colTop = new createjs.Text(mapIndex, textSize + "px monospace", colour);
                 colTop.x = mapDimensions.toCanvasCoord(mapIndex);
                 colTop.y = 0;
                 colTop.textBaseline = "top";
 
-                var rowRight = new createjs.Text(mapIndex, "9px monospace", colour);
-                rowRight.x = mapDimensions.toCanvasCoord(mapDimensions.totalTiles);
+                var rowRight = new createjs.Text(mapIndex, textSize + "px monospace", colour);
+                rowRight.x = mapDimensions.toCanvasCoord(mapDimensions.totalTiles - mapDimensions.hiddenBorder);
                 rowRight.y = mapDimensions.toCanvasCoord(mapIndex);
                 rowRight.textBaseline = "top";
                 rowRight.textAlign = "right";
 
-                var colBottom = new createjs.Text(mapIndex, "9px monospace", colour);
+                var colBottom = new createjs.Text(mapIndex, textSize + "px monospace", colour);
                 colBottom.x = mapDimensions.toCanvasCoord(mapIndex);
-                colBottom.y = mapDimensions.toCanvasCoord(mapDimensions.totalTiles);
+                colBottom.y = mapDimensions.toCanvasCoord(mapDimensions.totalTiles - mapDimensions.hiddenBorder);
                 colBottom.textBaseline = "bottom";
 
                 return [rowLeft, colTop, rowRight, colBottom];
@@ -701,7 +706,7 @@ var mapDisplay2d = (function(document, mapConfig) {
         render2dPreventTroopDrops(mapDimensions);
         render2dImageBuildings(mapDimensions);
         renderActiveRule(mapDimensions);
-        //renderGrid(mapDimensions);
+        renderGrid(mapDimensions);
     };
 
     var MapDimensions = function(props) {
@@ -720,14 +725,17 @@ var mapDisplay2d = (function(document, mapConfig) {
             mapTiles: props.mapTiles,
             borderTiles: props.borderTiles,
             totalTiles: props.totalTiles,
+            hiddenBorder: hiddenBorder,
             toCanvasCoord: toCanvasCoord,
             toCanvasSize: toCanvasSize
         };
     };
+    
+    displaySettings.showGridChanged.add(_.bind(render, this));
     
     return {
         render: render,
         setAssets: setAssets,
         canvas: canvas
     };
-})(document, mapConfig);
+};

@@ -1,6 +1,6 @@
 'use strict';
 
-var preloader = (function() {
+var Preloader = function() {
     return {
         loadAssets: function(callback) {
             var queue = new createjs.LoadQueue();
@@ -16,4 +16,4 @@ var preloader = (function() {
             ]);
         }
     };
-})();
+};

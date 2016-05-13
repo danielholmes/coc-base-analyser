@@ -1,6 +1,6 @@
 'use strict';
 
-var ui = (function($, model, mapDisplay, window) {
+var Ui = function($, model, mapDisplay, window, displaySettings) {
     var reportValid = false;
     var sizeValid = false;
     var activeRuleValid = false;
@@ -108,13 +108,19 @@ var ui = (function($, model, mapDisplay, window) {
     model.ruleChanged.add(_.bind(invalidateRule, this));
 
     $(document).ready(function () {
-        $("#results-panel-group").on("show.bs.collapse", function(event) {
-            model.setActiveRuleByCode($(event.target).data("rule-code"));
-        });
-        $("#results-panel-group").on("hide.bs.collapse", function(event) {
-            if (model.getActiveRuleCode() == $(event.target).data("rule-code")) {
-                model.clearActiveRule();
-            }
+        $("#results-panel-group")
+            .on("show.bs.collapse", function(event) {
+                model.setActiveRuleByCode($(event.target).data("rule-code"));
+            })
+            .on("hide.bs.collapse", function(event) {
+                if (model.getActiveRuleCode() == $(event.target).data("rule-code")) {
+                    model.clearActiveRule();
+                }
+            });
+        var showGrid = $("form#display-settings [name=grid]");
+        showGrid.prop("checked", displaySettings.getShowGrid());
+        showGrid.on("change", function(event) {
+           displaySettings.setShowGrid($(event.currentTarget).is(":checked")); 
         });
     });
 
@@ -123,4 +129,4 @@ var ui = (function($, model, mapDisplay, window) {
     return {
         render: render
     }
-})(jQuery, model, mapDisplay2d, window);
+};

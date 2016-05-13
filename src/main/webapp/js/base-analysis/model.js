@@ -1,6 +1,6 @@
 'use strict';
 
-var model = (function() {
+var Model = function() {
     var currentReport = null;
     var activeRuleCode = null;
     var reportChanged = new signals.Signal();
@@ -112,4 +112,4 @@ var model = (function() {
         reportChanged: reportChanged,
         ruleChanged: ruleChanged
     };
-})();
+};

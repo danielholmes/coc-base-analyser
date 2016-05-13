@@ -8,28 +8,6 @@
     {{/styles}}
 
     {{$navbar}}
-        <!--<ul class="nav navbar-nav">
-            <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Link</a></li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                    <li><a href="#">Action</a></li>
-                    <li><a href="#">Another action</a></li>
-                    <li><a href="#">Something else here</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">Separated link</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">One more separated link</a></li>
-                </ul>
-            </li>
-        </ul>
-        <form class="navbar-form navbar-left" role="search">
-            <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search">
-            </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-        </form>-->
         {{#times}}
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
@@ -50,6 +28,22 @@
                 </li>
             </ul>
         {{/times}}
+
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                   aria-expanded="false">Display Settings <span class="caret"></span></a>
+                <form id="display-settings" class="dropdown-menu">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input name="grid" type="checkbox"> Show grid
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </li>
+        </ul>
     {{/navbar}}
 
     {{$content}}
@@ -106,14 +100,16 @@
         <script type="text/javascript" src="//code.createjs.com/preloadjs-0.6.2.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jStorage/0.4.12/jstorage.min.js"></script>
         <script type="text/javascript" src="/js/console-polyfill.js"></script>
-        <script type="text/javascript" src="/js/base-analysis/preloader.js"></script>
-        <script type="text/javascript" src="/js/base-analysis/model.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/Preloader.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/Model.js"></script>
         <script type="text/javascript" src="/js/base-analysis/RedMoonBuildingSpriteSheet.js"></script>
         <script type="text/javascript" src="/js/base-analysis/RedMoonBuildingSpriteSheet.js"></script>
         <script type="text/javascript" src="/js/base-analysis/RedMoonWallSpriteSheet.js"></script>
-        <script type="text/javascript" src="/js/base-analysis/mapDisplay2d.js"></script>
-        <script type="text/javascript" src="/js/base-analysis/ui.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/DisplaySettings.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/MapDisplay2d.js"></script>
+        <script type="text/javascript" src="/js/base-analysis/Ui.js"></script>
         <script type="text/javascript" src="/js/base-analysis/main.js"></script>
     {{/scripts}}
 {{/base}}

@@ -45,7 +45,7 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
- - grid checkbox in navbar
+ - check http://www.thestoreshop.com/TH8/TH8basebuildingsm.pdf for rules
  - analysis performance, currently too slow
    - move to WV (closest DC) with better ping to clanseeker, cheaper hosting and possibly be able to use smaller machines
    - MapCoordinate trait with underlying FloatMapCoordinate, TileCoordinate, Tile - encourage integer math where possible and prevent widening
@@ -71,8 +71,6 @@ then deploy it manually through the AWS console:
   - class PossibleDoubleGiantBomb(anchors: (Either[Defense, PossibleTrapLocation], Either[Defense, PossibleTrapLocation]), gbs: (PossibleTrapLocation, PossibleTrapLocation))
  
  - BK Trigger rule further tweaks. should show red for all non-compartment tiles floodfilled from triggered
- 
- - change js to use classes and instances rather than global modules
  
  - clarify AQ range - see iphoto screenshot of greg raid. possibly shown on ppetes war base
  
