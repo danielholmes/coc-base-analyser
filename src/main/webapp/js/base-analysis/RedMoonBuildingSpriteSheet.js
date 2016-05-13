@@ -2,6 +2,53 @@
 
 var RedMoonBuildingSpriteSheet = function(image) {
     var defs = {
+        "SkeletonTrap": {
+            x: 1092,
+            y: 304,
+            width: 24,
+            height: 32,
+            gap: 2,
+            levelMultiplier: 0.5
+        },
+        "AirBomb": {
+            x: 994,
+            y: 297,
+            width: 25,
+            height: 40,
+            gap: 0,
+            levelMultiplier: 0.5
+        },
+        "SeekingAirMine": {
+            x: 1044,
+            y: 299,
+            width: 25,
+            height: 39,
+            gap: 0,
+            levelMultiplier: 0.5
+        },
+        "SpringTrap": {
+            x: 969,
+            y: 311,
+            width: 25,
+            height: 26,
+            gap: 0
+        },
+        "Bomb": {
+            x: 893,
+            y: 313,
+            width: 17,
+            height: 23,
+            gap: 9,
+            levelMultiplier: 0.5
+        },
+        "GiantBomb": {
+            x: 896,
+            y: 439,
+            width: 37,
+            height: 39,
+            gap: 12,
+            levelMultiplier: 0.5
+        },
         "TownHall": {
             x: 0,
             y: 5,
@@ -198,6 +245,9 @@ var RedMoonBuildingSpriteSheet = function(image) {
         var heightRatio = mapDimensions.toCanvasSize(element.block.size) / sheetDef.height;
         var useScale = Math.min(widthRatio, heightRatio);
         var sheetIndex = element.level - 1;
+        if (sheetDef.levelMultiplier) {
+            sheetIndex = Math.floor((element.level - 1) * sheetDef.levelMultiplier);
+        }
         var bitmap = new createjs.Bitmap(image);
         bitmap.sourceRect = new createjs.Rectangle(
             sheetDef.x + sheetIndex * (sheetDef.width + sheetDef.gap) + sheetDef.gap / 2,

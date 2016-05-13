@@ -16,6 +16,7 @@ import spray.http.Uri
 import spray.httpx.SprayJsonSupport._
 import spray.json._
 import ViewModelProtocol._
+import org.danielholmes.coc.baseanalyser.model.traps.Trap
 
 class ViewModelMapper {
   def exception(uri: Uri, e: Exception): ExceptionViewModel = {
@@ -315,12 +316,18 @@ class ViewModelMapper {
         block(c.preventTroopDropBlock),
         elementRange(c.range)
       )
-      case s: PreventsTroopDrop => BaseStructureElementViewModel(
-        objectId(s),
+      case p: PreventsTroopDrop => BaseStructureElementViewModel(
+        objectId(p),
         typeName,
-        s.level,
-        block(s.block),
-        block(s.preventTroopDropBlock)
+        p.level,
+        block(p.block),
+        block(p.preventTroopDropBlock)
+      )
+      case t: Trap => TrapElementViewModel(
+        objectId(t),
+        typeName,
+        t.level,
+        block(t.block)
       )
       case e: Element => throw new RuntimeException(s"Can't map ${element.getClass.getSimpleName}")
     }

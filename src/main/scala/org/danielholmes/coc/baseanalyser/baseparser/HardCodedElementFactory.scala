@@ -13,6 +13,10 @@ class HardCodedElementFactory extends ElementFactory {
     raw => constructor(elementLevel(raw.lvl), elementTile(raw))
   }
 
+  private def noLevelConstructor(constructor: (Tile) => Element): (RawElement => Element) = {
+    raw => constructor(elementTile(raw))
+  }
+
   private def elementLevel(rawLevel: Int): PosInt = PosInt.from(Math.max(1, rawLevel + 1)).get
 
   private def elementTile(raw: RawElement) = Tile(PosZInt.from(raw.x).get, PosZInt.from(raw.y).get)
@@ -34,7 +38,7 @@ class HardCodedElementFactory extends ElementFactory {
     1000012 -> levelAndCoordinateConstructor(AirDefense),
     1000013 -> levelAndCoordinateConstructor(Mortar),
     1000014 -> levelAndCoordinateConstructor(ClanCastle),
-    1000015 -> ((raw: RawElement) => BuilderHut(elementTile(raw))),
+    1000015 -> noLevelConstructor(BuilderHut),
     //1000016 CommunicationsMast,
     //1000017 -> GoblinTownHull,
     //1000018 -> GoblinHut,
@@ -54,7 +58,7 @@ class HardCodedElementFactory extends ElementFactory {
 
     // Traps
     12000000 -> levelAndCoordinateConstructor(Bomb),
-    12000001 -> levelAndCoordinateConstructor(SpringTrap),
+    12000001 -> noLevelConstructor(SpringTrap),
     12000002 -> levelAndCoordinateConstructor(GiantBomb),
     12000003 -> levelAndCoordinateConstructor(HalloweenBomb),
     //12000004 -> levelAndCoordinateConstructor(????),

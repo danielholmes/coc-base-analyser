@@ -24,7 +24,7 @@ sealed trait ElementViewModel {
   def level: Int
   def block: BlockViewModel
 }
-case class BaseElementViewModel(
+case class TrapElementViewModel(
   override val id: String,
   override val typeName: String,
   override val level: Int,

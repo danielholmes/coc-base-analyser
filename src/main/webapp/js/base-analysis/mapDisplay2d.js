@@ -467,24 +467,23 @@ var MapDisplay2d = function(canvas, mapConfig, model, displaySettings) {
 
     var render2dPreventTroopDrops = function(mapDimensions) {
         var allPrevents = new createjs.Container();
-        for (var i in model.getReport().village.elements) {
-            var element = model.getReport().village.elements[i];
-            if (element.noTroopDropBlock.size == 0) {
-                continue;
-            }
-            var prevent = new createjs.Shape();
-            prevent.graphics
-                .beginFill("rgba(255,255,255,1)")
-                .drawRect(
-                    0,
-                    0,
-                    mapDimensions.toCanvasSize(element.noTroopDropBlock.size),
-                    mapDimensions.toCanvasSize(element.noTroopDropBlock.size)
-                );
-            prevent.x = mapDimensions.toCanvasCoord(element.noTroopDropBlock.x);
-            prevent.y = mapDimensions.toCanvasCoord(element.noTroopDropBlock.y);
-            allPrevents.addChild(prevent);
-        }
+        _.chain(model.getReport().village.elements)
+            .reject(function(e) { return !e.noTroopDropBlock; })
+            .map(function(element) {
+                var prevent = new createjs.Shape();
+                prevent.graphics
+                    .beginFill("rgba(255,255,255,1)")
+                    .drawRect(
+                        0,
+                        0,
+                        mapDimensions.toCanvasSize(element.noTroopDropBlock.size),
+                        mapDimensions.toCanvasSize(element.noTroopDropBlock.size)
+                    );
+                prevent.x = mapDimensions.toCanvasCoord(element.noTroopDropBlock.x);
+                prevent.y = mapDimensions.toCanvasCoord(element.noTroopDropBlock.y);
+                return prevent;
+            })
+            .each(function(e) { allPrevents.addChild(e); });
         allPrevents.filters = [
             new createjs.ColorFilter(
                 1, 1, 1, 0.15,
@@ -513,16 +512,18 @@ var MapDisplay2d = function(canvas, mapConfig, model, displaySettings) {
 
     var renderBuildingImage = function(element, mapDimensions) {
         var display = renderElementImage(element, mapDimensions, buildingSheet);
-        var grass = new createjs.Shape();
-        grass.graphics
-            .beginFill("#6fa414")
-            .drawRect(
-                0,
-                0,
-                mapDimensions.toCanvasSize(element.block.size),
-                mapDimensions.toCanvasSize(element.block.size)
-            );
-        display.addChildAt(grass, 0);
+        if (element.noTroopDropBlock) {
+            var grass = new createjs.Shape();
+            grass.graphics
+                .beginFill("#6fa414")
+                .drawRect(
+                    0,
+                    0,
+                    mapDimensions.toCanvasSize(element.block.size),
+                    mapDimensions.toCanvasSize(element.block.size)
+                );
+            display.addChildAt(grass, 0);
+        }
         buildingsContainer.addChild(display);
     };
 

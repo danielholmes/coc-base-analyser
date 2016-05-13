@@ -45,15 +45,28 @@ then deploy it manually through the AWS console:
 
 
 ## General TODO
+ - include obstacles:
+   - affect some rules such as empty space analysis within base. Modify this because currently doesnt consider space taken up by traps
+   - Obstacles anywhere but outer 3 border tiles rule
+   - just use generic obstacle render atm
+
+ - store skeleton trap mode once can see and verify on live data
+ - store xbow mode once can see and verify on live data
+ 
  - own connection
   - purchase from alex
   - set up on own small EB app
+  
+ - Privileged vs unprivileged analysis - warnings if not using traps
+  - asterixes against rules which traps have an effect
+ - check trap rendering
+  
+ - trap access (if leadership go for it) - new, dedicated credentials of own
+  
  - analysis performance, currently too slow
    - MapCoordinate trait with underlying FloatMapCoordinate, TileCoordinate, Tile - encourage integer math where possible and prevent widening
    - Views of tile sets (e.g. TileBlock returned from matrix
    - Redo ranges - should include underlying cached set of tiles + tilecoordinates contained
- 
- - gzip css, etc
  
  - double check sweeper angles being rendered same as in game once clan seeker up
  - Some TH9 rules
@@ -75,10 +88,6 @@ then deploy it manually through the AWS console:
  
  - clarify AQ range - see iphoto screenshot of greg raid. possibly shown on ppetes war base
  
- - trap access (if leadership go for it) - new, dedicated credentials of own
- 
- - include obstacles? affect some rules such as empty space analysis within base
- 
  - TH11 rendering - new levels and warden + eagle
  - maintenance mode for site - different runRoute if connection to game unavailable
  
@@ -87,7 +96,6 @@ then deploy it manually through the AWS console:
   - split map display 2d apart. New inner stage container - drawLine(tile1, tile2) which transforms to 2d or 3d view
  - separate rule groups for farm vs arranged
  - pass, warning, fail levels (e.g. for minion anchors)
- - dynamic sizing of canvas still a bit funky - find proper js solution
  - integration tests
  - password protection (in the wrong hands opposition would see our trap locations)
 
