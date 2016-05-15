@@ -31,34 +31,36 @@ $(document).ready(function() {
         loadNext();
     };
 
+    var performLoadPlayer = function(player, attemptNum) {
+        loading.push(player);
+        jQuery.getJSON(player.analysisSummaryUrl)
+            .done(function (report) {
+                addResult(player, report);
+            })
+            .fail(function (response) {
+                if (response.status == 404 || response.status == 400) {
+                    addPermanentError(player, response.responseJSON);
+                    return;
+                }
+
+                if (response.status == 503) {
+                    addTemporaryError(player, "Game Servers connection not available", attemptNum);
+                    return;
+                }
+
+                addTemporaryError(player, 'Unknown error encountered', attemptNum);
+            });
+    };
+
     var loadPlayer = function(player, attemptNum) {
         var timeout = Math.pow(attemptNum - 1, 1.5) * 1000;
-        if (timeout > 0) {
-            console.log("Loading", player.ign, "with timeout " + timeout);
+        if (timeout == 0) {
+            performLoadPlayer(player, 1);
+            return;
         }
-        setTimeout(
-            function() {
-                loading.push(next);
-                jQuery.getJSON(player.analysisSummaryUrl)
-                    .done(function (report) {
-                        addResult(player, report);
-                    })
-                    .fail(function (response) {
-                        if (response.status == 404 || response.status == 400) {
-                            addPermanentError(player, response.responseJSON);
-                            return;
-                        }
 
-                        if (response.status == 503) {
-                            addTemporaryError(player, "Game Servers connection not available", attemptNum);
-                            return;
-                        }
-
-                        addTemporaryError(player, 'Unknown error encountered', attemptNum);
-                    });
-            },
-            timeout
-        );
+        console.log("Loading", player.ign, "with timeout " + timeout);
+        setTimeout(_.partial(performLoadPlayer, player, attemptNum), timeout);
     };
 
     var loadNext = function() {

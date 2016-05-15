@@ -4,6 +4,7 @@ var Ui = function($, model, mapDisplay, window, displaySettings) {
     var reportValid = false;
     var sizeValid = false;
     var activeRuleValid = false;
+    var panelGroup = $("#results-panel-group");
 
     var renderTemplate = function (selector, vars) {
         var template = $(selector).html();
@@ -57,7 +58,6 @@ var Ui = function($, model, mapDisplay, window, displaySettings) {
         }
 
         reportValid = true;
-        var panelGroup = $("#results-panel-group");
         panelGroup.empty();
         if (!model.hasReport()) {
             $("#report").hide();
@@ -81,7 +81,6 @@ var Ui = function($, model, mapDisplay, window, displaySettings) {
             }
         );
         panelGroup.append(panels);
-        panelGroup.find(".panel.failed:first a").trigger("click");
     };
 
     var renderRule = function() {
@@ -91,9 +90,11 @@ var Ui = function($, model, mapDisplay, window, displaySettings) {
 
         activeRuleValid = true;
         var panels = $("#results-panel-group").find(".panel");
-        panels.removeClass("active");
+        panels.collapse('hide');
         if (model.hasActiveRule()) {
-            panels.filter("#panel-" + model.getActiveRuleCode()).addClass("active");
+            panels.filter("#panel-" + model.getActiveRuleCode())
+                .find("[role=tabpanel]")
+                .collapse('show');
         }
     };
 
@@ -117,6 +118,7 @@ var Ui = function($, model, mapDisplay, window, displaySettings) {
                     model.clearActiveRule();
                 }
             });
+
         var showGrid = $("form#display-settings [name=grid]");
         showGrid.prop("checked", displaySettings.getShowGrid());
         showGrid.on("change", function(event) {

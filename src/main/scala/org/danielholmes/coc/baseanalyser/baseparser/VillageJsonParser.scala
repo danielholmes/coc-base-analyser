@@ -15,8 +15,6 @@ class VillageJsonParser(elementFactory: ElementFactory) {
   def parse(input: String): Villages = {
     try {
       val rawVillage = input.parseJson.convertTo[RawVillage]
-      println(rawVillage.war_layout
-        .map(layoutIndex => parseVillage(rawVillage, b => parseWarElement(b, layoutIndex))))
       Villages(
         parseVillage(rawVillage, b => Some(RawElement(b.data, b.lvl, b.x, b.y, b.aim_angle))),
         rawVillage.war_layout

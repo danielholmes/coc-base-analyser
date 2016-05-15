@@ -14,6 +14,15 @@ var Model = function() {
         currentReport = newReport;
         clearActiveRule();
         reportChanged.dispatch();
+
+        if (currentReport != null) {
+            var firstFailedRule = _.chain(currentReport.results)
+                .findWhere({ "success": false })
+                .value();
+            if (firstFailedRule != null) {
+                setActiveRuleByCode(firstFailedRule.code);
+            }
+        }
     };
 
     var clearReport = function() {
