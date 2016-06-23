@@ -16,9 +16,20 @@ var MapDisplay2d = function(canvas, mapConfig, model, displaySettings) {
     var buildingSheet = null;
     var wallSheet = null;
 
+    var hashCode = function(str){
+        var hash = 0;
+        if (str.length == 0) return hash;
+        for (i = 0; i < str.length; i++) {
+            var char = str.charCodeAt(i);
+            hash = ((hash<<5)-hash)+char;
+            hash = hash & hash;
+        }
+        return hash;
+    };
+
     var randomColour = function(seed) {
-        var numberSeed = (seed.length * 5.7) % 30;
-        return '#' + Math.floor(numberSeed / 30 * 16777215).toString(16);
+        var base = hashCode("" + seed).toString(16).slice(2, 8);
+        return '#' + base + Array(6 - base.length + 1).join("0");
     };
 
     var renderElementRanges = function(mapDimensions, elements) {
