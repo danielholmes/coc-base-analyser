@@ -1,6 +1,10 @@
-# COC Base Analyser
+# Clash of Clans Base Analyser
 
-Analyses base layouts against sets of war base rules
+Analyses base layouts against sets of war base rules. It runs this analysis in bulk and provides tabulated results for
+the current war bases for each member in a clan. Additional to this you can click through to an individual's base to
+see a more in depth analysis.
+
+Analysis is only allowed for pre-configured clans in the app which are assigned an alias for convenience.
 
 
 ## Dependencies
@@ -30,115 +34,39 @@ To find available SBT dependency updates run `sbt dependencyUpdates`
 
 `sbt ~tomcat:start`
 
-Available at (http://localhost:8080)
+Available at [http://localhost:8080](http://localhost:8080)
+
+Accessing a clan e.g. [http://localhost:8080/clans/alpha](http://localhost:8080/clans/alpha)
 
 
-## Production deployment
+## Production Build
 
-Currently has an Elastic Beanstalk app set up. Package the war file:
- 
 `sbt package` 
 
-then deploy it manually through the AWS console:
+then deploy the war as required:
 
 `target/scala-2.11/coc-base-analyser_2.11-0.1.war`
 
 
-## General TODO
- - Obstacles anywhere but outer 3 border tiles rule
- - just use generic obstacle render atm
+## Game Connection
 
- - Once api up again 
-  - store skeleton trap mode once can see and verify on live data
-  - store xbow mode once can see and verify on live data
-  - double check sweeper angles being rendered same as in game once clan seeker up
- 
- - own connection
-  - purchase from alex
-  - set up on own small EB app
-  
- - trap access (if leadership go for it) - new, dedicated credentials of own
- - Privileged vs unprivileged analysis - warnings if not using traps
-  - asterixes against rules which traps have an effect
-  
- - password protection (in the wrong hands opposition would see our trap locations)
-  
- - analysis performance, currently too slow
-   - MapCoordinate trait with underlying FloatMapCoordinate, TileCoordinate, Tile - encourage integer math where possible and prevent widening
-   - Views of tile sets (e.g. TileBlock returned from matrix
-   - Redo ranges - should include underlying cached set of tiles + tilecoordinates contained
- 
- - Some TH9 rules
-  - Queen Charge into wall breakable compartment shouldnt get to 2 air defs
-  - It should require either a jump spell or 2 wall breaker groups in order to access the queen.
- 
- - on equidistant hog lure, mark it as such or ignore it all together (maybe a pink line showing equidistant, non luring alternative path
- 
- - TH10s without infernos should go under TH 9.5 rules?
- 
- - separate hole in the base rule - just to highlight really bad issues (due to ignoring some others)
- 
- - expand possible trap locations for channel bases. e.g. see spandan and vicious 2.0 an sparta home base
- 
- - Begin on DGB:
-  - class PossibleDoubleGiantBomb(anchors: (Either[Defense, PossibleTrapLocation], Either[Defense, PossibleTrapLocation]), gbs: (PossibleTrapLocation, PossibleTrapLocation))
- 
- - BK Trigger rule further tweaks. should show red for all non-compartment tiles floodfilled from triggered
- 
- - clarify AQ range - see iphoto screenshot of greg raid. possibly shown on ppetes war base
- 
- - TH11 rendering - new levels and warden + eagle
- 
- - sbt deploy task
- - 3d render
-  - split map display 2d apart. New inner stage container - drawLine(tile1, tile2) which transforms to 2d or 3d view
- - separate rule groups for farm vs arranged
- - pass, warning, fail levels (e.g. for minion anchors)
- - integration tests
+The app requires a connection to the Supercell servers to query the village json and other clan members. Note that this 
+isn't referring to the official [Clash of Clans API](https://developer.clashofclans.com/), but a direct connection to
+the game servers how the game does. Once upon a time this project used a product called "Clan Seeker" which has since
+been discontinued. It's trivial however to write an agent for the app if there's another such service out there:
+
+ 1. Write a new game connection agent that implements the 
+   [GameConnection Trait](src/main/scala/org/danielholmes/coc/baseanalyser/gameconnection/GameConnection.scala)
+ 2. Wire in the game connection in the
+   [Services Trait](src/main/scala/org/danielholmes/coc/baseanalyser/Services.scala)
+
+At the moment there's a hardcoded stub/testing GameConnection with dummy data
 
 
-## TH8 TODO Rules
- - air defs should be a minimum distance apart
- - SAMs not next to each other - one kills a dragon
- - loon pathing
-   - must be >= 3 defenses to go through to path to air defs
-   - OR must be > certain distance
-   - should also consider air trap placement
-   - should also consider air sweeper placement
- - minimum 3 DGB possible spots (including diagonal)
- - minion anchors (warning only, no hard fail, once that functionality is built)
- - wb t junction warning
- 
+## Rules
 
-## TH8 TODO Rules once traps available
- - spring trap locations (resting on defenses)
- - skele traps should be on ground and not triggerable during cc lure
- - skele traps + air traps not within dgb positions (gives info for cleanup if first hit was with air)
- - 3 viable DGB spots (more difficult)
- - farm wars - teslas in diff compartment for gowipe
- - trash buildings in front of all outer ring defenses
+The project is very much in a WIP state. Town Hall 8 is pretty fleshed out but TH9 and above don't have many rules.
+Also these were modelled off of attack and base building meta from around February 2016. Some newer buildings are also 
+not present such as the Bomb Tower.
 
-
-## TH9 Rules
- - EQ cant connect >2 GB/DGB positions + AQ
- - Jump doesnt connect too many AQ, GB
- - queen needs to be protected from “suicide dragons”
-   Specifically, an air sweeper pointed to protect the queen, or (more commonly) a black mine between the queen and the likely dragon entry point
- - black bombs within range of queen or air def - to get hounds or suicide drags. red bombs out of range of air defs
- - The defenses around your DGB should be more than 4 tiles from an exterior wall
-   Ensures the defenses aren’t eliminated using a queen walk
-
-
-## TH10 Rules
- - cant get 2 infernos with one freeze
-
-
-## Expansion ideas
- - Hog pathing analysis - start paths from each tile and be able to select/see individual paths from defense to defense
-   to show DGB issues
- - multiple goals/rulesets:
-   - farming (protected loot, give away easy shield - one star, but no value for more than)
-   - war - depending on clan and level, this might be to prevent 1 star, prevent 2 star, or just prevent 3 star
-   - trophy?
- - provide weaknesses for attack types. e.g. drags doesnt consider DGB locations, hogs dont consider air def high hp.
- - queen walk pathing from drop point
+Rules are pretty quick to build as the building blocks and infrastructure of a modelled base are in place.

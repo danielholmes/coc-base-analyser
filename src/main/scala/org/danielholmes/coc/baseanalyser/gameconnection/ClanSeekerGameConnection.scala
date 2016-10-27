@@ -40,7 +40,7 @@ import ClanSeekerProtocol._
 class ClanSeekerGameConnection extends GameConnection {
   private val maxAttempts = 3
   private val rootUrl = "http://api.clanseeker.co"
-  private val timeout = 1.minute
+  private val timeout = 20.seconds
 
   def getClanDetails(id: Long): Option[ClanDetails] = {
     implicit val system = ActorSystem()
