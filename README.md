@@ -69,4 +69,14 @@ The project is very much in a WIP state. Town Hall 8 is pretty fleshed out but T
 Also these were modelled off of attack and base building meta from around February 2016. Some newer buildings are also 
 not present such as the Bomb Tower.
 
-Rules are pretty quick to build as the building blocks and infrastructure of a modelled base are in place.
+Rules are pretty quick to build due to the building blocks and infrastructure of a modelled base being in place.
+
+
+## Screenshots
+
+![Clan Homepage](docs/images/home-1.png?raw=true "Clan Home")
+![Base Analysis 1](docs/images/base-1.png?raw=true "Base Analysis 1")
+![Base Analysis 2](docs/images/base-2.png?raw=true "Base Analysis 2")
+![Base Analysis 3](docs/images/base-3.png?raw=true "Base Analysis 3")
+![Base Analysis 4](docs/images/base-4.png?raw=true "Base Analysis 4")
+![Bulk Analysis](docs/images/bulk-1.png?raw=true "Bulk Analysis")

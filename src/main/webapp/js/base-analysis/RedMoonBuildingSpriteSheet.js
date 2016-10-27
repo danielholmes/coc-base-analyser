@@ -230,6 +230,14 @@ var RedMoonBuildingSpriteSheet = function(image) {
             width: 49,
             height: 44,
             gap: 0
+        },
+        "Decoration": {
+            "//": "just a dummy sprite for the moment - decorations not fully implemented",
+            x: 912,
+            y: 1498,
+            width: 10,
+            height: 10,
+            gap: 10
         }
     };
     

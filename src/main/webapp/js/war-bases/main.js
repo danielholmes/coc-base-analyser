@@ -115,7 +115,7 @@ $(document).ready(function() {
         return $("<tr />").attr("id", rowId)
             .addClass(anyError ? 'danger' : '')
             .append($("<td />").append(result.player.ign))
-            .append($("<td />").append($("<a />").attr("href", result.player.analysisUrl).attr("target", "_blank").html(result.player.analysisUrl)))
+            .append($("<td />").append($("<a />").attr("href", result.player.analysisUrl).attr("target", "_blank").html('Go to result')))
             .append(
                 _.map(
                     _.sortBy(result.report.resultSummaries, function(summary) { return ruleOrder.indexOf(summary.shortName); }),
